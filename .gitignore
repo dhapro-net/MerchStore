@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+src/MerchStore.WebUI/HTMLPreview.html
+src/MerchStore.WebUI/HTMLPreviewCatalog.html
+src/MerchStore.WebUI/HTMLPreviewDetails.html
