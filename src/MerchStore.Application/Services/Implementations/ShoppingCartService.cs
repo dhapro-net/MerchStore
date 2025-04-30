@@ -101,5 +101,10 @@ namespace MerchStore.Application.Service.ShoppingCart
             var cart = await GetCartAsync(cartId);
             return cart.CalculateTotal();
         }
+
+        Task IShoppingCartService.GetCartAsync(Guid cartId)
+        {
+            return GetCartAsync(cartId);
+        }
     }
 }
