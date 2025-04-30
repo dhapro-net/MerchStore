@@ -18,9 +18,9 @@ namespace MerchStore.Application.Service.ShoppingCart
             _productCatalogService = productCatalogService ?? throw new ArgumentNullException(nameof(productCatalogService));
         }
         
-        public async Task<Domain.ShoppingCart.ShoppingCart> GetCartAsync(Guid cartId)
+       public async Task<Domain.ShoppingCart.ShoppingCart> GetCartAsync(Guid cartId)
         {
-            Domain.ShoppingCart.ShoppingCart cart = await _cartRepository.GetByIdAsync(cartId);
+            var cart = await _cartRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
                 cart = Domain.ShoppingCart.ShoppingCart.Create(cartId);
