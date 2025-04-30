@@ -1,9 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using MerchStore.Domain.ShoppingCart;
-using MerchStore.Domain.Entities;
-using MerchStore.Application.Services.Interfaces;
 using MerchStore.Service.ShoppingCart;
+using MerchStore.Service.Products;
+using MerchStore.Domain.Interfaces;
+
 
 namespace MerchStore.Application.Service.ShoppingCart
 {
@@ -22,7 +20,7 @@ namespace MerchStore.Application.Service.ShoppingCart
         
         public async Task<Domain.ShoppingCart.ShoppingCart> GetCartAsync(Guid cartId)
         {
-            var cart = await _cartRepository.GetByIdAsync(cartId);
+            Domain.ShoppingCart.ShoppingCart cart = await _cartRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
                 cart = Domain.ShoppingCart.ShoppingCart.Create(cartId);
