@@ -1,6 +1,3 @@
-
-
-
 namespace MerchStore.Domain.Interfaces
 {
     public interface IShoppingCartRepository
