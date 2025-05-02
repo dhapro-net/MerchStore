@@ -45,7 +45,7 @@ public class ShoppingCartController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error in ShoppingCart Index: {ex.Message}");
+            _logger.LogError(ex, "Error in ShoppingCart Index");
             ViewBag.ErrorMessage = "An error occurred while loading the shopping cart. Please try again later.";
             return View("Error");
         }
