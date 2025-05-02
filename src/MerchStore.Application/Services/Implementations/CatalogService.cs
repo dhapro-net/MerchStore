@@ -5,10 +5,7 @@ using MerchStore.Domain.Interfaces;
 
 namespace MerchStore.Application.Services.Implementations;
 
-/// <summary>
-/// Implementation of the catalog service.
-/// Acts as a facade over the repository layer.
-/// </summary>
+
 public class CatalogService : ICatalogService
 {
     private readonly IProductRepository _productRepository;
