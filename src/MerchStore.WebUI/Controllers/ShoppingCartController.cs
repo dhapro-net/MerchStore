@@ -156,7 +156,12 @@ public IActionResult EnterShippingInfo(ShippingInfo shippingInfo)
 {
     if (!ModelState.IsValid)
     {
-        return View("Index", new ShoppingCartViewModel { Shipping = shippingInfo });
+        var cartItems = GetCartFromCookie();
+        return View("Index", new ShoppingCartViewModel
+        {
+            Shipping = shippingInfo,
+            Items = cartItems
+        });
     }
 
     // Save shipping info to session or database
