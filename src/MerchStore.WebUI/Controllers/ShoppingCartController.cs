@@ -102,13 +102,13 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            // Retrieve the cart from the cookie
+            // Retrieve the cart from cookie
             var cart = GetCartFromCookie();
 
             // Remove the item
             cart.RemoveAll(i => i.ProductId == productId);
 
-            // Save the updated cart back to the cookie
+            // Update cart back to the cookie
             SaveCartToCookie(cart);
 
             return RedirectToAction("Index");
@@ -120,6 +120,62 @@ public class ShoppingCartController : Controller
             return View("Error");
         }
     }
+// POST: ShoppingCart/Checkout
+    [HttpPost]
+public async Task<IActionResult> Checkout(CheckoutRequest checkoutRequest)
+{
+    try
+    {
+        // Validate the request
+        if (!ModelState.IsValid)
+        {
+            ViewBag.ErrorMessage = "Invalid checkout data.";
+            return View("Error");
+        }
+
+        // Pass the checkout data to the application layer
+        await _checkoutService.ProcessCheckoutAsync(checkoutRequest);
+
+        // Clear the cart after successful checkout
+        SaveCartToCookie(new List<ShoppingCartItem>());
+
+        return RedirectToAction("Success");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in Checkout: {ex.Message}");
+        ViewBag.ErrorMessage = "An error occurred during checkout. Please try again later.";
+        return View("Error");
+    }
+}
+// GET: ShoppingCart/ShippingInfo
+[HttpPost]
+public IActionResult EnterShippingInfo(ShippingInfo shippingInfo)
+{
+    if (!ModelState.IsValid)
+    {
+        return View("Index", new ShoppingCartViewModel { Shipping = shippingInfo });
+    }
+
+    // Save shipping info to session or database
+    TempData["ShippingInfo"] = JsonSerializer.Serialize(shippingInfo);
+
+    return RedirectToAction("Index");
+}
+// POST: ShoppingCart/EnterPaymentInfo
+[HttpPost]
+public IActionResult EnterPaymentInfo(PaymentInfo paymentInfo)
+{
+    if (!ModelState.IsValid)
+    {
+        return View("Index", new ShoppingCartViewModel { Payment = paymentInfo });
+    }
+
+    // Save payment info to session or database
+    TempData["PaymentInfo"] = JsonSerializer.Serialize(paymentInfo);
+
+    return RedirectToAction("Index");
+}
 
     private List<ShoppingCartItem> GetCartFromCookie()
     {

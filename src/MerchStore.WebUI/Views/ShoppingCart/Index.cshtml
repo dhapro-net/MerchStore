@@ -7,8 +7,8 @@
 <div class="container mt-4">
     <h1 class="mb-4">@ViewData["Title"]</h1>
 
-    @if (Model.Items.Any())
-    {
+@if (Model.Items.Any())
+{
         <div class="row">
             <!-- Shopping Cart Table -->
             <div class="col-lg-8">
@@ -32,14 +32,16 @@
                                 {
                                     <tr>
                                         <td>
-                                            <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail" style="width: 50px; height: 50px;" />
+                                            <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail"
+                                                style="width: 50px; height: 50px;" />
                                             <span>@item.Name</span>
                                         </td>
                                         <td>@item.FormattedPrice</td>
                                         <td>
                                             <form asp-action="UpdateQuantity" method="post" class="d-inline">
                                                 <input type="hidden" name="ProductId" value="@item.Id" />
-                                                <input type="number" name="Quantity" value="@item.Quantity" min="1" class="form-control form-control-sm" style="width: 70px;" />
+                                                <input type="number" name="Quantity" value="@item.Quantity" min="1"
+                                                    class="form-control form-control-sm" style="width: 70px;" />
                                             </form>
                                         </td>
                                         <td>@item.TotalPrice.ToString("C")</td>
@@ -64,64 +66,57 @@
             </div>
 
             <!-- Shipping and Payment Information -->
-            <div class="col-lg-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Shipping Information</h5>
-                    </div>
-                    <div class="card-body">
-                        <form asp-action="EnterShippingInfo" method="post">
-                            <div class="mb-3">
-                                <label for="FullName" class="form-label">Full Name</label>
-                                <input type="text" id="FullName" name="FullName" class="form-control" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="Address" class="form-label">Address</label>
-                                <input type="text" id="Address" name="Address" class="form-control" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="City" class="form-label">City</label>
-                                <input type="text" id="City" name="City" class="form-control" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="PostalCode" class="form-label">Postal Code</label>
-                                <input type="text" id="PostalCode" name="PostalCode" class="form-control" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="Country" class="form-label">Country</label>
-                                <input type="text" id="Country" name="Country" class="form-control" required />
-                            </div>
-                        </form>
-                    </div>
+            <form asp-action="EnterShippingInfo" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="Shipping.FullName" class="form-label"></label>
+                    <input asp-for="Shipping.FullName" class="form-control" />
+                    <span asp-validation-for="Shipping.FullName" class="text-danger"></span>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Payment Information</h5>
-                    </div>
-                    <div class="card-body">
-                        <form asp-action="EnterPaymentInfo" method="post">
-                            <div class="mb-3">
-                                <label for="CardNumber" class="form-label">Card Number</label>
-                                <input type="text" id="CardNumber" name="CardNumber" class="form-control" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="ExpirationDate" class="form-label">Expiration Date</label>
-                                <input type="text" id="ExpirationDate" name="ExpirationDate" class="form-control" placeholder="MM/YY" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="CVV" class="form-label">CVV</label>
-                                <input type="text" id="CVV" name="CVV" class="form-control" required />
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
-                        </form>
-                    </div>
+                <div class="mb-3">
+                    <label asp-for="Shipping.Address" class="form-label"></label>
+                    <input asp-for="Shipping.Address" class="form-control" />
+                    <span asp-validation-for="Shipping.Address" class="text-danger"></span>
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="Shipping.City" class="form-label"></label>
+                    <input asp-for="Shipping.City" class="form-control" />
+                    <span asp-validation-for="Shipping.City" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Shipping.PostalCode" class="form-label"></label>
+                    <input asp-for="Shipping.PostalCode" class="form-control" />
+                    <span asp-validation-for="Shipping.PostalCode" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Shipping.Country" class="form-label"></label>
+                    <input asp-for="Shipping.Country" class="form-control" />
+                    <span asp-validation-for="Shipping.Country" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Submit Shipping Info</button>
+            </form>
+            <form asp-action="EnterPaymentInfo" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="Payment.CardNumber" class="form-label"></label>
+                    <input asp-for="Payment.CardNumber" class="form-control" />
+                    <span asp-validation-for="Payment.CardNumber" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Payment.ExpirationDate" class="form-label"></label>
+                    <input asp-for="Payment.ExpirationDate" class="form-control" placeholder="MM/YY" />
+                    <span asp-validation-for="Payment.ExpirationDate" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Payment.CVV" class="form-label"></label>
+                    <input asp-for="Payment.CVV" class="form-control" />
+                    <span asp-validation-for="Payment.CVV" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
+            </form>
+            }
+            else
+            {
+            <p>Your shopping cart is empty.</p>
+            }
         </div>
-    }
-    else
-    {
-        <p>Your shopping cart is empty.</p>
-    }
-</div>
