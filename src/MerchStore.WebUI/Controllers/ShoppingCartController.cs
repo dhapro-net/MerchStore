@@ -175,7 +175,12 @@ public IActionResult EnterPaymentInfo(PaymentInfo paymentInfo)
 {
     if (!ModelState.IsValid)
     {
-        return View("Index", new ShoppingCartViewModel { Payment = paymentInfo });
+        var cartItems = GetCartFromCookie();
+        return View("Index", new ShoppingCartViewModel 
+        { 
+            Payment = paymentInfo, 
+            CartItems = cartItems 
+        });
     }
 
     // Save payment info to session or database
