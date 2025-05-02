@@ -12,6 +12,8 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Checkout DI
+builder.Services.AddScoped<ICheckoutService, CheckoutService>();
 
 //Cookie policy configuration
 builder.Services.Configure<CookiePolicyOptions>(options =>

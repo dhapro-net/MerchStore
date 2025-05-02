@@ -9,10 +9,12 @@ public class ShoppingCartController : Controller
 {
     private const string CartCookieName = "ShoppingCart";
     private readonly ICatalogService _catalogService;
+    private readonly ICheckoutService _checkoutService;
 
-    public ShoppingCartController(ICatalogService catalogService)
+    public ShoppingCartController(ICatalogService catalogService, ICheckoutService checkoutService) 
     {
         _catalogService = catalogService;
+        _checkoutService = checkoutService; 
     }
 
     // GET: ShoppingCart
