@@ -3,6 +3,7 @@ using MerchStore.Application.Services.Interfaces;
 using MerchStore.WebUI.Models.ShoppingCart;
 using System.Text.Json;
 
+
 namespace MerchStore.WebUI.Controllers;
 
 public class ShoppingCartController : Controller
@@ -10,12 +11,13 @@ public class ShoppingCartController : Controller
     private const string CartCookieName = "ShoppingCart";
     private readonly ICatalogService _catalogService;
     private readonly ICheckoutService _checkoutService;
-
-    public ShoppingCartController(ICatalogService catalogService, ICheckoutService checkoutService) 
+    private readonly ILogger<ShoppingCartController> _logger;
+    public ShoppingCartController(ICatalogService catalogService, ICheckoutService checkoutService, ILogger<ShoppingCartController> logger) 
     {
         _catalogService = catalogService;
-        _checkoutService = checkoutService; 
-    }
+        _checkoutService = checkoutService;
+        _logger = logger;
+}
 
     // GET: ShoppingCart
     public IActionResult Index()
@@ -51,79 +53,83 @@ public class ShoppingCartController : Controller
         }
     }
 
-    // POST: ShoppingCart/Add
-    [HttpPost]
-    public async Task<IActionResult> AddToCart(Guid productId, int quantity)
+// POST: ShoppingCart/Add
+[HttpPost]
+public async Task<IActionResult> AddToCart(Guid productId, int quantity)
+{
+    try
     {
-        try
+        // Retrieve the product from the catalog service
+        var product = await _catalogService.GetProductByIdAsync(productId);
+        if (product == null)
         {
-            // Retrieve the product from the catalog service
-            var product = await _catalogService.GetProductByIdAsync(productId);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            // Retrieve the cart from the cookie
-            var cart = GetCartFromCookie();
-
-            // Check if the item already exists in the cart
-            var existingItem = cart.FirstOrDefault(i => i.ProductId == productId);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += quantity;
-            }
-            else
-            {
-                cart.Add(new ShoppingCartItem
-                {
-                    ProductId = product.Id,
-                    Name = product.Name,
-                    PriceAmount = product.Price.Amount,
-                    Quantity = quantity,
-                    ImageUrl = product.ImageUrl?.ToString()
-                });
-            }
-
-            // Save the updated cart back to the cookie
-            SaveCartToCookie(cart);
-
-            return RedirectToAction("Index");
+            _logger.LogWarning("Product with ID {ProductId} not found.", productId);
+            return NotFound();
         }
-        catch (Exception ex)
+
+        // Retrieve the cart from the cookie
+        var cart = GetCartFromCookie();
+
+        // Check if the item already exists in the cart
+        var existingItem = cart.FirstOrDefault(i => i.ProductId == productId);
+        if (existingItem != null)
         {
-            Console.WriteLine($"Error in AddToCart: {ex.Message}");
-            ViewBag.ErrorMessage = "An error occurred while adding the item to the cart. Please try again later.";
-            return View("Error");
+            existingItem.Quantity += quantity;
         }
+        else
+        {
+            cart.Add(new ShoppingCartItem
+            {
+                ProductId = product.Id,
+                Name = product.Name,
+                PriceAmount = product.Price.Amount,
+                Quantity = quantity,
+                ImageUrl = product.ImageUrl?.ToString()
+            });
+        }
+
+
+        // Save the updated cart back to the cookie
+        SaveCartToCookie(cart);
+
+        _logger.LogInformation("Product with ID {ProductId} added to cart. Quantity: {Quantity}.", productId, quantity);
+        return RedirectToAction("Index");
     }
-
-    // POST: ShoppingCart/Remove
-    [HttpPost]
-    public IActionResult RemoveFromCart(Guid productId)
+    catch (Exception ex)
     {
-        try
-        {
-            // Retrieve the cart from cookie
-            var cart = GetCartFromCookie();
-
-            // Remove the item
-            cart.RemoveAll(i => i.ProductId == productId);
-
-            // Update cart back to the cookie
-            SaveCartToCookie(cart);
-
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in RemoveFromCart: {ex.Message}");
-            ViewBag.ErrorMessage = "An error occurred while removing the item from the cart. Please try again later.";
-            return View("Error");
-        }
+        _logger.LogError(ex, "Error in AddToCart for Product ID {ProductId}.", productId);
+        ViewBag.ErrorMessage = "An error occurred while adding the item to the cart. Please try again later.";
+        return View("Error");
     }
+}
+
+// POST: ShoppingCart/Remove
+[HttpPost]
+public IActionResult RemoveFromCart(Guid productId)
+{
+    try
+    {
+        // Retrieve the cart from cookie
+        var cart = GetCartFromCookie();
+
+        // Remove the item
+        cart.RemoveAll(i => i.ProductId == productId);
+
+        // Update cart back to the cookie
+        SaveCartToCookie(cart);
+
+        _logger.LogInformation("Product with ID {ProductId} removed from cart.", productId);
+        return RedirectToAction("Index");
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error in RemoveFromCart for Product ID {ProductId}.", productId);
+        ViewBag.ErrorMessage = "An error occurred while removing the item from the cart. Please try again later.";
+        return View("Error");
+    }
+}
 // POST: ShoppingCart/Checkout
-    [HttpPost]
+[HttpPost]
 public async Task<IActionResult> Checkout(CheckoutRequest checkoutRequest)
 {
     try
@@ -131,6 +137,7 @@ public async Task<IActionResult> Checkout(CheckoutRequest checkoutRequest)
         // Validate the request
         if (!ModelState.IsValid)
         {
+            _logger.LogWarning("Invalid checkout data provided.");
             ViewBag.ErrorMessage = "Invalid checkout data.";
             return View("Error");
         }
@@ -141,11 +148,12 @@ public async Task<IActionResult> Checkout(CheckoutRequest checkoutRequest)
         // Clear the cart after successful checkout
         SaveCartToCookie(new List<ShoppingCartItem>());
 
+        _logger.LogInformation("Checkout completed successfully.");
         return RedirectToAction("Success");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error in Checkout: {ex.Message}");
+        _logger.LogError(ex, "Error during checkout.");
         ViewBag.ErrorMessage = "An error occurred during checkout. Please try again later.";
         return View("Error");
     }
