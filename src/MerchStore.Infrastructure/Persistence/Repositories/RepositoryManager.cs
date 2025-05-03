@@ -18,15 +18,17 @@ public class RepositoryManager : IRepositoryManager
     /// <param name="productRepository">The product repository</param>
     /// <param name="orderRepository">The order repository</param>
     /// <param name="unitOfWork">The unit of work</param>
-    public RepositoryManager(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public RepositoryManager(IProductRepository productRepository, IOrderRepository orderRepository, IUnitOfWork unitOfWork)
     {
         _productRepository = productRepository;
+        _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
     }
 
     /// <inheritdoc/>
     public IProductRepository ProductRepository => _productRepository;
 
+    public IOrderRepository OrderRepository => _orderRepository;
 
     /// <inheritdoc/>
     public IUnitOfWork UnitOfWork => _unitOfWork;
