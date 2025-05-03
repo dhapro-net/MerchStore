@@ -8,6 +8,9 @@ public class AppDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
 
+    //Completed orders stored in database
+    public DbSet<Order> Orders { get; set; }
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
