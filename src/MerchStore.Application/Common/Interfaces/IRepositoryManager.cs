@@ -43,7 +43,7 @@ public interface IRepositoryManager
         /// <summary>
     /// Gets the order repository.
     /// </summary>
-    IOrderRepository OrderRepository { get;
+    IOrderRepository OrderRepository { get; }
 
     /// <summary>
     /// Gets the unit of work to commit transactions.
