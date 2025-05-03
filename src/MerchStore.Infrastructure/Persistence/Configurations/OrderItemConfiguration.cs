@@ -16,8 +16,12 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         // Product Information
         builder.Property(oi => oi.ProductId).IsRequired();
         builder.Property(oi => oi.ProductName).IsRequired().HasMaxLength(100);
-        builder.Property(oi => oi.Price).IsRequired().HasColumnType("decimal(18,2)");
-        builder.Property(oi => oi.Quantity).IsRequired();
+        // Configure the Money value object for Price
+        builder.OwnsOne(oi => oi.Price, price =>
+        {
+            price.Property(p => p.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            price.Property(p => p.Currency).HasMaxLength(3).IsRequired();
+        });
 
         // Foreign Key to Order
         builder.HasOne(oi => oi.Order)
