@@ -1,24 +1,25 @@
-using MerchStore.Service.ShoppingCart;
+using MerchStore.Application.ShoppingCart.Dtos;
+using MerchStore.Application.Services.Interfaces;
 
-namespace MerchStore.Application.Services
+namespace MerchStore.Application.Services.Implementations
 {
     public class ShoppingCartQueryService : IShoppingCartQueryService
     {
         private readonly IShoppingCartService _shoppingCartService;
-        
+
         public ShoppingCartQueryService(IShoppingCartService shoppingCartService)
         {
             _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
         }
-        
-        public async Task GetCartAsync(Guid cartId)
+
+        public async Task<CartDto> GetCartAsync(Guid cartId)
         {
             var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart == null)
             {
                 return new CartDto { Id = cartId };
             }
-            
+
             var cartDto = new CartDto
             {
                 Id = cart.CartId,
@@ -26,7 +27,7 @@ namespace MerchStore.Application.Services
                 TotalItems = cart.Items.Sum(i => i.Quantity),
                 LastUpdated = cart.LastUpdated
             };
-            
+
             foreach (var item in cart.Items)
             {
                 cartDto.Items.Add(new CartItemDto
@@ -38,18 +39,18 @@ namespace MerchStore.Application.Services
                     TotalPrice = item.Quantity * item.UnitPrice
                 });
             }
-            
+
             return cartDto;
         }
-        
-        public async Task GetCartSummaryAsync(Guid cartId)
+
+        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId)
         {
             var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart == null)
             {
                 return new CartSummaryDto { CartId = cartId };
             }
-            
+
             return new CartSummaryDto
             {
                 CartId = cart.CartId,

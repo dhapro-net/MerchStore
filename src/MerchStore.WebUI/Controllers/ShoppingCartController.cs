@@ -1,221 +1,64 @@
-using Microsoft.AspNetCore.Mvc;
-using MerchStore.Application.Services.Interfaces;
-using MerchStore.WebUI.Models.ShoppingCart;
-using System.Text.Json;
-
-
-namespace MerchStore.WebUI.Controllers;
-
 public class ShoppingCartController : Controller
 {
-    private const string CartCookieName = "ShoppingCart";
-    private readonly ICatalogService _catalogService;
-    private readonly ICheckoutService _checkoutService;
+    private readonly IShoppingCartService _shoppingCartService;
     private readonly ILogger<ShoppingCartController> _logger;
-    public ShoppingCartController(ICatalogService catalogService, ICheckoutService checkoutService, ILogger<ShoppingCartController> logger) 
-    {
-        _catalogService = catalogService;
-        _checkoutService = checkoutService;
-        _logger = logger;
-}
 
-    // GET: ShoppingCart
+    public ShoppingCartController(IShoppingCartService shoppingCartService, ILogger<ShoppingCartController> logger)
+    {
+        _shoppingCartService = shoppingCartService;
+        _logger = logger;
+    }
+
     public IActionResult Index()
     {
         try
         {
-            // Retrieve the cart from the cookie
-            var cart = GetCartFromCookie();
-
-            // Map to the view model
-            var viewModel = new ShoppingCartViewModel
-            {
-                Items = cart.Select(item => new ShoppingCartItemViewModel
-                {
-                    Id = item.ProductId,
-                    Name = item.Name,
-                    FormattedPrice = item.PriceAmount.ToString("C"), // Format price as currency
-                    PriceAmount = item.PriceAmount,
-                    Quantity = item.Quantity,
-                    TotalPrice = item.PriceAmount * item.Quantity, // Calculate total price for each item
-                    ImageUrl = item.ImageUrl
-                }).ToList(),
-                TotalPrice = cart.Sum(item => item.PriceAmount * item.Quantity) // Calculate total price for the cart
-            };
-
+            var viewModel = _shoppingCartService.GetCartViewModel();
             return View(viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ShoppingCart Index");
-            ViewBag.ErrorMessage = "An error occurred while loading the shopping cart. Please try again later.";
-            return View("Error");
+            return View("Error", "An error occurred while loading the shopping cart.");
         }
     }
 
-// POST: ShoppingCart/Add
-[HttpPost]
-public async Task<IActionResult> AddToCart(Guid productId, int quantity)
-{
-    try
+    [HttpPost]
+    public async Task<IActionResult> AddItemToCartAsync(Guid cartId, string productId, int quantity)
     {
-        // Retrieve the product from the catalog service
-        var product = await _catalogService.GetProductByIdAsync(productId);
-        if (product == null)
+        try
         {
-            _logger.LogWarning("Product with ID {ProductId} not found.", productId);
-            return NotFound();
+            await _shoppingCartService.AddItemToCartAsync(cartId, productId, quantity);
+            return RedirectToAction("Index");
         }
-
-        // Retrieve the cart from the cookie
-        var cart = GetCartFromCookie();
-
-        // Check if the item already exists in the cart
-        var existingItem = cart.FirstOrDefault(i => i.ProductId == productId);
-        if (existingItem != null)
+        catch (Exception ex)
         {
-            existingItem.Quantity += quantity;
+            _logger.LogError(ex, "Error in AddItemToCartAsync");
+            return View("Error", "An error occurred while adding the item to the cart.");
         }
-        else
+    }
+
+    [HttpPost]
+    public async IActionResult RemoveItemFromCartAsync(Guid cartId, string productId)
+    {
+        try
         {
-            cart.Add(new ShoppingCartItem
-            {
-                ProductId = product.Id,
-                Name = product.Name,
-                PriceAmount = product.Price.Amount,
-                Quantity = quantity,
-                ImageUrl = product.ImageUrl?.ToString()
-            });
+            await _shoppingCartService.RemoveItemFromCartAsync(cartId, productId);
+            return RedirectToAction("Index");
         }
-
-
-        // Save the updated cart back to the cookie
-        SaveCartToCookie(cart);
-
-        _logger.LogInformation("Product with ID {ProductId} added to cart. Quantity: {Quantity}.", productId, quantity);
-        return RedirectToAction("Index");
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error in AddToCart for Product ID {ProductId}.", productId);
-        ViewBag.ErrorMessage = "An error occurred while adding the item to the cart. Please try again later.";
-        return View("Error");
-    }
-}
-
-// POST: ShoppingCart/Remove
-[HttpPost]
-public IActionResult RemoveFromCart(Guid productId)
-{
-    try
-    {
-        // Retrieve the cart from cookie
-        var cart = GetCartFromCookie();
-
-        // Remove the item
-        cart.RemoveAll(i => i.ProductId == productId);
-
-        // Update cart back to the cookie
-        SaveCartToCookie(cart);
-
-        _logger.LogInformation("Product with ID {ProductId} removed from cart.", productId);
-        return RedirectToAction("Index");
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error in RemoveFromCart for Product ID {ProductId}.", productId);
-        ViewBag.ErrorMessage = "An error occurred while removing the item from the cart. Please try again later.";
-        return View("Error");
-    }
-}
-// POST: ShoppingCart/Checkout
-[HttpPost]
-public async Task<IActionResult> Checkout(CheckoutRequest checkoutRequest)
-{
-    try
-    {
-        // Validate the request
-        if (!ModelState.IsValid)
+        catch (Exception ex)
         {
-            _logger.LogWarning("Invalid checkout data provided.");
-            ViewBag.ErrorMessage = "Invalid checkout data.";
-            return View("Error");
+            _logger.LogError(ex, "Error in RemoveItemFromCartAsync");
+            return View("Error", "An error occurred while removing the item from the cart.");
         }
-
-        // Pass the checkout data to the application layer
-        await _checkoutService.ProcessCheckoutAsync(checkoutRequest);
-
-        // Clear the cart after successful checkout
-        SaveCartToCookie(new List<ShoppingCartItem>());
-
-        _logger.LogInformation("Checkout completed successfully.");
-        return RedirectToAction("Success");
     }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error during checkout.");
-        ViewBag.ErrorMessage = "An error occurred during checkout. Please try again later.";
-        return View("Error");
-    }
-}
-// GET: ShoppingCart/ShippingInfo
-[HttpPost]
-public IActionResult EnterShippingInfo(ShippingInfo shippingInfo)
-{
-    if (!ModelState.IsValid)
-    {
-        var cartItems = GetCartFromCookie();
-        return View("Index", new ShoppingCartViewModel
+    
+    [HttpPost]
+    public async IActionResult UpdateItemQuantityAsync(Guid cartId, string productId,  int quantity)
+    {   
+        try
         {
-            Shipping = shippingInfo,
-            Items = cartItems
-        });
-    }
-
-    // Save shipping info to session or database
-    TempData["ShippingInfo"] = JsonSerializer.Serialize(shippingInfo);
-
-    return RedirectToAction("Index");
-}
-// POST: ShoppingCart/EnterPaymentInfo
-[HttpPost]
-public IActionResult EnterPaymentInfo(PaymentInfo paymentInfo)
-{
-    if (!ModelState.IsValid)
-    {
-        var cartItems = GetCartFromCookie();
-        return View("Index", new ShoppingCartViewModel 
-        { 
-            Payment = paymentInfo, 
-            CartItems = cartItems 
-        });
-    }
-
-    // Save payment info to session or database
-    TempData["PaymentInfo"] = JsonSerializer.Serialize(paymentInfo);
-
-    return RedirectToAction("Index");
-}
-
-    private List<ShoppingCartItem> GetCartFromCookie()
-    {
-        var cookieValue = Request.Cookies[CartCookieName];
-        if (string.IsNullOrEmpty(cookieValue))
-        {
-            return new List<ShoppingCartItem>();
+            await _shoppingCartService.UpdateItemFromCartAsync(cartId, productId,  )
         }
-
-        return JsonSerializer.Deserialize<List<ShoppingCartItem>>(cookieValue) ?? new List<ShoppingCartItem>();
-    }
-
-    private void SaveCartToCookie(List<ShoppingCartItem> cart)
-    {
-        var cookieValue = JsonSerializer.Serialize(cart);
-        Response.Cookies.Append(CartCookieName, cookieValue, new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = DateTimeOffset.UtcNow.AddDays(7) // Cookie expiration
-        });
     }
 }
-
