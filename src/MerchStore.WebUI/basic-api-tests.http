@@ -6,3 +6,12 @@ GET http://localhost:5022/api/basic/products/5e82c1db-bc58-4a36-802c-877dd3fd446
 
 ### Get product with invalid ID (404 response)
 GET http://localhost:5022/api/basic/products/00000000-0000-0000-0000-000000000000
+
+
+
+### Get all products (without API key - should fail)
+GET http://localhost:5022/api/basic/products
+
+### Get all products (with valid API key)
+GET http://localhost:5022/api/basic/products
+X-API-Key: ItHurtWhenIPee

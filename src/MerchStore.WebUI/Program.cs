@@ -14,6 +14,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication()
    .AddApiKey(builder.Configuration["ApiKey:Value"] ?? throw new InvalidOperationException("API Key is not configured in the application settings."));
 
+// Add API Key authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiKeyPolicy", policy =>
+        policy.AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+              .RequireAuthenticatedUser());
+});
+
 // Add Application services - this includes Services, Interfaces, etc.
 builder.Services.AddApplication();
 
@@ -83,6 +91,9 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// Add authentication middleware
+app.UseAuthentication();
+// Add authorization middleware
 app.UseAuthorization();
 
 app.MapStaticAssets();
