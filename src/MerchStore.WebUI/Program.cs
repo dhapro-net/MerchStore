@@ -1,8 +1,10 @@
 using MerchStore.Application;
 using MerchStore.Infrastructure;
 using MerchStore.WebUI.Authentication.ApiKey;
+using MerchStore.WebUI.Endpoints;
 using MerchStore.WebUI.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -59,6 +61,11 @@ builder.Services.AddSwaggerGen(options =>
     {
         options.IncludeXmlComments(xmlPath);
     }
+    // Configure operation IDs for minimal APIs to avoid conflicts
+    options.CustomOperationIds(apiDesc =>
+    {
+        return apiDesc.TryGetMethodInfo(out var methodInfo) ? methodInfo.Name : null;
+    });
     // Add API Key authentication support to Swagger UI
     options.AddSecurityDefinition(ApiKeyAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
@@ -124,5 +131,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+
+app.MapMinimalProductEndpoints();
 
 app.Run();
