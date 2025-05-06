@@ -26,13 +26,12 @@ namespace MerchStore.Domain.ShoppingCart
             else
             {
                 // Add new item
-                var newItem = new CartItem
-                {
-                    ProductId = productId,
-                    ProductName = (string)name,
-                    UnitPrice = (decimal)price,
-                    Quantity = quantity
-                };
+                var newItem = new CartItem(
+                    productId,
+                    (string)name,
+                    (decimal)price,
+                    quantity
+                );
                 
                 Items.Add(newItem);
             }
