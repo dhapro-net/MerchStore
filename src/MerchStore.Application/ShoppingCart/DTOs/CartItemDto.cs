@@ -1,4 +1,4 @@
-namespace MerchStore.Application.ShoppingCart.Dtos
+namespace MerchStore.Application.ShoppingCart.DTOs
 {
     public class CartItemDto
     {

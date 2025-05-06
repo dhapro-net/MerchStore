@@ -1,9 +1,10 @@
-using MerchStore.Service.ShoppingCart;
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Domain.ShoppingCart;
+using MerchStore.Domain.ShoppingCart.Interfaces;
 using MerchStore.Service.Products;
-using MerchStore.Domain.Interfaces;
 
 
-namespace MerchStore.Application.Service.ShoppingCart
+namespace MerchStore.Application.ShoppingCart.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
@@ -18,12 +19,12 @@ namespace MerchStore.Application.Service.ShoppingCart
             _productCatalogService = productCatalogService ?? throw new ArgumentNullException(nameof(productCatalogService));
         }
         
-       public async Task<Domain.ShoppingCart.ShoppingCart> GetCartAsync(Guid cartId)
+        public async Task<Cart> GetCartAsync(Guid cartId)
         {
             var cart = await _cartRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
-                cart = Domain.ShoppingCart.ShoppingCart.Create(cartId);
+                cart = Cart.Create(cartId);
                 await _cartRepository.AddAsync(cart);
             }
             return cart;
@@ -100,11 +101,6 @@ namespace MerchStore.Application.Service.ShoppingCart
         {
             var cart = await GetCartAsync(cartId);
             return cart.CalculateTotal();
-        }
-
-        Task IShoppingCartService.GetCartAsync(Guid cartId)
-        {
-            return GetCartAsync(cartId);
         }
     }
 }

@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 
-namespace MerchStore.Application.ShoppingCart.Dtos
+namespace MerchStore.Application.ShoppingCart.DTOs
 {
     public class CartDto
     {

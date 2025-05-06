@@ -1,8 +1,12 @@
-namespace MerchStore.Service.ShoppingCart
+using System;
+using System.Threading.Tasks;
+using MerchStore.Domain.ShoppingCart;
+
+namespace MerchStore.Application.ShoppingCart.Interfaces
 {
     public interface IShoppingCartService
     {
-        Task GetCartAsync(Guid cartId);
+        Task<Cart> GetCartAsync(Guid cartId);
         Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity);
         Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId);
         Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity);

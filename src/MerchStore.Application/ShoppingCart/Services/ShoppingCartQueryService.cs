@@ -1,6 +1,10 @@
-using MerchStore.Service.ShoppingCart;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Application.ShoppingCart.DTOs;
 
-namespace MerchStore.Application.Services
+namespace MerchStore.Application.ShoppingCart.Services
 {
     public class ShoppingCartQueryService : IShoppingCartQueryService
     {
@@ -11,7 +15,7 @@ namespace MerchStore.Application.Services
             _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
         }
         
-        public async Task GetCartAsync(Guid cartId)
+        public async Task<CartDto> GetCartAsync(Guid cartId)
         {
             var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart == null)
@@ -23,7 +27,7 @@ namespace MerchStore.Application.Services
             {
                 Id = cart.CartId,
                 TotalPrice = cart.CalculateTotal(),
-                TotalItems = cart.Items.Sum(i => i.Quantity),
+                TotalItems = cart.ItemCount(),
                 LastUpdated = cart.LastUpdated
             };
             
@@ -35,14 +39,14 @@ namespace MerchStore.Application.Services
                     ProductName = item.ProductName,
                     UnitPrice = item.UnitPrice,
                     Quantity = item.Quantity,
-                    TotalPrice = item.Quantity * item.UnitPrice
+                    TotalPrice = item.UnitPrice * item.Quantity
                 });
             }
             
             return cartDto;
         }
         
-        public async Task GetCartSummaryAsync(Guid cartId)
+        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId)
         {
             var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart == null)
@@ -53,7 +57,7 @@ namespace MerchStore.Application.Services
             return new CartSummaryDto
             {
                 CartId = cart.CartId,
-                ItemsCount = cart.Items.Sum(i => i.Quantity),
+                ItemsCount = cart.ItemCount(),
                 TotalPrice = cart.CalculateTotal()
             };
         }
