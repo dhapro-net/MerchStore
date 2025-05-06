@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{2533ABBC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReviewApiFunction", "infra\ReviewApiFunction\ReviewApiFunction.csproj", "{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReviewApiClient", "infra\ReviewApiClient\ReviewApiClient.csproj", "{B283DA2B-D152-43C5-9EA0-C13BB931BC26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B283DA2B-D152-43C5-9EA0-C13BB931BC26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B283DA2B-D152-43C5-9EA0-C13BB931BC26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B283DA2B-D152-43C5-9EA0-C13BB931BC26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B283DA2B-D152-43C5-9EA0-C13BB931BC26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +58,7 @@ Global
 		{5F0E4D07-05C4-66AA-F525-4D1C2197F4F9} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{AC501DD7-D4FF-2CA1-AE85-5CBE519E1425} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1} = {2533ABBC-FF5B-448A-81BD-1DB924A8D0EF}
+		{B283DA2B-D152-43C5-9EA0-C13BB931BC26} = {2533ABBC-FF5B-448A-81BD-1DB924A8D0EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C75DE094-9773-4209-BFFA-E25754DD0B05}

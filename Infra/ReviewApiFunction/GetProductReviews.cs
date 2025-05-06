@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReviewApiFunction.Models;
+using Microsoft.Azure.Functions.Worker.Http;
+using System.Net;
 
 namespace ReviewApiFunction
 {
@@ -108,6 +110,35 @@ namespace ReviewApiFunction
 
             // Sort by date descending (newest first)
             return reviews.OrderByDescending(r => r.CreatedAt).ToList();
+        }
+
+        // 🔹 Endpoint: /api/products/{productId}/review-stats
+        [Function("GetReviewStats")]
+        public async Task<HttpResponseData> GetStats(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{productId}/review-stats")] HttpRequestData req,
+            string productId,
+            FunctionContext context)
+        {
+            var reviews = new[]
+            {
+            new { reviewer = "Alice", rating = 5 },
+            new { reviewer = "Bob", rating = 4 },
+            new { reviewer = "Carol", rating = 2 }
+        };
+
+            var avg = reviews.Average(r => r.rating);
+            var count = reviews.Length;
+
+            var stats = new
+            {
+                productId,
+                averageRating = avg,
+                reviewCount = count
+            };
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(stats);
+            return response;
         }
     }
 }
