@@ -1,13 +1,25 @@
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
+using ReviewApiFunction;
+using Microsoft.Extensions.DependencyInjection;
 
-var builder = FunctionsApplication.CreateBuilder(args);
+var host = new HostBuilder()
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices(services =>
+    {
 
-builder.ConfigureFunctionsWebApplication();
+        services.AddApplicationInsightsTelemetryWorkerService();
+        //services.ConfigureApplicationInsights(); // Removed as the method is not defined
+        // Add OpenAPI configuration using our custom classes
+        services.AddSingleton<IOpenApiConfigurationOptions, SwaggerConfiguration>();
 
-// Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4.
-// builder.Services
-//     .AddApplicationInsightsTelemetryWorkerService()
-//     .ConfigureFunctionsApplicationInsights();
+        // Add custom UI options
+        services.AddSingleton<IOpenApiCustomUIOptions, SwaggerUIConfiguration>();
 
-builder.Build().Run();
+
+    })
+    .Build();
+host.Run();
+
+

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using ReviewApiFunction.Models;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Net;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+using Microsoft.OpenApi.Models;
 
 namespace ReviewApiFunction
 {
@@ -29,6 +31,11 @@ namespace ReviewApiFunction
         }
 
         [Function("GetProductReviews")]
+        [OpenApiOperation(operationId: "GetProductReviews", tags: new[] { "Reviews" }, Summary = "Get product reviews", Description = "This retrieves all reviews for a specific product.")]
+        [OpenApiParameter(name: "productId", In = ParameterLocation.Path, Required = true, Type = typeof(string), Summary = "The ID of the product to get reviews for", Description = "The product ID must be a valid GUID")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(ReviewResponse), Summary = "Successful operation", Description = "The product reviews were successfully retrieved")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.BadRequest, Summary = "Invalid product ID", Description = "The product ID format was invalid")]
+        [OpenApiResponseWithoutBody(statusCode: HttpStatusCode.InternalServerError, Summary = "Internal server error", Description = "An unexpected error occurred processing the request")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "products/{productId}/reviews")] HttpRequest req,
             string productId)
