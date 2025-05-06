@@ -11,6 +11,7 @@ public static class DependencyInjection
     {
         
         services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<IReviewService, ReviewService>();
 
         return services;
     }
