@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.Interfaces;
+using MerchStore.Domain.ShoppingCart.Interfaces;
 using MerchStore.Infrastructure.Persistence;
 using MerchStore.Infrastructure.Persistence.Repositories;
+using MerchStore.Infrastructure.Repositories;
 
 namespace MerchStore.Infrastructure;
 
@@ -41,6 +43,12 @@ public static class DependencyInjection
 
         // Register DbContext seeder
         services.AddScoped<AppDbContextSeeder>();
+
+        // Register HttpContextAccessor for cookie access
+        services.AddHttpContextAccessor();
+        
+        // Register cookie-based shopping cart repository
+        services.AddScoped<IShoppingCartRepository, CookieShoppingCartRepository>();
 
         return services;
     }
