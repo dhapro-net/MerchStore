@@ -3,7 +3,7 @@ using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.Queries;
 using MerchStore.Application.ShoppingCart.Dtos;
 
-namespace MerchStore.Application.ShoppingCart.Interfaces
+namespace MerchStore.Application.Services.Interfaces
 {
     public interface IShoppingCartApplicationService
     {

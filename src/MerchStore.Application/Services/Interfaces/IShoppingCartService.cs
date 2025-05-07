@@ -1,4 +1,4 @@
-namespace MerchStore.Service.ShoppingCart
+namespace MerchStore.Application.Services.Interfaces
 {
     public interface IShoppingCartService
     {

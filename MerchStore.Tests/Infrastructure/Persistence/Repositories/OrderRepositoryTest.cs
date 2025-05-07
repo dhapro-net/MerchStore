@@ -8,6 +8,7 @@ using MerchStore.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
+//Copilot generated tests.
 namespace MerchStore.Tests.Infrastructure.Repositories
 {
     public class OrderRepositoryTests

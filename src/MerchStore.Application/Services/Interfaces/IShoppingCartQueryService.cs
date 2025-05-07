@@ -2,11 +2,11 @@ using System;
 using System.Threading.Tasks;
 using MerchStore.Application.ShoppingCart.Dtos;
 
-namespace MerchStore.Application.ShoppingCart.Interfaces
+namespace MerchStore.Application.Services.Interfaces
 {
     public interface IShoppingCartQueryService
     {
-        Task GetCartAsync(Guid cartId);
-        Task GetCartSummaryAsync(Guid cartId);
+        Task<CartDto> GetCartAsync(Guid cartId);
+        Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId);
     }
 }
