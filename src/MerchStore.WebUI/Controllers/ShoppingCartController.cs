@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Application.Services.Interfaces;
+using MerchStore.WebUI.Models.ShoppingCart;
 
 public class ShoppingCartController : Controller
 {
@@ -16,7 +17,7 @@ public class ShoppingCartController : Controller
         _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-    
+
     public async Task<IActionResult> Index()
     {
         try
@@ -31,7 +32,20 @@ public class ShoppingCartController : Controller
             return View("Error", "An error occurred while loading the shopping cart.");
         }
     }
+    [HttpPost]
+    public IActionResult SubmitOrder(ShoppingCartViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            // Return the view with validation errors
+            return View("Index", model);
+        }
 
+        // Process the shipping and payment information
+        // Save the order, charge the payment, etc.
+
+        return RedirectToAction("OrderConfirmation");
+    }
     // Read-only operation using IShoppingCartQueryService
     public async Task<IActionResult> GetCartAsync()
     {
