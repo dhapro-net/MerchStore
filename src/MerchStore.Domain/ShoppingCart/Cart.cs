@@ -1,13 +1,35 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MerchStore.Domain.Common;
 using MerchStore.Domain.ValueObjects;
+using MerchStore.Domain.ShoppingCart.Events;
 
 namespace MerchStore.Domain.ShoppingCart
 {
-    public class Cart
+    public class Cart : AggregateRoot<Guid>
     {
-        public Guid CartId { get; private set; }
+        public Guid CartId 
+        { 
+            get => Id;
+            private set => Id = value;
+        }
         public List<CartItem> Items { get; private set; } = new List<CartItem>();
         public DateTime CreatedAt { get; private set; }
         public DateTime LastUpdated { get; private set; }
+
+        // For EF Core
+        private Cart() : base()
+        {
+        }
+
+        private Cart(Guid id) : base(id)
+        {
+            CartId = id;
+            CreatedAt = DateTime.UtcNow;
+            LastUpdated = DateTime.UtcNow;
+            Items = new List<CartItem>();
+        }
 
         public void AddItem(string productId, string name, Money price, int quantity)
         {
@@ -28,7 +50,7 @@ namespace MerchStore.Domain.ShoppingCart
                 var newItem = new CartItem(
                     productId,
                     name,
-                    price,  // Fixed to pass the Money object directly
+                    price,
                     quantity
                 );
                 
@@ -36,6 +58,9 @@ namespace MerchStore.Domain.ShoppingCart
             }
             
             UpdateLastModified();
+            
+            // Add domain event
+            AddDomainEvent(new CartItemAddedEvent(CartId, productId, name, price, quantity));
         }
 
         public decimal CalculateTotal()
@@ -47,6 +72,9 @@ namespace MerchStore.Domain.ShoppingCart
         {
             Items.Clear();
             UpdateLastModified();
+            
+            // Add domain event
+            AddDomainEvent(new CartClearedEvent(CartId));
         }
 
         public void RemoveItem(string productId)
@@ -60,8 +88,10 @@ namespace MerchStore.Domain.ShoppingCart
             {
                 Items.Remove(itemToRemove);
                 UpdateLastModified();
+                
+                // Add domain event
+                AddDomainEvent(new CartItemRemovedEvent(CartId, productId));
             }
-
         }
 
         public void UpdateQuantity(string productId, int quantity)
@@ -94,13 +124,7 @@ namespace MerchStore.Domain.ShoppingCart
             if (cartId == Guid.Empty)
                 throw new ArgumentException("Cart ID cannot be empty", nameof(cartId));
                 
-            return new Cart
-            {
-                CartId = cartId,
-                Items = new List<CartItem>(),
-                CreatedAt = DateTime.UtcNow,
-                LastUpdated = DateTime.UtcNow
-            };
+            return new Cart(cartId);
         }
 
         // Domain methods to query cart state
