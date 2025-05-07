@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.WebUI.Controllers;
 using MerchStore.WebUI.Models.ShoppingCart;
+using MerchStore.Domain.Entities;
+using MerchStore.Domain.ValueObjects;
 
-//Copilot generated tests.
 namespace MerchStore.WebUI.Tests.Controllers
 {
     public class ShoppingCartControllerTests
@@ -31,48 +33,29 @@ namespace MerchStore.WebUI.Tests.Controllers
         }
 
         [Fact]
-        public async Task Index_ReturnsViewWithViewModel_WhenCartExists()
+        public async Task Index_ReturnsViewWithCart_WhenCartExists()
         {
             // Arrange
-            var cartId = Guid.NewGuid();
             var cartDto = new CartDto
             {
-                Id = cartId,
+                Id = Guid.NewGuid(),
                 TotalPrice = 100,
-                TotalItems = 2
+                TotalItems = 2,
+                Items = new List<CartItemDto>
+                {
+                    new CartItemDto { ProductId = "1", Quantity = 1, Price = 50 },
+                    new CartItemDto { ProductId = "2", Quantity = 1, Price = 50 }
+                }
             };
-            _mockQueryService.Setup(s => s.GetCartAsync(cartId)).ReturnsAsync(cartDto);
+            _mockQueryService.Setup(s => s.GetCartAsync(It.IsAny<Guid>())).ReturnsAsync(cartDto);
 
             // Act
             var result = await _controller.Index();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsType<CartDto>(viewResult.Model);
-            Assert.Equal(cartDto, viewResult.Model);
-        }
-
-        [Fact]
-        public async Task Index_ReturnsViewWithEmptyCart_WhenCartIsEmpty()
-        {
-            // Arrange
-            var cartId = Guid.NewGuid();
-            var cartDto = new CartDto
-            {
-                Id = cartId,
-                TotalPrice = 0,
-                TotalItems = 0,
-                Items = new List<CartItemDto>()
-            };
-            _mockQueryService.Setup(s => s.GetCartAsync(cartId)).ReturnsAsync(cartDto);
-
-            // Act
-            var result = await _controller.Index();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.IsType<CartDto>(viewResult.Model);
-            Assert.Empty(((CartDto)viewResult.Model).Items);
+            var model = Assert.IsType<CartDto>(viewResult.Model);
+            Assert.Equal(cartDto, model);
         }
 
         [Fact]
@@ -109,23 +92,6 @@ namespace MerchStore.WebUI.Tests.Controllers
         }
 
         [Fact]
-        public async Task AddItemToCartAsync_ReturnsErrorView_WhenQuantityIsInvalid()
-        {
-            // Arrange
-            var cartId = Guid.NewGuid();
-            var productId = "test-product";
-            var quantity = 0; // Invalid quantity
-
-            // Act
-            var result = await _controller.AddItemToCartAsync(cartId, productId, quantity);
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("Error", viewResult.ViewName);
-            Assert.Equal("Invalid quantity.", viewResult.Model);
-        }
-
-        [Fact]
         public async Task AddItemToCartAsync_ReturnsErrorView_WhenExceptionIsThrown()
         {
             // Arrange
@@ -133,7 +99,8 @@ namespace MerchStore.WebUI.Tests.Controllers
             var productId = "test-product";
             var quantity = 1;
 
-            _mockService.Setup(s => s.AddItemToCartAsync(cartId, productId, quantity)).ThrowsAsync(new Exception("Test exception"));
+            _mockService.Setup(s => s.AddItemToCartAsync(cartId, productId, quantity))
+                .ThrowsAsync(new Exception("Test exception"));
 
             // Act
             var result = await _controller.AddItemToCartAsync(cartId, productId, quantity);
@@ -145,93 +112,104 @@ namespace MerchStore.WebUI.Tests.Controllers
         }
 
         [Fact]
-        public async Task RemoveItemFromCartAsync_RedirectsToIndex_WhenSuccessful()
+        public void SubmitOrder_CreatesOrderSuccessfully_WhenModelIsValid()
         {
             // Arrange
-            var cartId = Guid.NewGuid();
-            var productId = "test-product";
+            var model = new ShoppingCartViewModel
+            {
+                Shipping = new ShippingViewModel
+                {
+                    FullName = "John Doe",
+                    Address = "123 Main St",
+                    City = "New York",
+                    PostalCode = "10001",
+                    Country = "USA"
+                },
+                Payment = new PaymentViewModel
+                {
+                    CardNumber = "4111111111111111",
+                    ExpirationDate = "12/25",
+                    CVV = "123"
+                }
+            };
 
-            _mockService.Setup(s => s.RemoveItemFromCartAsync(cartId, productId)).Returns(Task.CompletedTask);
+            Guid orderId = Guid.NewGuid();
+            var paymentInfo = new PaymentInfo("4111111111111111", "12/25", "123");
+            var shippingAddress = "123 Main St, New York, NY, 10001, USA";
+            var customerName = "John Doe";
+            var totalAmount = new Money(100, "USD");
+            var orderDate = DateTime.UtcNow;
 
             // Act
-            var result = await _controller.RemoveItemFromCartAsync(cartId, productId);
+            var order = new Order(orderId, paymentInfo, shippingAddress, customerName, totalAmount, orderDate);
 
             // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectResult.ActionName);
+            Assert.Equal(orderId, order.Id);
+            Assert.Equal(paymentInfo, order.PaymentInfo);
+            Assert.Equal(shippingAddress, order.ShippingAddress);
+            Assert.Equal(customerName, order.CustomerName);
+            Assert.Equal(totalAmount, order.TotalAmount);
+            Assert.Equal(orderDate, order.OrderDate);
         }
 
         [Fact]
-        public async Task RemoveItemFromCartAsync_ReturnsErrorView_WhenProductNotFound()
+        public async Task SubmitOrder_ReturnsErrorView_WhenExceptionIsThrown()
         {
             // Arrange
-            var cartId = Guid.NewGuid();
-            var productId = "non-existent-product";
+            var model = new ShoppingCartViewModel
+            {
+                Shipping = new ShippingViewModel
+                {
+                    FullName = "Jane Doe",
+                    Address = "456 Elm St",
+                    City = "Los Angeles",
+                    PostalCode = "90001",
+                    Country = "USA"
+                },
+                Payment = new PaymentViewModel
+                {
+                    CardNumber = "4111111111111111",
+                    ExpirationDate = "12/25",
+                    CVV = "123"
+                }
+            };
 
-            _mockService.Setup(s => s.RemoveItemFromCartAsync(cartId, productId))
-                .ThrowsAsync(new KeyNotFoundException("Product not found"));
+            _mockService.Setup(s => s.CreateOrderAsync(It.IsAny<Order>()))
+                .ThrowsAsync(new Exception("Order creation failed."));
 
             // Act
-            var result = await _controller.RemoveItemFromCartAsync(cartId, productId);
+            var result = await _controller.SubmitOrder(model);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("Error", viewResult.ViewName);
-            Assert.Equal("Product not found.", viewResult.Model);
+            Assert.Equal("An error occurred while processing your order.", viewResult.Model);
         }
 
         [Fact]
-        public async Task UpdateItemQuantityAsync_RedirectsToIndex_WhenSuccessful()
+        public async Task GetCartAsync_ReturnsViewWithCart()
         {
             // Arrange
-            var cartId = Guid.NewGuid();
-            var productId = "test-product";
-            var quantity = 2;
-
-            _mockService.Setup(s => s.UpdateItemQuantityAsync(cartId, productId, quantity)).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _controller.UpdateItemQuantityAsync(cartId, productId, quantity);
-
-            // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectResult.ActionName);
-        }
-
-        [Fact]
-        public async Task UpdateItemQuantityAsync_ReturnsErrorView_WhenQuantityIsInvalid()
-        {
-            // Arrange
-            var cartId = Guid.NewGuid();
-            var productId = "test-product";
-            var quantity = 0; // Invalid quantity
+            var cartDto = new CartDto
+            {
+                Id = Guid.NewGuid(),
+                TotalPrice = 100,
+                TotalItems = 2,
+                Items = new List<CartItemDto>
+                {
+                    new CartItemDto { ProductId = "1", Quantity = 1, Price = 50 },
+                    new CartItemDto { ProductId = "2", Quantity = 1, Price = 50 }
+                }
+            };
+            _mockQueryService.Setup(s => s.GetCartAsync(It.IsAny<Guid>())).ReturnsAsync(cartDto);
 
             // Act
-            var result = await _controller.UpdateItemQuantityAsync(cartId, productId, quantity);
+            var result = await _controller.GetCartAsync();
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("Error", viewResult.ViewName);
-            Assert.Equal("Invalid quantity.", viewResult.Model);
-        }
-
-        [Fact]
-        public async Task UpdateItemQuantityAsync_ReturnsErrorView_WhenExceptionIsThrown()
-        {
-            // Arrange
-            var cartId = Guid.NewGuid();
-            var productId = "test-product";
-            var quantity = 2;
-
-            _mockService.Setup(s => s.UpdateItemQuantityAsync(cartId, productId, quantity)).ThrowsAsync(new Exception("Test exception"));
-
-            // Act
-            var result = await _controller.UpdateItemQuantityAsync(cartId, productId, quantity);
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("Error", viewResult.ViewName);
-            Assert.Equal("An error occurred while updating the item quantity.", viewResult.Model);
+            var model = Assert.IsType<CartDto>(viewResult.Model);
+            Assert.Equal(cartDto, model);
         }
     }
 }

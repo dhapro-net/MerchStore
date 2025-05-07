@@ -14,6 +14,6 @@ namespace MerchStore.WebUI.Models.ShoppingCart
 
         [Required(ErrorMessage = "CVV is required.")]
         [RegularExpression(@"^\d{3}$", ErrorMessage = "Invalid CVV. Must be 3 digits.")]
-        public string CVV { get; set; }
+        public string? CVV { get; set; }
     }
 }
