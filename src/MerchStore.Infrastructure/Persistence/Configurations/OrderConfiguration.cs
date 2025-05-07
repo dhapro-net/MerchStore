@@ -1,8 +1,9 @@
+
+using MerchStore.Domain.Entities;
+using MerchStore.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MerchStore.Domain.Entities;
-
-namespace MerchStore.Infrastructure.Persistence.Configurations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
@@ -22,10 +23,17 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .IsRequired()
             .HasMaxLength(200);
 
+        // Total Price with Value Converter
+        var moneyConverter = new ValueConverter<Money, decimal>(
+            v => v.Amount, // Convert Money to decimal for the database
+            v => new Money(v, "SEK") // Convert decimal back to Money for the application
+        );
+
         // Total Price
         builder.Property(o => o.TotalPrice)
             .IsRequired()
-            .HasColumnType("decimal(18,2)");
+            .HasColumnType("decimal(18,2)")
+            .HasConversion(moneyConverter);
 
         // Configure the relationship with OrderItem
         builder.HasMany(o => o.Items)
@@ -34,11 +42,11 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Cascade);
 
         // Configure the owned PaymentInfo value object
-        builder.OwnsOne(o => o.Payment, payment =>
+        builder.OwnsOne(o => o.PaymentInfo, paymentInfo =>
         {
-            payment.Property(p => p.CardNumber).HasMaxLength(16).IsRequired();
-            payment.Property(p => p.ExpirationDate).HasMaxLength(5).IsRequired();
-            payment.Property(p => p.CVV).HasMaxLength(3).IsRequired();
+            paymentInfo.Property(p => p.CardNumber).HasMaxLength(16).IsRequired();
+            paymentInfo.Property(p => p.ExpirationDate).HasMaxLength(5).IsRequired();
+            paymentInfo.Property(p => p.CVV).HasMaxLength(3).IsRequired();
         });
     }
 }
