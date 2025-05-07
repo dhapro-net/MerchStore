@@ -28,13 +28,6 @@ public class OrderRepository : Repository<Order, Guid>, IOrderRepository
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersByCustomerAsync(Guid customerId)
-    {
-        return await _context.Orders
-            .Where(o => o.CustomerId == customerId)
-            .Include(o => o.Items) // Include related OrderItems
-            .ToListAsync();
-    }
 
     public async Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
     {

@@ -5,8 +5,6 @@ namespace MerchStore.Domain.Interfaces;
 public interface IOrderRepository
 {
     Task<Order?> GetOrderByIdAsync(Guid orderId);
-
-    Task<IEnumerable<Order>> GetOrdersByCustomerAsync(Guid customerId);
  
     Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
 
