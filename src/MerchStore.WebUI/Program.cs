@@ -1,5 +1,9 @@
 using MerchStore.Application;
 using MerchStore.Infrastructure;
+using MerchStore.Application.Services;
+{
+    
+};
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,8 @@ builder.Services.AddApplication();
 
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
+
+
 
 
 

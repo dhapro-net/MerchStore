@@ -16,20 +16,27 @@ public class ShoppingCartController : Controller
         _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-
-    // Read-only operation using IShoppingCartQueryService
+    
     public async Task<IActionResult> Index()
     {
         try
         {
-            var viewModel = await _shoppingCartQueryService.GetCartAsync(Guid.NewGuid()); // Replace Guid.NewGuid() with the actual cart ID
-            return View(viewModel);
+            // Replace Guid.NewGuid() with the actual user/cart identifier
+            var cartDto = await _shoppingCartQueryService.GetCartAsync(Guid.NewGuid());
+            return View(cartDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in ShoppingCart Index");
+            _logger.LogError(ex, "Error in Index");
             return View("Error", "An error occurred while loading the shopping cart.");
         }
+    }
+
+    // Read-only operation using IShoppingCartQueryService
+    public async Task<IActionResult> GetCartAsync()
+    {
+        var cartDto = await _shoppingCartQueryService.GetCartAsync(Guid.NewGuid());
+        return View(cartDto);
     }
 
     // Write operation using IShoppingCartService
@@ -45,38 +52,6 @@ public class ShoppingCartController : Controller
         {
             _logger.LogError(ex, "Error in AddItemToCartAsync");
             return View("Error", "An error occurred while adding the item to the cart.");
-        }
-    }
-
-    // Write operation using IShoppingCartService
-    [HttpPost]
-    public async Task<IActionResult> RemoveItemFromCartAsync(Guid cartId, string productId)
-    {
-        try
-        {
-            await _shoppingCartService.RemoveItemFromCartAsync(cartId, productId);
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in RemoveItemFromCartAsync");
-            return View("Error", "An error occurred while removing the item from the cart.");
-        }
-    }
-
-    // Write operation using IShoppingCartService
-    [HttpPost]
-    public async Task<IActionResult> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity)
-    {
-        try
-        {
-            await _shoppingCartService.UpdateItemQuantityAsync(cartId, productId, quantity);
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in UpdateItemQuantityAsync");
-            return View("Error", "An error occurred while updating the item quantity.");
         }
     }
 }
