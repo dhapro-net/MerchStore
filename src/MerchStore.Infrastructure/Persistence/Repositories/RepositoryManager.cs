@@ -11,6 +11,7 @@ public class RepositoryManager : IRepositoryManager
 {
     private readonly IProductRepository _productRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrderRepository _orderRepository;
 
     /// <summary>
     /// Constructor that accepts all required repositories and the unit of work
