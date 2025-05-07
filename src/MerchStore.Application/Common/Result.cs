@@ -20,32 +20,24 @@ public class Result
 
     public static Result Success() => new(true, string.Empty);
     public static Result Failure(string error) => new(false, error);
-    
-    public static Result<T> Success<T>(T value) => Result<T>.Success(value);
-    public static Result<T> Failure<T>(string error) => Result<T>.Failure(error);
 }
 
-public class Result<T> : Result
+public class Result<T>
 {
-    private readonly T _value;
-    
-    public T Value 
+    public bool IsSuccess { get; }
+    public T Value { get; }
+    public string Error { get; }
+
+    private Result(bool isSuccess, T value, string error)
     {
-        get 
-        {
-            if (!IsSuccess)
-                throw new InvalidOperationException("Cannot access the value of a failed result");
-                
-            return _value;
-        }
+        IsSuccess = isSuccess;
+        Value = value;
+        Error = error;
     }
 
-    protected internal Result(bool isSuccess, T value, string error) 
-        : base(isSuccess, error)
-    {
-        _value = value;
-    }
+    public static Result<T> Success(T value) => 
+        new Result<T>(true, value, string.Empty);
 
-    public static Result<T> Success(T value) => new(true, value, string.Empty);
-    public static new Result<T> Failure(string error) => new(false, default, error);
+    public static Result<T> Failure(string error) => 
+        new Result<T>(false, default, error);
 }

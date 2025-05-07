@@ -3,6 +3,7 @@ using MerchStore.Infrastructure;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
+using MerchStore.Application.ShoppingCart.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
