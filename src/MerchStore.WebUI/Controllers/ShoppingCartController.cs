@@ -44,8 +44,14 @@ public class ShoppingCartController : Controller
         // Process the shipping and payment information
         // Save the order, charge the payment, etc.
 
-        return RedirectToAction("OrderConfirmation");
+        return RedirectToAction("OrderCompleted");
     }
+
+    public IActionResult OrderCompleted()
+    {
+        return View();
+    }
+
     // Read-only operation using IShoppingCartQueryService
     public async Task<IActionResult> GetCartAsync()
     {
