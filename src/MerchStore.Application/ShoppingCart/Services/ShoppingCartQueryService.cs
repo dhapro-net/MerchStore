@@ -37,9 +37,9 @@ namespace MerchStore.Application.ShoppingCart.Services
                 {
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
+                    UnitPrice = item.UnitPrice.Amount,
                     Quantity = item.Quantity,
-                    TotalPrice = item.UnitPrice * item.Quantity
+                    TotalPrice = item.UnitPrice.Amount * item.Quantity
                 });
             }
             
