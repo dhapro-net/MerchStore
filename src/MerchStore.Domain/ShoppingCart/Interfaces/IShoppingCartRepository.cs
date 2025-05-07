@@ -11,8 +11,5 @@ namespace MerchStore.Domain.ShoppingCart.Interfaces
         Task UpdateAsync(Cart cart);
         Task DeleteAsync(Guid id);
         
-        // Optional additional methods
-        Task<bool> ExistsAsync(Guid id);
-        Task<Cart> GetOrCreateCartAsync(Guid id);
     }
 }

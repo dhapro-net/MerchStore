@@ -40,7 +40,7 @@ namespace MerchStore.Domain.ShoppingCart
 
         public decimal CalculateTotal()
         {
-            return Items.Sum(item => item.UnitPrice * item.Quantity);
+            return Items.Sum(item => item.UnitPrice.Amount * item.Quantity);
         }
 
         public void Clear()
