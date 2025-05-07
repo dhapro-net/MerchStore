@@ -6,6 +6,8 @@ public class PaymentInfo
     public string ExpirationDate { get; private set; }
     public string CVV { get; private set; }
 
+    private PaymentInfo() { }
+
     // Constructor to ensure immutability
     public PaymentInfo(string cardNumber, string expirationDate, string cvv)
     {

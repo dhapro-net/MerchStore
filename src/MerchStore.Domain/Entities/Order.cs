@@ -5,16 +5,22 @@ namespace MerchStore.Domain.Entities;
 
 public class Order : Entity<Guid>
 {
-    public Guid Id { get; set; } // Primary Key
-    public string CustomerName { get; set; }
-    public string Address { get; set; }
-    public Money TotalPrice { get; set; }
+    public PaymentInfo PaymentInfo { get; private set; }
+    public string CustomerName { get; private set; }
+    public string Address { get; private set; }
+    public Money TotalPrice { get; private set; }
+    public List<OrderItem> Items { get; private set; } = new List<OrderItem>();
+    public DateTime CreatedDate { get; private set; }
 
-    // Navigation property for order items
-    public List<OrderItem> Items { get; set; }
+    private Order() { }
 
-    // Payment information
-    public PaymentInfo Payment { get; set; }
-    public DateTime CreatedDate { get; set; }
-
+    public Order(Guid id, PaymentInfo paymentInfo, string customerName, string address, Money totalPrice, DateTime createdDate)
+    {
+        Id = id; // Provided by Entity<Guid>
+        PaymentInfo = paymentInfo ?? throw new ArgumentNullException(nameof(paymentInfo));
+        CustomerName = customerName ?? throw new ArgumentNullException(nameof(customerName));
+        Address = address ?? throw new ArgumentNullException(nameof(address));
+        TotalPrice = totalPrice ?? throw new ArgumentNullException(nameof(totalPrice));
+        CreatedDate = createdDate;
+    }
 }
