@@ -1,5 +1,8 @@
 using MerchStore.Application;
 using MerchStore.Infrastructure;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,15 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Register MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddItemToCartCommand).Assembly));
+
+// Register FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(typeof(AddItemToCartCommand).Assembly);
+
+// HttpContextAccessor for cookie access
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -39,6 +51,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
