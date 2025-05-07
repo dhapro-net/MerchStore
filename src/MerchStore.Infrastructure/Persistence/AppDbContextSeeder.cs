@@ -102,7 +102,7 @@ public class AppDbContextSeeder
             _logger.LogInformation("Database already contains products. Skipping product seed.");
         }
     }
-    private async Task SeedOrdersAsync()
+    private async Task SeedOrdersAsync() // Copilot generated seed
 {
     // Check if we already have orders (to avoid duplicate seeding)
     if (!await _context.Orders.AnyAsync())
@@ -116,7 +116,7 @@ public class AppDbContextSeeder
             {
                 CustomerName = "John Doe",
                 Address = "123 Main Street, Springfield",
-                TotalPrice = 899.47m, // Total price of all items in the order
+                TotalPrice = Money.FromSEK(249.99m), // Total price of all items in the order
                 Payment = new PaymentInfo("4111111111111111", "12/25", "123"),
                 Items = new List<OrderItem>
                 {
@@ -140,7 +140,7 @@ public class AppDbContextSeeder
             {
                 CustomerName = "Jane Smith",
                 Address = "456 Elm Street, Metropolis",
-                TotalPrice = 579.98m,
+                TotalPrice = Money.FromSEK(249.99m),
                 Payment = new PaymentInfo("5555555555554444", "11/26", "456"),
                 Items = new List<OrderItem>
                 {
