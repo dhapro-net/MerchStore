@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using MerchStore.Application.ShoppingCart.Dtos;
+using MerchStore.Application.ShoppingCart.DTOs;
 
 namespace MerchStore.Application.ShoppingCart.Queries
 {

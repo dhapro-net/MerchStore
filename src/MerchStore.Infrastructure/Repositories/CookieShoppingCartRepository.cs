@@ -27,21 +27,24 @@ namespace MerchStore.Infrastructure.Repositories
             };
         }
         
-        public Task<Cart> GetByIdAsync(Guid id)
+        public Task<Cart> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
         {
+            // Check if the operation has been canceled
+            cancellationToken.ThrowIfCancellationRequested();
+
             var cookieKey = GetCookieKeyForCart(id);
             var cookieValue = _httpContextAccessor.HttpContext?.Request.Cookies[cookieKey];
-            
+
             if (string.IsNullOrEmpty(cookieValue))
                 return Task.FromResult<Cart>(null);
-                
+
             try
             {
-                var options = new JsonSerializerOptions 
-                { 
-                    PropertyNameCaseInsensitive = true 
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
                 };
-                
+
                 var cart = JsonSerializer.Deserialize<Cart>(cookieValue, options);
                 return Task.FromResult(cart);
             }

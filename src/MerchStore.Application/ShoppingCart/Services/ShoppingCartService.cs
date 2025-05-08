@@ -2,6 +2,8 @@ using MediatR;
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.DTOs;
 using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Application.ShoppingCart.Queries;
+using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Application.ShoppingCart.Services
@@ -17,41 +19,62 @@ namespace MerchStore.Application.ShoppingCart.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+
         public async Task<CartDto> GetCartAsync(Guid cartId)
         {
-            _logger.LogInformation($"Fetching cart with ID {cartId}.");
+            _logger.LogInformation($"Fetching cart with ID: {cartId}.");
+            // Use mediator to send a query to fetch the cart
             return await _mediator.Send(new GetCartQuery(cartId));
         }
-
+        public async Task<Money> CalculateCartTotalAsync(Guid cartId)
+        {
+            _logger.LogInformation($"Calculating total for cart with ID: {cartId}.");
+            return await _mediator.Send(new CalculateCartTotalQuery(cartId));
+        }
         public async Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity)
         {
             _logger.LogInformation($"Adding ProductId: {productId} with Quantity: {quantity} to CartId: {cartId}.");
-            return await _mediator.Send(new AddItemToCartCommand(cartId, productId, quantity));
+            var result = await _mediator.Send(new AddItemToCartCommand(cartId, productId, quantity));
+            if (!result.IsSuccess)
+            {
+                _logger.LogError($"Failed to add item to cart: {result.Error}");
+                return false;
+            }
+            return result.Value;
         }
 
         public async Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
         {
             _logger.LogInformation($"Removing ProductId: {productId} from CartId: {cartId}.");
-            return await _mediator.Send(new RemoveItemFromCartCommand(cartId, productId));
+            var result = await _mediator.Send(new RemoveItemFromCartCommand(cartId, productId));
+            if (!result.IsSuccess)
+            {
+                _logger.LogError($"Failed to remove item from cart: {result.Error}");
+                return false;
+            }
+            return result.Value;
         }
-
         public async Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity)
         {
             _logger.LogInformation($"Updating quantity for ProductId: {productId} to {quantity} in CartId: {cartId}.");
-            return await _mediator.Send(new UpdateCartItemQuantityCommand(cartId, productId, quantity));
+            var result = await _mediator.Send(new UpdateCartItemQuantityCommand(cartId, productId, quantity));
+            if (!result.IsSuccess)
+            {
+                _logger.LogError($"Failed to update item quantity: {result.Error}");
+                return false;
+            }
+            return result.Value;
         }
-
         public async Task<bool> ClearCartAsync(Guid cartId)
         {
             _logger.LogInformation($"Clearing all items from CartId: {cartId}.");
-            return await _mediator.Send(new ClearCartCommand(cartId));
-        }
-
-        public async Task<decimal> CalculateCartTotalAsync(Guid cartId)
-        {
-            _logger.LogInformation($"Calculating total for CartId: {cartId}.");
-            var cart = await GetCartAsync(cartId);
-            return cart.TotalPrice;
+            var result = await _mediator.Send(new ClearCartCommand(cartId));
+            if (!result.IsSuccess)
+            {
+                _logger.LogError($"Failed to clear cart: {result.Error}");
+                return false;
+            }
+            return result.Value;
         }
     }
 }

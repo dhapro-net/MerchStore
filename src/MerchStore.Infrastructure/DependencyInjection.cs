@@ -48,9 +48,10 @@ public static class DependencyInjection
 
         // Register HttpContextAccessor for cookie access
         services.AddHttpContextAccessor();
-        
+
         // Register cookie-based shopping cart repository
         services.AddScoped<IShoppingCartRepository, CookieShoppingCartRepository>();
+
 
         return services;
     }
@@ -65,6 +66,7 @@ public static class DependencyInjection
     {
         using var scope = serviceProvider.CreateScope();
         var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
+
         await seeder.SeedAsync();
     }
 }

@@ -6,8 +6,8 @@ namespace MerchStore.Domain.ShoppingCart.Interfaces
 {
     public interface IShoppingCartRepository
     {
-        Task<Cart> GetByIdAsync(Guid id);
-        Task AddAsync(Cart cart);
+        Task<Cart> GetCartByIdAsync(Guid cartId, CancellationToken cancellationToken);
+         Task AddAsync(Cart cart);
         Task UpdateAsync(Cart cart);
         Task DeleteAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);

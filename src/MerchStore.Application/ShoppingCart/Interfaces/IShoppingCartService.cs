@@ -1,5 +1,6 @@
 using MerchStore.Domain.ShoppingCart;
-using MerchStore.Application.ShoppingCart.Dtos;
+using MerchStore.Application.ShoppingCart.DTOs;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Application.ShoppingCart.Interfaces
 {
@@ -10,6 +11,6 @@ namespace MerchStore.Application.ShoppingCart.Interfaces
         Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId);
         Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity);
         Task<bool> ClearCartAsync(Guid cartId);
-        Task<decimal> CalculateCartTotalAsync(Guid cartId);
+        Task<Money> CalculateCartTotalAsync(Guid cartId);
     }
 }

@@ -63,9 +63,16 @@ namespace MerchStore.Domain.ShoppingCart
             AddDomainEvent(new CartItemAddedEvent(CartId, productId, name, price, quantity));
         }
 
-        public decimal CalculateTotal()
+        public Money CalculateTotal()
         {
-            return Items.Sum(item => item.UnitPrice.Amount * item.Quantity);
+            if (!Items.Any())
+                return new Money(0, "SEK"); // Default to 0 with a default currency
+
+            var totalAmount = Items
+                .Select(item => item.UnitPrice * item.Quantity) // Multiply Money by quantity
+                .Aggregate((sum, next) => sum + next); // Sum up Money objects
+
+            return totalAmount;
         }
 
         public void Clear()

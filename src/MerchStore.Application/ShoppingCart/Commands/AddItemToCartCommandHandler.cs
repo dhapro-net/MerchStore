@@ -1,7 +1,7 @@
 using MediatR;
 using MerchStore.Application.Common;
 using MerchStore.Application.ShoppingCart.Commands;
-using MerchStore.Service.ShoppingCart;
+using MerchStore.Application.ShoppingCart.Interfaces;
 
 namespace MerchStore.Application.ShoppingCart.Commands
 {

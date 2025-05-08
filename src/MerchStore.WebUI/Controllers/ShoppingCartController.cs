@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using MerchStore.Application.ShoppingCart.Commands;
+using MerchStore.Application.ShoppingCart.Queries;
 
 public class ShoppingCartController : Controller
 {
@@ -17,7 +19,7 @@ public class ShoppingCartController : Controller
         try
         {
             var cartId = GetOrCreateCartId();
-            var cartDto = await _mediator.Send(new GetCartQuery { CartId = cartId });
+            var cartDto = await _mediator.Send(new GetCartQuery(cartId));
             return View(cartDto);
         }
         catch (Exception ex)
@@ -27,26 +29,23 @@ public class ShoppingCartController : Controller
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddItemToCartAsync(string productId, int quantity)
+[HttpPost]
+public async Task<IActionResult> AddItemToCartAsync(string productId, int quantity)
+{
+    try
     {
-        try
-        {
-            var cartId = GetOrCreateCartId();
-            await _mediator.Send(new AddItemToCartCommand
-            {
-                CartId = cartId,
-                ProductId = productId,
-                Quantity = quantity
-            });
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error in AddItemToCartAsync");
-            return View("Error", "An error occurred while adding the item to the cart.");
-        }
+        var cartId = GetOrCreateCartId();
+        // Use the constructor to instantiate the command
+        var command = new AddItemToCartCommand(cartId, productId, quantity);
+        await _mediator.Send(command);
+        return RedirectToAction("Index");
     }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error in AddItemToCartAsync");
+        return View("Error", "An error occurred while adding the item to the cart.");
+    }
+}
 
     private Guid GetOrCreateCartId()
     {

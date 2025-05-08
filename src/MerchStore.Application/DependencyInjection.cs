@@ -3,6 +3,9 @@ using MerchStore.Application.Services.Implementations;
 using MerchStore.Application.Services.Interfaces;
 using MediatR;
 using System.Reflection;
+using MerchStore.Domain.ShoppingCart.Interfaces;
+using MerchStore.Application.ShoppingCart.Services;
+using MerchStore.Application.ShoppingCart.Interfaces;
 
 
 namespace MerchStore.Application;
@@ -15,9 +18,9 @@ public static class DependencyInjection
 
         services.AddScoped<ICatalogService, CatalogService>();
         services.AddMediatR(Assembly.GetExecutingAssembly());
-        services.AddScoped<IShoppingCartService, ShoppingCartService>();
+        services.AddMediatR(typeof(DependencyInjection).Assembly);
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
-        services.AddLogging();
+        services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
         return services;
     }

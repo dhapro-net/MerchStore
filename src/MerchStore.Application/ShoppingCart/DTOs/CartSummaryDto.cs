@@ -1,4 +1,5 @@
 using System;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Application.ShoppingCart.DTOs
 {
@@ -6,6 +7,7 @@ namespace MerchStore.Application.ShoppingCart.DTOs
     {
         public Guid CartId { get; set; }
         public int ItemsCount { get; set; }
-        public decimal TotalPrice { get; set; }
+        public Money TotalPrice { get; set; }
+        
     }
 }
