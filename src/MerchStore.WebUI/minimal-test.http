@@ -1,0 +1,5 @@
+### get all products 
+GET http://localhost:5022/api/minimal/products
+
+### get product by ID (replace with a valid ID)
+GET http://localhost:5022/api/minimal/products/e826cf81-bbad-40f1-b26f-17b2d67adbb1
