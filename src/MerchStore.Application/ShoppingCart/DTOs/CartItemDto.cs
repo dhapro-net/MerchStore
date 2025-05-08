@@ -8,6 +8,5 @@ namespace MerchStore.Application.ShoppingCart.DTOs
         public string ProductName { get; set; }
         public Money UnitPrice { get; set; }
         public int Quantity { get; set; }
-        public Money TotalPrice => UnitPrice * Quantity;
     }
 }

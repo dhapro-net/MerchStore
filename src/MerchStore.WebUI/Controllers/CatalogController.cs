@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
+using MerchStore.Application.ShoppingCart.Commands;
 
 namespace MerchStore.WebUI.Controllers;
 
@@ -22,7 +23,7 @@ public class CatalogController : Controller
             // Send the query to get all products
             var products = await _mediator.Send(new GetAllProductsQuery());
 
-            // Map domain entities to view models
+            // Map ProductDto to ProductCardViewModel
             var productViewModels = products.Select(p => new ProductCardViewModel
             {
                 Id = p.Id,
@@ -30,10 +31,10 @@ public class CatalogController : Controller
                 TruncatedDescription = p.Description.Length > 100
                     ? p.Description.Substring(0, 97) + "..."
                     : p.Description,
-                FormattedPrice = p.Price.ToString(),
+                FormattedPrice = p.Price.Amount.ToString("C"), // Format price as currency
                 PriceAmount = p.Price.Amount,
                 ImageUrl = p.ImageUrl?.ToString(),
-                StockQuantity = p.StockQuantity
+                StockQuantity = p.StockQuantity,
             }).ToList();
 
             // Create the product catalog view model
@@ -63,16 +64,16 @@ public class CatalogController : Controller
             // Send the query to get product details
             var product = await _mediator.Send(new GetProductByIdQuery(id));
 
-            // Map domain entity to view model
+            // Map ProductDto to ProductDetailsViewModel
             var viewModel = new ProductDetailsViewModel
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
-                FormattedPrice = product.Price.ToString(),
+                FormattedPrice = product.Price.Amount.ToString("C"), // Format price as currency
                 PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
-                StockQuantity = product.StockQuantity
+                StockQuantity = product.StockQuantity,
             };
 
             return View(viewModel);
@@ -87,4 +88,43 @@ public class CatalogController : Controller
             return View("Error");
         }
     }
+[HttpPost]
+public async Task<IActionResult> AddToCart(Guid productId)
+{
+    // Get or create the CartId (e.g., from cookies or session)
+    var cartId = GetOrCreateCartId();
+
+    // Send the AddItemToCartCommand
+    var result = await _mediator.Send(new AddItemToCartCommand(cartId, productId.ToString(), 1));
+
+    if (!result.IsSuccess)
+    {
+        TempData["ErrorMessage"] = result.Error;
+        return RedirectToAction("Index");
+    }
+
+    TempData["SuccessMessage"] = "Item added to cart successfully!";
+    return RedirectToAction("Index");
+}
+    private Guid GetOrCreateCartId()
+    {
+        const string cartCookieKey = "ShoppingCartId";
+
+        if (Request.Cookies.TryGetValue(cartCookieKey, out var cartIdString) && Guid.TryParse(cartIdString, out var cartId))
+        {
+            return cartId;
+        }
+
+        cartId = Guid.NewGuid();
+        Response.Cookies.Append(cartCookieKey, cartId.ToString(), new CookieOptions
+        {
+            Expires = DateTime.UtcNow.AddDays(7),
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict
+        });
+
+        return cartId;
+    }
+
 }

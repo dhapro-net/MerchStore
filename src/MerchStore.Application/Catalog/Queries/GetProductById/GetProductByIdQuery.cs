@@ -1,5 +1,4 @@
 using MediatR;
-using MerchStore.Application.DTOs;
 
 namespace MerchStore.Application.Catalog.Queries
 {

@@ -31,14 +31,12 @@
                                 {
                                     <tr>
                                         <td>
-                                            <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail"
-                                                style="width: 50px; height: 50px;" />
-                                            <span>@item.Name</span>
+                                            <span>@item.ProductName</span>
                                         </td>
-                                        <td>@item.FormattedPrice</td>
+                                        <td>@item.UnitPrice.ToString("C")</td>
                                         <td>
                                             <form asp-action="UpdateQuantity" method="post" class="d-inline">
-                                                <input type="hidden" name="ProductId" value="@item.Id" />
+                                                <input type="hidden" name="ProductId" value="@item.ProductId" />
                                                 <input type="number" name="Quantity" value="@item.Quantity" min="1"
                                                     class="form-control form-control-sm quantity-input" />
                                                 <button type="submit" class="btn btn-primary btn-sm">Update</button>
@@ -47,7 +45,7 @@
                                         <td>@item.TotalPrice.ToString("C")</td>
                                         <td>
                                             <form asp-action="RemoveItem" method="post" class="d-inline">
-                                                <input type="hidden" name="ProductId" value="@item.Id" />
+                                                <input type="hidden" name="ProductId" value="@item.ProductId" />
                                                 <button type="submit" class="btn btn-danger btn-sm">Remove</button>
                                             </form>
                                         </td>
@@ -74,7 +72,7 @@
             </div>
         </div>
 
-          <!-- Combined Shipping and Payment Form -->
+        <!-- Combined Shipping and Payment Form -->
         <div class="col-lg-4">
             <form asp-action="SubmitOrder" method="post">
 

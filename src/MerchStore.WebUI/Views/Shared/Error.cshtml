@@ -1,7 +1,11 @@
-﻿@model ErrorViewModel
+﻿@model MerchStore.WebUI.Models.ErrorViewModel
 @{
     ViewData["Title"] = "Error";
 }
+<div class="container mt-4">
+    <h1 class="text-danger">An Error Occurred</h1>
+    <p>@Model.Message</p>
+</div>
 
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>

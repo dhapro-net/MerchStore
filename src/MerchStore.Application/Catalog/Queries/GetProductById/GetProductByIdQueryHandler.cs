@@ -1,14 +1,15 @@
 using MediatR;
-using MerchStore.Application.DTOs;
-using MerchStore.Domain.Catalog.Interfaces;
+using MerchStore.Application;
+using MerchStore.Domain;
+using MerchStore.Domain.Interfaces;
 
 namespace MerchStore.Application.Catalog.Queries
 {
     public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDto>
     {
-        private readonly ICatalogRepository _repository;
+        private readonly IProductRepository _repository;
 
-        public GetProductByIdQueryHandler(ICatalogRepository repository)
+        public GetProductByIdQueryHandler(IProductRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
@@ -27,7 +28,8 @@ namespace MerchStore.Application.Catalog.Queries
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                ImageUrl = product.ImageUrl,
+                ImageUrl = string.IsNullOrEmpty(product.ImageUrl) ? null : new Uri(product.ImageUrl), 
+
                 StockQuantity = product.StockQuantity
             };
         }

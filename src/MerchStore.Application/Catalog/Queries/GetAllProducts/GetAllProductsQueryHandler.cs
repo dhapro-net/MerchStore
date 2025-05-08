@@ -1,14 +1,14 @@
 using MediatR;
-using MerchStore.Application.DTOs;
-using MerchStore.Domain.Catalog.Interfaces;
+using MerchStore.Domain.Interfaces;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Application.Catalog.Queries
 {
     public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, List<ProductDto>>
     {
-        private readonly ICatalogRepository _repository;
+        private readonly IProductRepository _repository;
 
-        public GetAllProductsQueryHandler(ICatalogRepository repository)
+        public GetAllProductsQueryHandler(IProductRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
@@ -16,13 +16,14 @@ namespace MerchStore.Application.Catalog.Queries
         public async Task<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
             var products = await _repository.GetAllProductsAsync(cancellationToken);
+
             return products.Select(p => new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                Price = p.Price,
-                ImageUrl = p.ImageUrl,
+                Price = new Money(p.Price.Amount, p.Price.Currency), 
+                ImageUrl = new Uri(p.ImageUrl), 
                 StockQuantity = p.StockQuantity
             }).ToList();
         }
