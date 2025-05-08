@@ -1,9 +1,8 @@
 
-using MerchStore.Application.Services.Interfaces;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Interfaces;
 
-namespace MerchStore.Application.Services.Implementations;
+namespace MerchStore.Application.Catalog.Services;
 
 
 public class CatalogService : ICatalogService

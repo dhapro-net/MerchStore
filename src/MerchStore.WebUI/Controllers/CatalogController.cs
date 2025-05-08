@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using MerchStore.Application.Services.Interfaces;
+using MediatR;
+using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
 
 namespace MerchStore.WebUI.Controllers;
 
 public class CatalogController : Controller
 {
-    private readonly ICatalogService _catalogService;
+    private readonly IMediator _mediator;
 
-    public CatalogController(ICatalogService catalogService)
+    public CatalogController(IMediator mediator)
     {
-        _catalogService = catalogService;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     // GET: Catalog
@@ -18,8 +19,8 @@ public class CatalogController : Controller
     {
         try
         {
-            // Get all products from the service
-            var products = await _catalogService.GetAllProductsAsync();
+            // Send the query to get all products
+            var products = await _mediator.Send(new GetAllProductsQuery());
 
             // Map domain entities to view models
             var productViewModels = products.Select(p => new ProductCardViewModel
@@ -46,7 +47,6 @@ public class CatalogController : Controller
         catch (Exception ex)
         {
             // Log the exception
-            // In a real application, you should use a proper logging framework
             Console.WriteLine($"Error in ProductCatalog: {ex.Message}");
 
             // Show an error message to the user
@@ -60,14 +60,8 @@ public class CatalogController : Controller
     {
         try
         {
-            // Get the specific product from the service
-            var product = await _catalogService.GetProductByIdAsync(id);
-
-            // Return 404 if product not found
-            if (product is null)
-            {
-                return NotFound();
-            }
+            // Send the query to get product details
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
 
             // Map domain entity to view model
             var viewModel = new ProductDetailsViewModel
@@ -91,19 +85,6 @@ public class CatalogController : Controller
             // Show an error message to the user
             ViewBag.ErrorMessage = "An error occurred while loading the product. Please try again later.";
             return View("Error");
-        }
-    }
-    public class CartController : Controller
-    {
-        [HttpPost]
-        public IActionResult AddToCart(Guid id)
-        {
-            // Logic to add the product to the cart
-            // Example: Use a service to handle cart operations
-            // _cartService.AddToCart(id);
-
-            TempData["SuccessMessage"] = "Product added to cart!";
-            return RedirectToAction("Index", "Catalog");
         }
     }
 }
