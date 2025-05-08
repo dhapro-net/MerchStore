@@ -23,7 +23,7 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            // Replace Guid.NewGuid() with the actual user/cart identifier
+            var cardId = GetOrCreateCartId();
             var cartDto = await _shoppingCartQueryService.GetCartAsync(Guid.NewGuid());
             return View(cartDto);
         }
@@ -53,26 +53,43 @@ public class ShoppingCartController : Controller
         return View();
     }
 
-    // Read-only operation using IShoppingCartQueryService
-    public async Task<IActionResult> GetCartAsync()
-    {
-        var cartDto = await _shoppingCartQueryService.GetCartAsync(Guid.NewGuid());
-        return View(cartDto);
-    }
-
+    
     // Write operation using IShoppingCartService
     [HttpPost]
-    public async Task<IActionResult> AddItemToCartAsync(Guid cartId, string productId, int quantity)
+    public async Task<IActionResult> AddItemToCartAsync(string productId, int quantity)
     {
         try
         {
-            await _shoppingCartService.AddItemToCartAsync(cartId, productId, quantity);
-            return RedirectToAction("Index");
+            var cartId = GetOrCreateCartId(); // Retrieve or create the cart ID
+            await _shoppingCartService.AddItemToCartAsync(cartId, productId, quantity); // Add the item to the cart
+            return RedirectToAction("Index"); // Redirect to the cart page
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in AddItemToCartAsync");
             return View("Error", "An error occurred while adding the item to the cart.");
         }
+    }
+    private Guid GetOrCreateCartId()
+    {
+        var cartCookieKey = "ShoppingCartId";
+
+        // Check if the cart ID exists in the request cookies
+        if (Request.Cookies.TryGetValue(cartCookieKey, out var cartIdString) && Guid.TryParse(cartIdString, out var cartId))
+        {
+            return cartId;
+        }
+
+        // If not, generate a new cart ID and store it in a cookie
+        cartId = Guid.NewGuid();
+        Response.Cookies.Append(cartCookieKey, cartId.ToString(), new CookieOptions
+        {
+            Expires = DateTime.UtcNow.AddDays(7), // Set cookie expiration
+            HttpOnly = true, // Prevent client-side scripts from accessing the cookie
+            Secure = true, // Ensure the cookie is sent over HTTPS
+            SameSite = SameSiteMode.Strict // Restrict cross-site cookie usage
+        });
+
+        return cartId;
     }
 }

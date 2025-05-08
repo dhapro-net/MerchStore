@@ -1,61 +1,57 @@
-using MerchStore.Application.Services.Interfaces;
+using MediatR;
+using MerchStore.Application.ShoppingCart.Commands;
+using MerchStore.Application.ShoppingCart.DTOs;
 using MerchStore.Application.ShoppingCart.Interfaces;
-using MerchStore.Service.ShoppingCart;
+using Microsoft.Extensions.Logging;
 
-
-
-namespace MerchStore.Application.Service.ShoppingCart
+namespace MerchStore.Application.ShoppingCart.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
-        private readonly ICartRepository _cartRepository;
-        private readonly IProductCatalogService _productCatalogService;
+        private readonly IMediator _mediator;
+        private readonly ILogger<ShoppingCartService> _logger;
 
-        public ShoppingCartService(ICartRepository cartRepository, IProductCatalogService productCatalogService)
+        public ShoppingCartService(IMediator mediator, ILogger<ShoppingCartService> logger)
         {
-            _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
-            _productCatalogService = productCatalogService ?? throw new ArgumentNullException(nameof(productCatalogService));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
-       public async Task<Domain.ShoppingCart.Cart> GetCartAsync(Guid cartId)
+
+        public async Task<CartDto> GetCartAsync(Guid cartId)
         {
-            var cart = await _cartRepository.GetByIdAsync(cartId);
-            if (cart == null)
-            {
-                cart = Domain.ShoppingCart.Cart.Create(cartId);
-                await _cartRepository.AddAsync(cart);
-            }
-            return cart;
+            _logger.LogInformation($"Fetching cart with ID {cartId}.");
+            return await _mediator.Send(new GetCartQuery(cartId));
         }
-        
+
         public async Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity)
         {
-            // Return false as a placeholder
-            return false;
+            _logger.LogInformation($"Adding ProductId: {productId} with Quantity: {quantity} to CartId: {cartId}.");
+            return await _mediator.Send(new AddItemToCartCommand(cartId, productId, quantity));
         }
 
-        public Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
+        public async Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
         {
-            // Return false as a placeholder
-            return Task.FromResult(false);
+            _logger.LogInformation($"Removing ProductId: {productId} from CartId: {cartId}.");
+            return await _mediator.Send(new RemoveItemFromCartCommand(cartId, productId));
         }
 
-        public Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity)
+        public async Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity)
         {
-            // Return false as a placeholder
-            return Task.FromResult(false);
+            _logger.LogInformation($"Updating quantity for ProductId: {productId} to {quantity} in CartId: {cartId}.");
+            return await _mediator.Send(new UpdateCartItemQuantityCommand(cartId, productId, quantity));
         }
 
-        public Task<bool> ClearCartAsync(Guid cartId)
+        public async Task<bool> ClearCartAsync(Guid cartId)
         {
-            // Return false as a placeholder
-            return Task.FromResult(false);
+            _logger.LogInformation($"Clearing all items from CartId: {cartId}.");
+            return await _mediator.Send(new ClearCartCommand(cartId));
         }
 
         public async Task<decimal> CalculateCartTotalAsync(Guid cartId)
         {
+            _logger.LogInformation($"Calculating total for CartId: {cartId}.");
             var cart = await GetCartAsync(cartId);
-            return cart.CalculateTotal();
+            return cart.TotalPrice;
         }
     }
 }
