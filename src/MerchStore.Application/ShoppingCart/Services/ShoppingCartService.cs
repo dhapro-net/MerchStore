@@ -1,7 +1,7 @@
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ShoppingCart.Interfaces;
-using MerchStore.Service.Products;
+using MerchStore.Application.Services.Interfaces;
 
 
 namespace MerchStore.Application.ShoppingCart.Services

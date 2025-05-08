@@ -1,11 +1,7 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using MerchStore.Application.Common;
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.Interfaces;
-using MerchStore.Service.Products;
 
 namespace MerchStore.Application.ShoppingCart.Handlers
 {

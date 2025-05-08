@@ -1,7 +1,6 @@
 
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.Queries;
-using MerchStore.Application.ShoppingCart.Dtos;
 
 namespace MerchStore.Application.ShoppingCart.Interfaces
 {

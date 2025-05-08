@@ -1,7 +1,10 @@
-namespace MerchStore.Domain.Common;
+using System;
 
-public abstract class DomainEvent
+namespace MerchStore.Domain.Common
 {
-    public DateTime OccurredOn { get; } = DateTime.UtcNow;
-    public Guid Id { get; } = Guid.NewGuid();
+    public abstract class DomainEvent
+    {
+        public DateTime OccurredOn { get; } = DateTime.UtcNow;
+        public Guid Id { get; } = Guid.NewGuid();
+    }
 }

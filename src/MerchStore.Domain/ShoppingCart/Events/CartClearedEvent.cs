@@ -1,13 +1,15 @@
+using System;
 using MerchStore.Domain.Common;
 
-namespace MerchStore.Domain.ShoppingCart.Events;
-
-public class CartClearedEvent : DomainEvent
+namespace MerchStore.Domain.ShoppingCart.Events
 {
-    public Guid CartId { get; }
-
-    public CartClearedEvent(Guid cartId)
+    public class CartClearedEvent : DomainEvent
     {
-        CartId = cartId;
+        public Guid CartId { get; }
+
+        public CartClearedEvent(Guid cartId)
+        {
+            CartId = cartId;
+        }
     }
 }

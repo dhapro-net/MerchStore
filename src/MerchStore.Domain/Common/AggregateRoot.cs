@@ -1,23 +1,27 @@
-namespace MerchStore.Domain.Common;
+using System;
+using System.Collections.Generic;
 
-public abstract class AggregateRoot<TId> : Entity<TId> where TId : notnull
+namespace MerchStore.Domain.Common
 {
-    private readonly List<DomainEvent> _domainEvents = new();
-    
-    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-    
-    protected AggregateRoot(TId id) : base(id) { }
-    
-    // Required for EF Core
-    protected AggregateRoot() { }
-    
-    protected void AddDomainEvent(DomainEvent domainEvent)
+    public abstract class AggregateRoot<TId> : Entity<TId> where TId : notnull
     {
-        _domainEvents.Add(domainEvent);
-    }
-    
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
+        private readonly List<DomainEvent> _domainEvents = new List<DomainEvent>();
+        
+        public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+        
+        protected AggregateRoot(TId id) : base(id) { }
+        
+        // Required for EF Core
+        protected AggregateRoot() { }
+        
+        protected void AddDomainEvent(DomainEvent domainEvent)
+        {
+            _domainEvents.Add(domainEvent);
+        }
+        
+        public void ClearDomainEvents()
+        {
+            _domainEvents.Clear();
+        }
     }
 }

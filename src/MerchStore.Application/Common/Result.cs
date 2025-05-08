@@ -1,43 +1,55 @@
-namespace MerchStore.Application.Common;
+using System;
 
-public class Result
+namespace MerchStore.Application.Common
 {
-    public bool IsSuccess { get; }
-    public string Error { get; }
-    public bool IsFailure => !IsSuccess;
-
-    protected Result(bool isSuccess, string error)
+    public class Result
     {
-        if (isSuccess && !string.IsNullOrEmpty(error))
-            throw new InvalidOperationException("A successful result cannot contain an error message");
-            
-        if (!isSuccess && string.IsNullOrEmpty(error))
-            throw new InvalidOperationException("A failure result must contain an error message");
-            
-        IsSuccess = isSuccess;
-        Error = error;
+        public bool IsSuccess { get; }
+        public string Error { get; }
+        public bool IsFailure => !IsSuccess;
+
+        protected Result(bool isSuccess, string error)
+        {
+            if (isSuccess && !string.IsNullOrEmpty(error))
+                throw new InvalidOperationException("A successful result cannot contain an error message");
+                
+            if (!isSuccess && string.IsNullOrEmpty(error))
+                throw new InvalidOperationException("A failure result must contain an error message");
+                
+            IsSuccess = isSuccess;
+            Error = error;
+        }
+
+        public static Result Success() => new(true, string.Empty);
+        public static Result Failure(string error) => new(false, error);
+        
+        // Add these generic methods
+        public static Result<T> Success<T>(T value) => Result<T>.Success(value);
+        public static Result<T> Failure<T>(string error) => Result<T>.Failure(error);
     }
 
-    public static Result Success() => new(true, string.Empty);
-    public static Result Failure(string error) => new(false, error);
-}
-
-public class Result<T>
-{
-    public bool IsSuccess { get; }
-    public T Value { get; }
-    public string Error { get; }
-
-    private Result(bool isSuccess, T value, string error)
+    public class Result<T> : Result
     {
-        IsSuccess = isSuccess;
-        Value = value;
-        Error = error;
+        private readonly T _value;
+        
+        public T Value 
+        {
+            get 
+            {
+                if (!IsSuccess)
+                    throw new InvalidOperationException("Cannot access the value of a failed result");
+                    
+                return _value;
+            }
+        }
+
+        protected internal Result(bool isSuccess, T value, string error) 
+            : base(isSuccess, error)
+        {
+            _value = value;
+        }
+
+        public static Result<T> Success(T value) => new(true, value, string.Empty);
+        public static new Result<T> Failure(string error) => new(false, default, error);
     }
-
-    public static Result<T> Success(T value) => 
-        new Result<T>(true, value, string.Empty);
-
-    public static Result<T> Failure(string error) => 
-        new Result<T>(false, default, error);
 }
