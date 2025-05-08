@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MerchStore.Domain.Entities;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Infrastructure.Persistence;
 
@@ -7,6 +8,9 @@ namespace MerchStore.Infrastructure.Persistence;
 public class AppDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
+
+    //Completed orders stored in database
+    public DbSet<Order> Orders { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -24,5 +28,15 @@ public class AppDbContext : DbContext
         // Apply entity configurations from the current assembly
         // This scans for all IEntityTypeConfiguration implementations and applies them
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+    modelBuilder.Entity<Order>(entity =>
+    {
+        entity.OwnsOne(o => o.PaymentInfo, paymentInfo =>
+        {
+            paymentInfo.Property(p => p.CardNumber).IsRequired();
+            paymentInfo.Property(p => p.ExpirationDate).IsRequired();
+            paymentInfo.Property(p => p.CVV).IsRequired();
+        });
+    });
     }
 }

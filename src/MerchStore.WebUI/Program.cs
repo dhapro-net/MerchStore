@@ -1,5 +1,9 @@
 using MerchStore.Application;
 using MerchStore.Infrastructure;
+using MerchStore.Application.Services;
+{
+    
+};
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,17 @@ builder.Services.AddApplication();
 
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
+
+
+
+
+
+//Cookie policy configuration
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => false; // True to ask for consent, needed for GDPR compliance
+    options.MinimumSameSitePolicy = SameSiteMode.Lax;
+});
 
 var app = builder.Build();
 
@@ -30,6 +45,8 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseCookiePolicy();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

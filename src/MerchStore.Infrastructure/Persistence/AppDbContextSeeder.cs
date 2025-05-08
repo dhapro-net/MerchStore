@@ -102,4 +102,6 @@ public class AppDbContextSeeder
             _logger.LogInformation("Database already contains products. Skipping product seed.");
         }
     }
+
+    
 }
