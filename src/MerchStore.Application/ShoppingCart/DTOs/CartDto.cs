@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MerchStore.Application.ShoppingCart.DTOs;
 
 
 namespace MerchStore.Application.ShoppingCart.Dtos

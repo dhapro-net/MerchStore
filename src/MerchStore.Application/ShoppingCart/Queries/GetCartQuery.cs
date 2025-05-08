@@ -1,6 +1,6 @@
 using System;
 using MediatR;
-using MerchStore.Application.ShoppingCart.DTOs;
+using MerchStore.Application.ShoppingCart.Dtos;
 
 namespace MerchStore.Application.ShoppingCart.Queries
 {

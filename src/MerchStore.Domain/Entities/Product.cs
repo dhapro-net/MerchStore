@@ -16,9 +16,10 @@ public class Product : Entity<Guid>
     public string Description { get; private set; } = string.Empty;
     public string Category { get; private set; } = string.Empty;
     public Money Price { get; private set; } = Money.FromSEK(0);
-    public int StockQuantity { get; private set; } = 0;
+    public int StockQuantity { get; set; } = 0;
     public Uri? ImageUrl { get; private set; } = null;
     public bool IsAvailable { get; set; }
+    public bool IsFeatured { get; set; }
 
     // Private parameterless constructor for EF Core
     private Product()

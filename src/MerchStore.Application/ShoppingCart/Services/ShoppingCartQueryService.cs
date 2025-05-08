@@ -1,3 +1,6 @@
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.Application.ShoppingCart.Dtos;
+using MerchStore.Application.ShoppingCart.DTOs;
 using MerchStore.Service.ShoppingCart;
 
 
@@ -14,7 +17,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
         }
         
-        public async Task GetCartAsync(Guid cartId)
+        public async Task<CartDto> GetCartAsync(Guid cartId)
         {
             
             var cart = await _shoppingCartService.GetCartAsync(cartId);
@@ -37,16 +40,15 @@ namespace MerchStore.Application.ShoppingCart.Services
                 {
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
+                    UnitPrice = item.UnitPrice.Amount,
                     Quantity = item.Quantity,
-                    TotalPrice = item.Quantity * item.UnitPrice
+                    TotalPrice = item.Quantity * item.UnitPrice.Amount
                 });
             }
             
             return cartDto;
         }
-        
-        public async Task GetCartSummaryAsync(Guid cartId)
+        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId)
         {
             
             var cart = await _shoppingCartService.GetCartAsync(cartId);

@@ -1,3 +1,4 @@
+using MerchStore.Domain.ShoppingCart;
 
 namespace MerchStore.Service.ShoppingCart
 {

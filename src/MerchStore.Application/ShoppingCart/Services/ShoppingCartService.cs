@@ -1,7 +1,6 @@
-
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Service.ShoppingCart;
-using MerchStore.Service.Products;
-using MerchStore.Domain.Interfaces;
 
 
 
@@ -9,21 +8,21 @@ namespace MerchStore.Application.Service.ShoppingCart
 {
     public class ShoppingCartService : IShoppingCartService
     {
+        private readonly ICartRepository _cartRepository;
+        private readonly IProductCatalogService _productCatalogService;
 
-        public Task GetCartAsync(Guid cartId)
+        public ShoppingCartService(ICartRepository cartRepository, IProductCatalogService productCatalogService)
         {
-
-        
             _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
             _productCatalogService = productCatalogService ?? throw new ArgumentNullException(nameof(productCatalogService));
         }
         
-       public async Task<Domain.ShoppingCart.ShoppingCart> GetCartAsync(Guid cartId)
+       public async Task<Domain.ShoppingCart.Cart> GetCartAsync(Guid cartId)
         {
             var cart = await _cartRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
-                cart = Domain.ShoppingCart.ShoppingCart.Create(cartId);
+                cart = Domain.ShoppingCart.Cart.Create(cartId);
                 await _cartRepository.AddAsync(cart);
             }
             return cart;
@@ -32,7 +31,7 @@ namespace MerchStore.Application.Service.ShoppingCart
         public async Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity)
         {
             // Return false as a placeholder
-            return Task.FromResult(false);
+            return false;
         }
 
         public Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
@@ -53,16 +52,10 @@ namespace MerchStore.Application.Service.ShoppingCart
             return Task.FromResult(false);
         }
 
-        public Task<decimal> CalculateCartTotalAsync(Guid cartId)
+        public async Task<decimal> CalculateCartTotalAsync(Guid cartId)
         {
-            
             var cart = await GetCartAsync(cartId);
             return cart.CalculateTotal();
-        }
-
-        Task IShoppingCartService.GetCartAsync(Guid cartId)
-        {
-            return GetCartAsync(cartId);
         }
     }
 }

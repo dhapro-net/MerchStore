@@ -4,6 +4,11 @@ using MerchStore.Domain.ShoppingCart;
 
 namespace MerchStore.Application.ShoppingCart.Interfaces
 {
-    [Obsolete("Use MerchStore.Domain.ShoppingCart.Interfaces.IShoppingCartRepository instead")]
-    public interface ICartRepository { }
+    public interface ICartRepository
+    {
+        Task<Cart> GetByIdAsync(Guid cartId);
+        Task AddAsync(Cart cart);
+        Task UpdateAsync(Cart cart);
+        Task DeleteAsync(Guid cartId);
+    }
 }

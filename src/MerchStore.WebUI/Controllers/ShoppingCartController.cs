@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.WebUI.Models.ShoppingCart;
+using MerchStore.Service.ShoppingCart;
 
 public class ShoppingCartController : Controller
 {
