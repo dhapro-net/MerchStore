@@ -1,6 +1,7 @@
+using System.Threading.Tasks;
 using MerchStore.Domain.Entities;
 
-namespace MerchStore.Service.Products
+namespace MerchStore.Application.Services.Interfaces
 {
     public interface IProductCatalogService
     {

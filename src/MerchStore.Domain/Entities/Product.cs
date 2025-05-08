@@ -5,13 +5,21 @@ namespace MerchStore.Domain.Entities;
 
 public class Product : Entity<Guid>
 {
+    private string v1;
+    private string v2;
+    private Uri uri;
+    private Money money;
+    private int v3;
+
     // Properties with private setters for encapsulation
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+    public string Category { get; private set; } = string.Empty;
     public Money Price { get; private set; } = Money.FromSEK(0);
-    public int StockQuantity { get; private set; } = 0;
+    public int StockQuantity { get; set; } = 0;
     public Uri? ImageUrl { get; private set; } = null;
     public bool IsAvailable { get; set; }
+    public bool IsFeatured { get; set; }
 
     // Private parameterless constructor for EF Core
     private Product()
@@ -20,7 +28,7 @@ public class Product : Entity<Guid>
     }
 
     // Public constructor with required parameters
-    public Product(string name, string description, Uri? imageUrl, Money price, int stockQuantity) : base(Guid.NewGuid())
+    public Product(string name, string description, string category, Uri? imageUrl, Money price, int stockQuantity) : base(Guid.NewGuid())
     {
         // Validate parameters
         if (string.IsNullOrWhiteSpace(name))
@@ -34,6 +42,9 @@ public class Product : Entity<Guid>
 
         if (description.Length > 500)
             throw new ArgumentException("Product description cannot exceed 500 characters", nameof(description));
+
+        if (string.IsNullOrWhiteSpace(category))
+            throw new ArgumentException("Category cannot be empty", nameof(category));
 
         // Image URI validation
         if (imageUrl != null)
@@ -63,9 +74,19 @@ public class Product : Entity<Guid>
         // Set properties
         Name = name;
         Description = description;
+        Category = category;
         ImageUrl = imageUrl;
         Price = price;
         StockQuantity = stockQuantity;
+    }
+
+    public Product(string v1, string v2, Uri uri, Money money, int v3)
+    {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.uri = uri;
+        this.money = money;
+        this.v3 = v3;
     }
 
     // Domain methods that encapsulate business logic

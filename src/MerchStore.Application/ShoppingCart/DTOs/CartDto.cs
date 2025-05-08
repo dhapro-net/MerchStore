@@ -1,13 +1,15 @@
-public class CartDto
-{
-    public List<CartItemDto> Items { get; set; } = new List<CartItemDto>();
-}
+using System.Collections.Generic;
+using MerchStore.Application.ShoppingCart.DTOs;
 
-public class CartItemDto
+
+namespace MerchStore.Application.ShoppingCart.Dtos
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string ImageUrl { get; set; }
-    public decimal Price { get; set; }
-    public int Quantity { get; set; }
+    public class CartDto
+    {
+        public Guid Id { get; set; }
+        public List<CartItemDto> Items { get; set; } = new List<CartItemDto>();
+        public decimal TotalPrice { get; set; }
+        public int TotalItems { get; set; }
+        public DateTime LastUpdated { get; set; }
+    }
 }
