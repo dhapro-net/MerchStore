@@ -20,7 +20,7 @@
                 <div class="card h-100 shadow-sm">
                     <div class="d-flex justify-content-center align-items-center bg-light overflow-hidden"
                         style="height: 200px;">
-                        <img src="@(product.HasImage? product.ImageUrl: "https://placehold.co/200x200?text=:(")"
+                        <img src="@(product.HasImage ? product.ImageUrl : "https://placehold.co/200x200?text=:(")"
                             class="img-fluid object-fit-contain" alt="@product.Name">
                     </div>
                     <div class="card-body">
@@ -35,7 +35,8 @@
                                 aria-label="@(product.InStock ? "View details for " + product.Name : "Out of stock")">
                                 View Details
                             </a>
-                            <form asp-action="AddToCart" asp-route-id="@product.Id" method="post" class="d-inline">
+                            <form asp-action="AddToCart" method="post" class="d-inline">
+                                <input type="hidden" name="productId" value="@product.Id" />
                                 <button type="submit"
                                     class="btn btn-outline-success btn-sm @(product.InStock ? "" : "disabled")"
                                     title="@(product.InStock ? "Add to Cart" : "Out of Stock")"

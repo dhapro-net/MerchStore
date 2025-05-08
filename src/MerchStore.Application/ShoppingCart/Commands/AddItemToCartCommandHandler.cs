@@ -28,7 +28,8 @@ namespace MerchStore.Application.ShoppingCart.Commands
             var success = await _cartService.AddItemToCartAsync(
                 request.CartId,
                 request.ProductId,
-                request.Quantity);
+                request.Quantity,
+                cancellationToken);
                 
             if (!success)
                 return Result.Failure<bool>("Failed to add item to cart. The product may not exist or is unavailable.");

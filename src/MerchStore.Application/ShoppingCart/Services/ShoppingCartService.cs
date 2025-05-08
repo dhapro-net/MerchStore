@@ -3,6 +3,9 @@ using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.DTOs;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Application.ShoppingCart.Queries;
+using MerchStore.Domain.Interfaces;
+using MerchStore.Domain.ShoppingCart;
+using MerchStore.Domain.ShoppingCart.Interfaces;
 using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -12,36 +15,77 @@ namespace MerchStore.Application.ShoppingCart.Services
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ShoppingCartService> _logger;
+        private readonly IShoppingCartRepository _cartRepository;
+        private readonly IProductRepository _productRepository;
 
-        public ShoppingCartService(IMediator mediator, ILogger<ShoppingCartService> logger)
+
+        public ShoppingCartService(IMediator mediator, IShoppingCartRepository cartRepository, IProductRepository productRepository, ILogger<ShoppingCartService> logger)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
+            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+
+
         }
 
 
-        public async Task<CartDto> GetCartAsync(Guid cartId)
+        public async Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Fetching cart with ID: {cartId}.");
-            // Use mediator to send a query to fetch the cart
-            return await _mediator.Send(new GetCartQuery(cartId));
+            _logger.LogInformation($"Fetching or creating cart with ID: {cartId}.");
+
+            var cart = await _cartRepository.GetCartByIdAsync(cartId, cancellationToken);
+            if (cart == null)
+            {
+                _logger.LogWarning($"Cart with ID {cartId} not found. Creating a new cart.");
+                cart = Cart.Create(cartId);
+                await _cartRepository.AddAsync(cart);
+            }
+
+            return new CartDto
+            {
+                CartId = cart.CartId,
+                Items = cart.Items.Select(i => new CartItemDto
+                {
+                    ProductId = i.ProductId,
+                    ProductName = i.ProductName,
+                    UnitPrice = i.UnitPrice,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
         }
         public async Task<Money> CalculateCartTotalAsync(Guid cartId)
         {
             _logger.LogInformation($"Calculating total for cart with ID: {cartId}.");
             return await _mediator.Send(new CalculateCartTotalQuery(cartId));
         }
-        public async Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity)
+
+        public async Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Adding ProductId: {productId} with Quantity: {quantity} to CartId: {cartId}.");
-            var result = await _mediator.Send(new AddItemToCartCommand(cartId, productId, quantity));
-            if (!result.IsSuccess)
+
+            // Fetch the cart (e.g., from a repository or database)
+            var cart = await _cartRepository.GetCartByIdAsync(cartId, cancellationToken);
+            if (cart == null)
             {
-                _logger.LogError($"Failed to add item to cart: {result.Error}");
+                _logger.LogError($"Cart with ID {cartId} not found.");
                 return false;
             }
-            return result.Value;
+
+            // Fetch the product (e.g., from a product repository)
+            var product = await _productRepository.GetProductByIdAsync(Guid.Parse(productId), cancellationToken);
+            if (product == null || product.StockQuantity < quantity)
+            {
+                _logger.LogError($"Product with ID {productId} not found or insufficient stock.");
+                return false;
+            }
+
+            // Add the item to the cart
+            cart.AddItem(productId, product.Name, product.Price, quantity);
+
+            return true;
         }
+
 
         public async Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
         {

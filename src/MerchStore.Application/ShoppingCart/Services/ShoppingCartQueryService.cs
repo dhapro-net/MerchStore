@@ -17,11 +17,11 @@ namespace MerchStore.Application.ShoppingCart.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<CartDto> GetCartAsync(Guid cartId)
+        public async Task<CartDto> GetCartAsync(Guid cartId, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Fetching cart with ID: {cartId}");
 
-            var cart = await _shoppingCartService.GetCartAsync(cartId);
+            var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, cancellationToken);
             if (cart == null)
             {
                 _logger.LogWarning($"Cart with ID {cartId} not found.");
@@ -53,11 +53,11 @@ namespace MerchStore.Application.ShoppingCart.Services
             return cartDto;
         }
 
-        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId)
+        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Fetching cart summary with ID: {cartId}");
 
-            var cart = await _shoppingCartService.GetCartAsync(cartId);
+            var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, cancellationToken);
             if (cart == null)
             {
                 _logger.LogWarning($"Cart summary with ID {cartId} not found.");

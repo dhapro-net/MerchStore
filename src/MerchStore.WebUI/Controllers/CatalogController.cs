@@ -3,6 +3,7 @@ using MediatR;
 using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
 using MerchStore.Application.ShoppingCart.Commands;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MerchStore.WebUI.Controllers;
 
@@ -88,23 +89,44 @@ public class CatalogController : Controller
             return View("Error");
         }
     }
-[HttpPost]
-public async Task<IActionResult> AddToCart(Guid productId)
-{
-    // Get or create the CartId (e.g., from cookies or session)
-    var cartId = GetOrCreateCartId();
-
-    // Send the AddItemToCartCommand
-    var result = await _mediator.Send(new AddItemToCartCommand(cartId, productId.ToString(), 1));
-
-    if (!result.IsSuccess)
+    [HttpPost]
+    public async Task<IActionResult> AddToCart(Guid productId)
     {
-        TempData["ErrorMessage"] = result.Error;
+    try
+    {
+        if (productId == Guid.Empty)
+        {
+            Console.WriteLine("Invalid ProductId received.");
+            TempData["ErrorMessage"] = "Invalid product ID.";
+            return RedirectToAction("Index");
+        }
+
+        var cartId = GetOrCreateCartId();
+        Console.WriteLine($"Using CartId: {cartId}");
+
+        var result = await _mediator.Send(new AddItemToCartCommand(cartId, productId.ToString(), 1));
+
+        if (!result.IsSuccess)
+        {
+            Console.WriteLine($"Error adding item to cart: {result.Error}");
+            TempData["ErrorMessage"] = result.Error;
+            return RedirectToAction("Index");
+        }
+
+        Console.WriteLine("Item added to cart successfully!");
+        TempData["SuccessMessage"] = "Item added to cart successfully!";
         return RedirectToAction("Index");
     }
+    catch (Exception ex)
+    {
+        // Log the exception
+        Console.WriteLine($"Unexpected error in AddToCart: {ex.Message}");
+        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
 
-    TempData["SuccessMessage"] = "Item added to cart successfully!";
-    return RedirectToAction("Index");
+        // Show a generic error message to the user
+        TempData["ErrorMessage"] = "An unexpected error occurred while adding the item to the cart. Please try again later.";
+        return RedirectToAction("Index");
+    }
 }
     private Guid GetOrCreateCartId()
     {
@@ -112,10 +134,12 @@ public async Task<IActionResult> AddToCart(Guid productId)
 
         if (Request.Cookies.TryGetValue(cartCookieKey, out var cartIdString) && Guid.TryParse(cartIdString, out var cartId))
         {
+            Console.WriteLine($"Retrieved CartId from cookie: {cartId}");
             return cartId;
         }
 
         cartId = Guid.NewGuid();
+        Console.WriteLine($"Generated new CartId: {cartId}");
         Response.Cookies.Append(cartCookieKey, cartId.ToString(), new CookieOptions
         {
             Expires = DateTime.UtcNow.AddDays(7),

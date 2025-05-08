@@ -7,6 +7,8 @@ using MerchStore.Domain.ShoppingCart.Interfaces;
 using MerchStore.Infrastructure.Persistence;
 using MerchStore.Infrastructure.Persistence.Repositories;
 using MerchStore.Infrastructure.Repositories;
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Application.ShoppingCart.Services;
 
 namespace MerchStore.Infrastructure;
 
@@ -51,6 +53,12 @@ public static class DependencyInjection
 
         // Register cookie-based shopping cart repository
         services.AddScoped<IShoppingCartRepository, CookieShoppingCartRepository>();
+
+        services.AddScoped<IShoppingCartService, ShoppingCartService>();
+        // Register Unit of Work
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        services.AddScoped<IOrderRepository, OrderRepository>();
 
 
         return services;
