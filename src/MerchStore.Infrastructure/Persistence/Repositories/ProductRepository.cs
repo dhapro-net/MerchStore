@@ -1,5 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Interfaces;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Infrastructure.Persistence.Repositories;
 
@@ -9,43 +15,62 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 /// </summary>
 public class ProductRepository : Repository<Product, Guid>, IProductRepository 
 {
+    private readonly AppDbContext _context;
+
     public ProductRepository(AppDbContext context) : base(context)
     {
-    }// Should there be cart logic here? Also Cart Id is wrong I think
-
-    public Task GetCartById(Guid cartId)
+        _context = context;
+    }
+    
+    public async Task<IEnumerable<Product>> GetFeaturedProductsAsync()
     {
-        // Implementation for retrieving a cart by its ID
-        throw new NotImplementedException();
+        return await _context.Set<Product>()
+            .Where(p => p.IsFeatured)
+            .ToListAsync();
     }
 
-    public Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity)
+    public async Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm)
     {
-        // Implementation for adding an item to the cart
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(searchTerm))
+            return await GetAllAsync();
+
+        return await _context.Set<Product>()
+            .Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm))
+            .ToListAsync();
     }
 
-    public Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
+    public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(string category)
     {
-        // Implementation for removing an item from the cart
-        throw new NotImplementedException();
+        return await _context.Set<Product>()
+            .Where(p => p.Category == category)
+            .ToListAsync();
     }
 
-    public Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity)
+    public async Task<bool> IsInStockAsync(Guid productId, int quantity)
     {
-        // Implementation for updating the quantity of an item in the cart
-        throw new NotImplementedException();
+        var product = await _context.Set<Product>()
+            .FirstOrDefaultAsync(p => p.Id == productId);
+        
+        return product != null && product.StockQuantity >= quantity;
     }
 
-    public Task<bool> ClearCartAsync(Guid cartId)
+    public async Task<bool> UpdateStockAsync(Guid productId, int quantity)
     {
-        // Implementation for clearing the cart
-        throw new NotImplementedException();
+        var product = await _context.Set<Product>()
+            .FirstOrDefaultAsync(p => p.Id == productId);
+        
+        if (product == null)
+            return false;
+
+        product.StockQuantity = quantity;
+        await _context.SaveChangesAsync();
+        return true;
     }
 
-    public Task<decimal> CalculateCartTotalAsync(Guid cartId)
+    public async Task<IEnumerable<Product>> GetProductsInPriceRangeAsync(decimal minPrice, decimal maxPrice)
     {
-        // Implementation for calculating the total price of the cart
-        throw new NotImplementedException();
+        return await _context.Set<Product>()
+            .Where(p => p.Price.Amount >= minPrice && p.Price.Amount <= maxPrice)
+            .ToListAsync();
     }
 }

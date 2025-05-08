@@ -1,6 +1,9 @@
+using MediatR;
+using MerchStore.Application.Common;
+
 namespace MerchStore.Application.ShoppingCart.Commands
 {
-    public class AddItemToCartCommand
+    public class AddItemToCartCommand : IRequest<Result<bool>>
     {
         public Guid CartId { get; set; }
         public string ProductId { get; set; }

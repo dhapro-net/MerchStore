@@ -1,14 +1,37 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MerchStore.Domain.Common;
+using MerchStore.Domain.ValueObjects;
+using MerchStore.Domain.ShoppingCart.Events;
+
 namespace MerchStore.Domain.ShoppingCart
 {
-    public class ShoppingCart
+    public class Cart : AggregateRoot<Guid>
     {
-        public Guid CartId { get; set; }
-        public List<CartItem> Items { get; set; } = new List<CartItem>();
-        public decimal Total { get; set; }
+        public Guid CartId 
+        { 
+            get => Id;
+            private set => Id = value;
+        }
+        public List<CartItem> Items { get; private set; } = new List<CartItem>();
         public DateTime CreatedAt { get; private set; }
         public DateTime LastUpdated { get; private set; }
 
-        public void AddItem(string productId, object name, object price, int quantity)
+        // For EF Core
+        private Cart() : base()
+        {
+        }
+
+        private Cart(Guid id) : base(id)
+        {
+            CartId = id;
+            CreatedAt = DateTime.UtcNow;
+            LastUpdated = DateTime.UtcNow;
+            Items = new List<CartItem>();
+        }
+
+        public void AddItem(string productId, string name, Money price, int quantity)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
@@ -20,35 +43,38 @@ namespace MerchStore.Domain.ShoppingCart
             
             if (existingItem != null)
             {
-                // Update existing item quantity
                 existingItem.UpdateQuantity(existingItem.Quantity + quantity);
             }
             else
             {
-                // Add new item
-                var newItem = new CartItem
-                {
-                    ProductId = productId,
-                    ProductName = (string)name,
-                    UnitPrice = (decimal)price,
-                    Quantity = quantity
-                };
+                var newItem = new CartItem(
+                    productId,
+                    name,
+                    price,
+                    quantity
+                );
                 
                 Items.Add(newItem);
             }
             
             UpdateLastModified();
+            
+            // Add domain event
+            AddDomainEvent(new CartItemAddedEvent(CartId, productId, name, price, quantity));
         }
 
         public decimal CalculateTotal()
         {
-            return Items.Sum(item => item.UnitPrice * item.Quantity);
+            return Items.Sum(item => item.UnitPrice.Amount * item.Quantity);
         }
 
         public void Clear()
         {
             Items.Clear();
             UpdateLastModified();
+            
+            // Add domain event
+            AddDomainEvent(new CartClearedEvent(CartId));
         }
 
         public void RemoveItem(string productId)
@@ -62,8 +88,10 @@ namespace MerchStore.Domain.ShoppingCart
             {
                 Items.Remove(itemToRemove);
                 UpdateLastModified();
+                
+                // Add domain event
+                AddDomainEvent(new CartItemRemovedEvent(CartId, productId));
             }
-
         }
 
         public void UpdateQuantity(string productId, int quantity)
@@ -86,25 +114,18 @@ namespace MerchStore.Domain.ShoppingCart
             }
         }
 
-         private void UpdateLastModified()
+        private void UpdateLastModified()
         {
             LastUpdated = DateTime.UtcNow;
         }
         
-        public static ShoppingCart Create(Guid cartId)
+        public static Cart Create(Guid cartId)
         {
             if (cartId == Guid.Empty)
                 throw new ArgumentException("Cart ID cannot be empty", nameof(cartId));
                 
-            return new ShoppingCart
-            {
-                CartId = cartId,
-                Items = new List<CartItem>(),
-                CreatedAt = DateTime.UtcNow,
-                LastUpdated = DateTime.UtcNow
-            };
+            return new Cart(cartId);
         }
-
 
         // Domain methods to query cart state
         public bool HasItems() => Items.Any();
@@ -117,6 +138,4 @@ namespace MerchStore.Domain.ShoppingCart
         public CartItem GetItem(string productId) => 
             Items.FirstOrDefault(i => i.ProductId == productId);
     }
-
-   
 }
