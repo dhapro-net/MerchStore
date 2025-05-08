@@ -3,7 +3,7 @@ using MerchStore.Application.Common;
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Service.ShoppingCart;
 
-namespace MerchStore.Application.ShoppingCart.Handlers
+namespace MerchStore.Application.ShoppingCart.Commands
 {
     public class AddItemToCartCommandHandler : IRequestHandler<AddItemToCartCommand, Result<bool>>
     {

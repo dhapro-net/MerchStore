@@ -1,7 +1,7 @@
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Application.ShoppingCart.Dtos;
 
-namespace MerchStore.Application.ShoppingCart.Interfaces;
+namespace MerchStore.Application.ShoppingCart.Interfaces
 {
     public interface IShoppingCartService
     {

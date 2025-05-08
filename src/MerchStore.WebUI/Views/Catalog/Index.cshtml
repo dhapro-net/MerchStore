@@ -18,22 +18,33 @@
         {
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <div class="d-flex justify-content-center align-items-center bg-light overflow-hidden" style="height: 200px;">
-                        <img src="@(product.HasImage ? product.ImageUrl : "https://placehold.co/200x200?text=:(")" 
-                             class="img-fluid object-fit-contain" 
-                             alt="@product.Name">
+                    <div class="d-flex justify-content-center align-items-center bg-light overflow-hidden"
+                        style="height: 200px;">
+                        <img src="@(product.HasImage? product.ImageUrl: "https://placehold.co/200x200?text=:(")"
+                            class="img-fluid object-fit-contain" alt="@product.Name">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
                     </div>
                     <div class="card-footer d-flex justify-content-between align-items-center">
                         <span class="text-primary fw-bold">@product.FormattedPrice</span>
-                        <a asp-action="Details" asp-route-id="@product.Id"
-                           class="btn btn-outline-primary btn-sm @(product.InStock ? "" : "disabled")"
-                           title="@(product.InStock ? "" : "Out of Stock")"
-                           aria-label="@(product.InStock ? "View details for " + product.Name : "Out of stock")">
-                            View Details
-                        </a>
+                        <div class="btn-group">
+                            <a asp-action="Details" asp-route-id="@product.Id"
+                                class="btn btn-outline-primary btn-sm @(product.InStock ? "" : "disabled")"
+                                title="@(product.InStock ? "" : "Out of Stock")"
+                                aria-label="@(product.InStock ? "View details for " + product.Name : "Out of stock")">
+                                View Details
+                            </a>
+                            <form asp-action="AddToCart" asp-route-id="@product.Id" method="post" class="d-inline">
+                                <button type="submit"
+                                    class="btn btn-outline-success btn-sm @(product.InStock ? "" : "disabled")"
+                                    title="@(product.InStock ? "Add to Cart" : "Out of Stock")"
+                                    aria-label="@(product.InStock ? "Add " + product.Name + " to cart" : "Out of stock")"
+                                    @(product.InStock ? "" : "disabled")>
+                                    Buy
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

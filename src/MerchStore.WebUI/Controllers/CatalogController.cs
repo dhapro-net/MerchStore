@@ -93,4 +93,17 @@ public class CatalogController : Controller
             return View("Error");
         }
     }
+    public class CartController : Controller
+    {
+        [HttpPost]
+        public IActionResult AddToCart(Guid id)
+        {
+            // Logic to add the product to the cart
+            // Example: Use a service to handle cart operations
+            // _cartService.AddToCart(id);
+
+            TempData["SuccessMessage"] = "Product added to cart!";
+            return RedirectToAction("Index", "Catalog");
+        }
+    }
 }
