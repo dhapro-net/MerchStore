@@ -1,8 +1,5 @@
-using System;
-using System.Threading.Tasks;
-using MerchStore.Domain.ShoppingCart;
 
-namespace MerchStore.Application.ShoppingCart.Interfaces
+namespace MerchStore.Service.ShoppingCart
 {
     public interface IShoppingCartService
     {

@@ -1,0 +1,135 @@
+@model MerchStore.WebUI.Models.ShoppingCart.ShoppingCartViewModel
+@{
+    ViewData["Title"] = "MerchStore - Shopping Cart";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <div class="row">
+        <!-- Shopping Cart Table -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Shopping Cart</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model?.Items != null && Model.Items.Any())
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail"
+                                                style="width: 50px; height: 50px;" />
+                                            <span>@item.Name</span>
+                                        </td>
+                                        <td>@item.FormattedPrice</td>
+                                        <td>
+                                            <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                                <input type="hidden" name="ProductId" value="@item.Id" />
+                                                <input type="number" name="Quantity" value="@item.Quantity" min="1"
+                                                    class="form-control form-control-sm quantity-input" />
+                                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                            </form>
+                                        </td>
+                                        <td>@item.TotalPrice.ToString("C")</td>
+                                        <td>
+                                            <form asp-action="RemoveItem" method="post" class="d-inline">
+                                                <input type="hidden" name="ProductId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td colspan="2">@Model.TotalPrice.ToString("C")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning text-center">
+                            <h4 class="mb-3">Your cart is empty!</h4>
+                            <p>It looks like you haven't added any items to your cart yet.</p>
+                            <a href="/Catalog" class="btn btn-primary">Browse Products</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+          <!-- Combined Shipping and Payment Form -->
+        <div class="col-lg-4">
+            <form asp-action="SubmitOrder" method="post">
+
+                <!-- Shipping Information -->
+                <h5>Shipping Information</h5>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label asp-for="Shipping.FullName" class="form-label">Full Name</label>
+                        <input asp-for="Shipping.FullName" class="form-control form-control-sm" />
+                        <span asp-validation-for="Shipping.FullName" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Shipping.Address" class="form-label">Address</label>
+                        <input asp-for="Shipping.Address" class="form-control form-control-sm" />
+                        <span asp-validation-for="Shipping.Address" class="text-danger"></span>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="Shipping.City" class="form-label">City</label>
+                        <input asp-for="Shipping.City" class="form-control form-control-sm" />
+                        <span asp-validation-for="Shipping.City" class="text-danger"></span>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="Shipping.PostalCode" class="form-label">Postal Code</label>
+                        <input asp-for="Shipping.PostalCode" class="form-control form-control-sm" />
+                        <span asp-validation-for="Shipping.PostalCode" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Shipping.Country" class="form-label">Country</label>
+                        <input asp-for="Shipping.Country" class="form-control form-control-sm" />
+                        <span asp-validation-for="Shipping.Country" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Payment Information -->
+                <h5 class="mt-3">Payment Information</h5>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label asp-for="Payment.CardNumber" class="form-label">Card Number</label>
+                        <input asp-for="Payment.CardNumber" class="form-control form-control-sm" />
+                        <span asp-validation-for="Payment.CardNumber" class="text-danger"></span>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="Payment.ExpirationDate" class="form-label">Expiration Date</label>
+                        <input asp-for="Payment.ExpirationDate" class="form-control form-control-sm" placeholder="MM/YY" />
+                        <span asp-validation-for="Payment.ExpirationDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-6">
+                        <label asp-for="Payment.CVV" class="form-label">CVV</label>
+                        <input asp-for="Payment.CVV" class="form-control form-control-sm" />
+                        <span asp-validation-for="Payment.CVV" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">Submit Order</button>
+            </form>
+        </div>
+    </div>
+</div>

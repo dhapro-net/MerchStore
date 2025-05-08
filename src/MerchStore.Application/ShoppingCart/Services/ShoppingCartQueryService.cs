@@ -1,13 +1,12 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MerchStore.Application.ShoppingCart.Interfaces;
-using MerchStore.Application.ShoppingCart.DTOs;
+using MerchStore.Service.ShoppingCart;
+
+
 
 namespace MerchStore.Application.ShoppingCart.Services
 {
     public class ShoppingCartQueryService : IShoppingCartQueryService
     {
+        
         private readonly IShoppingCartService _shoppingCartService;
         
         public ShoppingCartQueryService(IShoppingCartService shoppingCartService)
@@ -15,8 +14,9 @@ namespace MerchStore.Application.ShoppingCart.Services
             _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
         }
         
-        public async Task<CartDto> GetCartAsync(Guid cartId)
+        public async Task GetCartAsync(Guid cartId)
         {
+            
             var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart == null)
             {
@@ -27,7 +27,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             {
                 Id = cart.CartId,
                 TotalPrice = cart.CalculateTotal(),
-                TotalItems = cart.ItemCount(),
+                TotalItems = cart.Items.Sum(i => i.Quantity),
                 LastUpdated = cart.LastUpdated
             };
             
@@ -37,17 +37,18 @@ namespace MerchStore.Application.ShoppingCart.Services
                 {
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice.Amount,
+                    UnitPrice = item.UnitPrice,
                     Quantity = item.Quantity,
-                    TotalPrice = item.UnitPrice.Amount * item.Quantity
+                    TotalPrice = item.Quantity * item.UnitPrice
                 });
             }
             
             return cartDto;
         }
         
-        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId)
+        public async Task GetCartSummaryAsync(Guid cartId)
         {
+            
             var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart == null)
             {
@@ -57,7 +58,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             return new CartSummaryDto
             {
                 CartId = cart.CartId,
-                ItemsCount = cart.ItemCount(),
+                ItemsCount = cart.Items.Sum(i => i.Quantity),
                 TotalPrice = cart.CalculateTotal()
             };
         }
