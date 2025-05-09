@@ -57,7 +57,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             return new CartDto
             {
                 CartId = cart.CartId,
-                Items = cart.Items.Select(i => new CartItemDto
+                Products = cart.Products.Select(i => new CartProductDto
                 {
                     ProductId = i.ProductId,
                     ProductName = i.ProductName,
@@ -72,7 +72,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             return await _mediator.Send(new CalculateCartTotalQuery(cartId));
         }
 
-        public async Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken)
+        public async Task<bool> AddProductToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Adding ProductId: {productId} with Quantity: {quantity} to CartId: {cartId}.");
 
@@ -92,38 +92,38 @@ namespace MerchStore.Application.ShoppingCart.Services
                 return false;
             }
 
-            // Add the item to the cart
-            cart.AddItem(productId, product.Name, product.Price, quantity);
+            // Add the product to the cart
+            cart.AddProduct(productId, product.Name, product.Price, quantity);
 
             return true;
         }
 
 
-        public async Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId)
+        public async Task<bool> RemoveProductFromCartAsync(Guid cartId, string productId)
         {
             _logger.LogInformation($"Removing ProductId: {productId} from CartId: {cartId}.");
-            var result = await _mediator.Send(new RemoveItemFromCartCommand(cartId, productId));
+            var result = await _mediator.Send(new RemoveProductFromCartCommand(cartId, productId));
             if (!result.IsSuccess)
             {
-                _logger.LogError($"Failed to remove item from cart: {result.Error}");
+                _logger.LogError($"Failed to remove product from cart: {result.Error}");
                 return false;
             }
             return result.Value;
         }
-        public async Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity)
+        public async Task<bool> UpdateProductQuantityAsync(Guid cartId, string productId, int quantity)
         {
             _logger.LogInformation($"Updating quantity for ProductId: {productId} to {quantity} in CartId: {cartId}.");
-            var result = await _mediator.Send(new UpdateCartItemQuantityCommand(cartId, productId, quantity));
+            var result = await _mediator.Send(new UpdateCartProductQuantityCommand(cartId, productId, quantity));
             if (!result.IsSuccess)
             {
-                _logger.LogError($"Failed to update item quantity: {result.Error}");
+                _logger.LogError($"Failed to update product quantity: {result.Error}");
                 return false;
             }
             return result.Value;
         }
         public async Task<bool> ClearCartAsync(Guid cartId)
         {
-            _logger.LogInformation($"Clearing all items from CartId: {cartId}.");
+            _logger.LogInformation($"Clearing all product from CartId: {cartId}.");
             var result = await _mediator.Send(new ClearCartCommand(cartId));
             if (!result.IsSuccess)
             {

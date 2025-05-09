@@ -1,6 +1,6 @@
 namespace MerchStore.WebUI.Models.ShoppingCart;
 
-public class ShoppingCartItemViewModel
+public class ShoppingCartProductViewModel
 {
     public string ProductId { get; set; }
     public string ProductName { get; set; }

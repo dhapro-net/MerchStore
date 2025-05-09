@@ -4,11 +4,11 @@ using MerchStore.Domain.Entities;
 
 namespace MerchStore.Infrastructure.Persistence.Configurations;
 
-public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
+public class OrderProductConfiguration : IEntityTypeConfiguration<OrderProduct>
 {
-    public void Configure(EntityTypeBuilder<OrderItem> builder)
+    public void Configure(EntityTypeBuilder<OrderProduct> builder)
     {
-        builder.ToTable("OrderItems");
+        builder.ToTable("OrderProducts");
 
         // Primary Key
         builder.HasKey(oi => oi.Id);
@@ -25,7 +25,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
 
         // Foreign Key to Order
         builder.HasOne(oi => oi.Order)
-            .WithMany(o => o.Items)
+            .WithMany(o => o.Products)
             .HasForeignKey(oi => oi.OrderId);
     }
 }

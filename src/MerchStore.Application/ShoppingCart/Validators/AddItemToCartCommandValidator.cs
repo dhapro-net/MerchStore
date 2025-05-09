@@ -3,9 +3,9 @@ using MerchStore.Application.ShoppingCart.Commands;
 
 namespace MerchStore.Application.ShoppingCart.Validators
 {
-    public class AddItemToCartCommandValidator : AbstractValidator<AddItemToCartCommand>
+    public class AddProductToCartCommandValidator : AbstractValidator<AddProductToCartCommand>
     {
-        public AddItemToCartCommandValidator()
+        public AddProductToCartCommandValidator()
         {
             RuleFor(x => x.CartId)
                 .NotEqual(Guid.Empty)

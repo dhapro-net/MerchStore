@@ -8,9 +8,9 @@ namespace MerchStore.Application.ShoppingCart.Interfaces
     {
         Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken); 
 
-        Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken);
-        Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId);
-        Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity);
+        Task<bool> AddProductToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken);
+        Task<bool> RemoveProductFromCartAsync(Guid cartId, string productId);
+        Task<bool> UpdateProductQuantityAsync(Guid cartId, string productId, int quantity);
         Task<bool> ClearCartAsync(Guid cartId);
         Task<Money> CalculateCartTotalAsync(Guid cartId);
 

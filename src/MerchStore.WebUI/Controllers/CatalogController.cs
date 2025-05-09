@@ -95,7 +95,7 @@ private readonly IShoppingCartService _shoppingCartService;
     }
     [HttpPost]
     [HttpPost]
-public async Task<IActionResult> AddToCart(Guid productId)
+public async Task<IActionResult> AddProductToCart(Guid productId)
 {
     try
     {
@@ -110,28 +110,28 @@ public async Task<IActionResult> AddToCart(Guid productId)
         var cartId = GetOrCreateCartId();
         var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, HttpContext.RequestAborted);
 
-        // Add the item to the cart
-        var success = await _shoppingCartService.AddItemToCartAsync(cart.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
+        // Add the product to the cart
+        var success = await _shoppingCartService.AddProductToCartAsync(cart.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
 
         if (!success)
         {
-            Console.WriteLine("Error adding item to cart.");
-            TempData["ErrorMessage"] = "Failed to add item to cart.";
+            Console.WriteLine("Error adding product to cart.");
+            TempData["ErrorMessage"] = "Failed to add product to cart.";
             return RedirectToAction("Index");
         }
 
-        Console.WriteLine("Item added to cart successfully!");
-        TempData["SuccessMessage"] = "Item added to cart successfully!";
+        Console.WriteLine("Product added to cart successfully!");
+        TempData["SuccessMessage"] = "Product added to cart successfully!";
         return RedirectToAction("Index");
     }
     catch (Exception ex)
     {
         // Log the exception
-        Console.WriteLine($"Unexpected error in AddToCart: {ex.Message}");
+        Console.WriteLine($"Unexpected error in AddProductToCart: {ex.Message}");
         Console.WriteLine($"Stack Trace: {ex.StackTrace}");
 
         // Show a generic error message to the user
-        TempData["ErrorMessage"] = "An unexpected error occurred while adding the item to the cart. Please try again later.";
+        TempData["ErrorMessage"] = "An unexpected error occurred while adding the product to the cart. Please try again later.";
         return RedirectToAction("Index");
     }
 }

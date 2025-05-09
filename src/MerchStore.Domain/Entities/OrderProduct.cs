@@ -2,7 +2,7 @@ using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Domain.Entities;
 
-public class OrderItem
+public class OrderProduct
 {
     public Guid Id { get; set; } // Primary Key
     public Guid ProductId { get; set; } // Foreign Key to Product

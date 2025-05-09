@@ -4,7 +4,7 @@ using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Domain.ShoppingCart.Events
 {
-    public class CartItemAddedEvent : DomainEvent
+    public class CartProductAddedEvent : DomainEvent
     {
         public Guid CartId { get; }
         public string ProductId { get; }
@@ -12,7 +12,7 @@ namespace MerchStore.Domain.ShoppingCart.Events
         public Money UnitPrice { get; }
         public int Quantity { get; }
 
-        public CartItemAddedEvent(Guid cartId, string productId, string productName, Money unitPrice, int quantity)
+        public CartProductAddedEvent(Guid cartId, string productId, string productName, Money unitPrice, int quantity)
         {
             CartId = cartId;
             ProductId = productId;
