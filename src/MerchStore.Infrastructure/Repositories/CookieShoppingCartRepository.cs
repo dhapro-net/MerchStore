@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Infrastructure.Repositories
 {
-    public class CookieShoppingCartRepository : IShoppingCartRepository
+    public class CookieShoppingCartRepository : IShoppingCartCommandRepository, IShoppingCartQueryRepository
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private const string CartCookiePrefix = "ShoppingCartId";

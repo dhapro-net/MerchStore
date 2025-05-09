@@ -6,7 +6,8 @@ namespace MerchStore.Domain.Entities;
 
 public class Product : Entity<Guid>
 {
-    // Properties with private setters for encapsulation
+    private static readonly string[] ValidImageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public string Category { get; private set; } = string.Empty;
@@ -16,16 +17,10 @@ public class Product : Entity<Guid>
     public bool IsAvailable { get; private set; }
     public bool IsFeatured { get; private set; }
 
-    // Private parameterless constructor for EF Core
-    private Product()
-    {
-        // Required for EF Core, but we don't want it to be used directly
-    }
+    private Product() { }
 
-    // Public constructor with required parameters
     public Product(string name, string description, string category, string imageUrl, Money price, int stockQuantity) : base(Guid.NewGuid())
     {
-        // Validate and set properties
         SetName(name);
         SetDescription(description);
         SetCategory(category);
@@ -34,7 +29,6 @@ public class Product : Entity<Guid>
         SetStockQuantity(stockQuantity);
     }
 
-    // Method to validate and set Name
     private void SetName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -46,7 +40,6 @@ public class Product : Entity<Guid>
         Name = name;
     }
 
-    // Method to validate and set Description
     private void SetDescription(string description)
     {
         if (string.IsNullOrWhiteSpace(description))
@@ -58,7 +51,6 @@ public class Product : Entity<Guid>
         Description = description;
     }
 
-    // Method to validate and set Category
     private void SetCategory(string category)
     {
         if (string.IsNullOrWhiteSpace(category))
@@ -67,7 +59,6 @@ public class Product : Entity<Guid>
         Category = category;
     }
 
-    // Method to validate and set ImageUrl
     public void SetImageUrl(string imageUrl)
     {
         if (string.IsNullOrWhiteSpace(imageUrl))
@@ -80,24 +71,23 @@ public class Product : Entity<Guid>
             throw new ArgumentException("Image URL exceeds maximum length of 2000 characters", nameof(imageUrl));
 
         string extension = Path.GetExtension(uri.AbsoluteUri).ToLowerInvariant();
-        string[] validExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-
-        if (!validExtensions.Contains(extension))
+        if (!ValidImageExtensions.Contains(extension))
             throw new ArgumentException("Image URL must point to a valid image file (jpg, jpeg, png, gif, webp)", nameof(imageUrl));
 
         ImageUrl = imageUrl;
     }
 
-    // Method to validate and set Price
     private void SetPrice(Money price)
     {
         if (price is null)
             throw new ArgumentNullException(nameof(price));
 
+        if (price.Amount <= 0)
+            throw new ArgumentException("Price must be greater than zero", nameof(price));
+
         Price = price;
     }
 
-    // Method to validate and set StockQuantity
     private void SetStockQuantity(int stockQuantity)
     {
         if (stockQuantity < 0)
@@ -107,8 +97,6 @@ public class Product : Entity<Guid>
         IsAvailable = stockQuantity > 0;
     }
 
-
-    // Domain methods that encapsulate business logic
     public void UpdateDetails(string name, string description, string imageUrl)
     {
         SetName(name);
@@ -132,7 +120,7 @@ public class Product : Entity<Guid>
             throw new ArgumentException("Quantity must be positive", nameof(quantity));
 
         if (StockQuantity < quantity)
-            return false; // Not enough stock
+            return false;
 
         StockQuantity -= quantity;
         IsAvailable = StockQuantity > 0;

@@ -145,15 +145,5 @@ namespace MerchStore.Domain.ShoppingCart
             return cart;
         }
 
-        // Domain methods to query cart state
-        public bool HasProducts() => Products.Any();
-
-        public int ProductCount() => Products.Sum(i => i.Quantity);
-
-        public bool ContainsProduct(string productId) =>
-            Products.Any(i => i.ProductId == productId);
-
-        public CartProduct GetProduct(string productId) =>
-            Products.FirstOrDefault(i => i.ProductId == productId);
     }
 }

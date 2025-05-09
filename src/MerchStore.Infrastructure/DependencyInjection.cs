@@ -32,9 +32,12 @@ public static class DependencyInjection
             options.UseInMemoryDatabase("MerchStoreDb"));
 
         // Register repositories
-        services.AddScoped<IProductRepository, ProductRepository>();
-
-        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
+        services.AddScoped<IOrderCommandRepository, OrderCommandRepository>();
+        services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
+        services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
+        services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
+        services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -57,8 +60,8 @@ public static class DependencyInjection
         services.AddScoped<IShoppingCartService, ShoppingCartService>();
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        
-        services.AddScoped<IOrderRepository, OrderRepository>();
+
+
 
 
         return services;
