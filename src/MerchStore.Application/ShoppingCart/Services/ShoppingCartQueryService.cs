@@ -28,9 +28,9 @@ namespace MerchStore.Application.ShoppingCart.Services
                 return new CartDto
                 {
                     CartId = cartId,
-                    Product = new List<CartProductDto>(),
+                    Products = new List<CartProductDto>(), // Fixed: Changed 'Product' to 'Products'
                     TotalPrice = new Money(0, "SEK"), // Default Money object
-                    TotalProduct = 0,
+                    TotalProducts = 0, // Fixed: Changed 'TotalProduct' to 'TotalProducts'
                     LastUpdated = DateTime.UtcNow
                 };
             }
@@ -39,9 +39,9 @@ namespace MerchStore.Application.ShoppingCart.Services
             {
                 CartId = cart.CartId,
                 TotalPrice = cart.CalculateTotal(),
-                TotalProduct = cart.Product?.Sum(i => i.Quantity) ?? 0,
+                TotalProducts = cart.Products?.Sum(i => i.Quantity) ?? 0, // Fixed: Changed 'Product' to 'Products'
                 LastUpdated = cart.LastUpdated,
-                Product = cart.Product?.Select(product => new CartProductDto
+                Products = cart.Products?.Select(product => new CartProductDto // Fixed: Changed 'Product' to 'Products'
                 {
                     ProductId = product.ProductId,
                     ProductName = product.ProductName,
@@ -72,7 +72,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             return new CartSummaryDto
             {
                 CartId = cart.CartId,
-                ProductCount = cart.Product?.Sum(i => i.Quantity) ?? 0,
+                ProductCount = cart.Products?.Sum(i => i.Quantity) ?? 0,
                 TotalPrice = cart.CalculateTotal() // Assuming CalculateTotal() now returns Money
             };
         }

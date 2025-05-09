@@ -32,8 +32,8 @@ namespace MerchStore.Application.ShoppingCart.Queries
             return new CartSummaryDto
             {
                 CartId = cart.Id,
-                ProductCount = cart.Product.Count,
-                TotalPrice = new Money(cart.Product.Sum(product => (product.UnitPrice?.Amount ?? 0) * product.Quantity), "SEK")
+                ProductCount = cart.Products.Count,
+                TotalPrice = new Money(cart.Products.Sum(product => (product.UnitPrice?.Amount ?? 0) * product.Quantity), "SEK")
             };
         }
     }

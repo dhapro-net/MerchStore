@@ -14,7 +14,7 @@
                     <h5>Shopping Cart</h5>
                 </div>
                 <div class="card-body">
-                    @if (Model?.Items != null && Model.Items.Any())
+                    @if (Model?.Products != null && Model.Products.Any())
                     {
                         <table class="table">
                             <thead>
@@ -27,7 +27,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var product in Model.Items)
+                                @foreach (var product in Model.Products)
 {
     <tr>
         <td>

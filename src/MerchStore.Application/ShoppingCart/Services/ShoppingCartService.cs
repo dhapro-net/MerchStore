@@ -57,7 +57,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             return new CartDto
             {
                 CartId = cart.CartId,
-                Product = cart.Product.Select(i => new CartProductDto
+                Products = cart.Products.Select(i => new CartProductDto
                 {
                     ProductId = i.ProductId,
                     ProductName = i.ProductName,
