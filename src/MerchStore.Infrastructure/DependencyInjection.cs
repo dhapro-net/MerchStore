@@ -54,8 +54,9 @@ public static class DependencyInjection
         // Register HttpContextAccessor for cookie access
         services.AddHttpContextAccessor();
 
-        // Register cookie-based shopping cart repository
-        services.AddScoped<IShoppingCartRepository, CookieShoppingCartRepository>();
+        // Register cookie-based shopping cart repositories
+        services.AddScoped<IShoppingCartQueryRepository, CookieShoppingCartRepository>();
+        services.AddScoped<IShoppingCartCommandRepository, CookieShoppingCartRepository>();
 
         services.AddScoped<IShoppingCartService, ShoppingCartService>();
         // Register Unit of Work
