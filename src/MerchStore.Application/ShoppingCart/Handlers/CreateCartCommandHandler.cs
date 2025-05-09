@@ -8,18 +8,20 @@ using Microsoft.Extensions.Logging;
 public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, CartDto>
 {
     private readonly ILogger<CreateCartCommandHandler> _logger;
+    private readonly ILogger<Cart> _cartLogger;
 
-    public CreateCartCommandHandler(ILogger<CreateCartCommandHandler> logger)
+    public CreateCartCommandHandler(ILogger<CreateCartCommandHandler> logger, ILogger<Cart> cartLogger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _cartLogger = cartLogger ?? throw new ArgumentNullException(nameof(cartLogger));
     }
 
     public async Task<CartDto> Handle(CreateCartCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Creating a new cart with ID: {CartId}.", request.CartId);
 
-        // Create the cart
-        var cart = Cart.Create(request.CartId, _logger as ILogger<Cart>);
+        // Create the cart with the correct logger
+        var cart = Cart.Create(request.CartId, _cartLogger);
 
         // Map to CartDto
         return new CartDto

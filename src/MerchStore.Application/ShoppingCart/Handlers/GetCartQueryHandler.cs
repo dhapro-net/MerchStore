@@ -20,26 +20,29 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
     }
 
     public async Task<CartDto> Handle(GetCartQuery request, CancellationToken cancellationToken)
-    {
-        var cart = await _repository.GetCartByIdAsync(request.CartId, cancellationToken);
-        if (cart == null)
-        {
-            return null; // Or handle the null case appropriately
-        }
+{
+    // Retrieve the cart from the repository
+    var cart = await _repository.GetCartByIdAsync(request.CartId, cancellationToken);
 
-        // Map Cart to CartDto
-        return new CartDto
-        {
-            CartId = cart.CartId,
-            Products = cart.Products.Select(p => new CartProductDto
-            {
-                ProductId = p.ProductId,
-                ProductName = p.ProductName,
-                UnitPrice = p.UnitPrice,
-                Quantity = p.Quantity
-            }).ToList(),
-            TotalPrice = new Money(cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK"),
-            LastUpdated = cart.LastUpdated
-        };
+    // Return null if the cart does not exist or has an invalid ID
+    if (cart == null || cart.CartId == Guid.Empty)
+    {
+        return null;
     }
+
+    // Map Cart to CartDto
+    return new CartDto
+    {
+        CartId = cart.CartId,
+        Products = cart.Products.Select(p => new CartProductDto
+        {
+            ProductId = p.ProductId,
+            ProductName = p.ProductName,
+            UnitPrice = p.UnitPrice,
+            Quantity = p.Quantity
+        }).ToList(),
+        TotalPrice = new Money(cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK"),
+        LastUpdated = cart.LastUpdated
+    };
+}
 }

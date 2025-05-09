@@ -15,6 +15,7 @@ public class OrderProduct
     public Guid OrderId { get; private set; }
     public Order Order { get; private set; }
 
+    private OrderProduct() { } //For EF Core 
     public OrderProduct(Guid id, Guid productId, string productName, Money unitPrice, int quantity, Guid orderId)
     {
         Id = id;

@@ -63,4 +63,11 @@ public static class DependencyInjection
 
         return services;
     }
+        public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
+
+        await seeder.SeedAsync();
+    }
 }

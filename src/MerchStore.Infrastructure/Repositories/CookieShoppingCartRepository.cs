@@ -1,10 +1,8 @@
-using System;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ShoppingCart.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace MerchStore.Infrastructure.Repositories
 {
@@ -35,29 +33,36 @@ namespace MerchStore.Infrastructure.Repositories
             };
         }
 
-        public async Task<Cart> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Cart?> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (_httpContextAccessor.HttpContext == null)
-            {
-                _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
-                return null;
-            }
-
-            var cookieKey = GetCookieKeyForCart(id);
-            _logger.LogInformation($"Generated cookie key: {cookieKey}");
-
-            var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
-
-            if (string.IsNullOrEmpty(cookieValue))
-            {
-                _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
-                return null;
-            }
-
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Check for Guid.Empty
+                if (id == Guid.Empty)
+                {
+                    _logger.LogWarning("Attempted to retrieve a cart with Guid.Empty. Returning null.");
+                    return null;
+                }
+
+                if (_httpContextAccessor.HttpContext == null)
+                {
+                    _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
+                    return null;
+                }
+
+                var cookieKey = GetCookieKeyForCart(id);
+                _logger.LogInformation($"Generated cookie key: {cookieKey}");
+
+                var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
+
+                if (string.IsNullOrEmpty(cookieValue))
+                {
+                    _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
+                    return null;
+                }
+
                 var cart = JsonSerializer.Deserialize<Cart>(cookieValue, _jsonSerializerOptions);
                 if (cart == null)
                 {
@@ -67,6 +72,11 @@ namespace MerchStore.Infrastructure.Repositories
 
                 _logger.LogInformation($"Successfully retrieved cart with ID {id}.");
                 return cart;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Operation was canceled while retrieving cart with ID {CartId}.", id);
+                return null;
             }
             catch (Exception ex)
             {

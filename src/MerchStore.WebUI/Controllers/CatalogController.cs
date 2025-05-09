@@ -3,24 +3,34 @@ using MediatR;
 using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
 using MerchStore.Application.ShoppingCart.Commands;
-using Microsoft.AspNetCore.Authorization;
 using MerchStore.Application.ShoppingCart.Interfaces;
-using MerchStore.WebUI.Helpers;
-
 namespace MerchStore.WebUI.Controllers;
 
+/// <summary>
+/// Controller for managing the product catalog and shopping cart operations.
+/// </summary>
 public class CatalogController : Controller
 {
     private readonly IMediator _mediator;
-private readonly IShoppingCartService _shoppingCartService;
+    private readonly ILogger<CatalogController> _logger;
+    private readonly IShoppingCartQueryService _shoppingCartQueryService; // Add this field
 
-    public CatalogController(IMediator mediator, IShoppingCartService shoppingCartService)
-{
-    _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
-}
+    /// <summary>
+    /// Constructor for CatalogController.
+    /// </summary>
+    /// <param name="mediator">Mediator for sending queries and commands.</param>
+    /// <param name="logger">Logger for structured logging.</param>
+    /// <param name="shoppingCartQueryService">Service for shopping cart queries.</param>
+    public CatalogController(IMediator mediator, ILogger<CatalogController> logger, IShoppingCartQueryService shoppingCartQueryService)
+    {
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _shoppingCartQueryService = shoppingCartQueryService ?? throw new ArgumentNullException(nameof(shoppingCartQueryService)); // Inject the service
+    }
 
-    // GET: Catalog
+    /// <summary>
+    /// Displays the product catalog.
+    /// </summary>
     public async Task<IActionResult> Index()
     {
         try
@@ -53,7 +63,7 @@ private readonly IShoppingCartService _shoppingCartService;
         catch (Exception ex)
         {
             // Log the exception
-            Console.WriteLine($"Error in ProductCatalog: {ex.Message}");
+            _logger.LogError(ex, "Error occurred while loading the product catalog.");
 
             // Show an error message to the user
             ViewBag.ErrorMessage = "An error occurred while loading products. Please try again later.";
@@ -61,7 +71,10 @@ private readonly IShoppingCartService _shoppingCartService;
         }
     }
 
-    // GET: Store/Details/5
+    /// <summary>
+    /// Displays the details of a specific product.
+    /// </summary>
+    /// <param name="id">The ID of the product.</param>
     public async Task<IActionResult> Details(Guid id)
     {
         try
@@ -86,59 +99,64 @@ private readonly IShoppingCartService _shoppingCartService;
         catch (Exception ex)
         {
             // Log the exception
-            Console.WriteLine($"Error in ProductDetails: {ex.Message}");
+            _logger.LogError(ex, "Error occurred while loading product details for ProductId: {ProductId}", id);
 
             // Show an error message to the user
             ViewBag.ErrorMessage = "An error occurred while loading the product. Please try again later.";
             return View("Error");
         }
     }
+
+    /// <summary>
+    /// Adds a product to the shopping cart.
+    /// </summary>
+    /// <param name="productId">The ID of the product to add.</param>
     [HttpPost]
-    [HttpPost]
-public async Task<IActionResult> AddProductToCart(Guid productId)
-{
-    try
+    public async Task<IActionResult> AddProductToCart(Guid productId)
     {
         if (productId == Guid.Empty)
         {
-            Console.WriteLine("Invalid ProductId received.");
+            _logger.LogWarning("Invalid ProductId received.");
             TempData["ErrorMessage"] = "Invalid product ID.";
             return RedirectToAction("Index");
         }
 
-        // Get or create the cart
-        var cartId = GetOrCreateCartId();
-        var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, HttpContext.RequestAborted);
-
-        // Add the product to the cart
-        var success = await _shoppingCartService.AddProductToCartAsync(cart.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
-
-        if (!success)
+        try
         {
-            Console.WriteLine("Error adding product to cart.");
-            TempData["ErrorMessage"] = "Failed to add product to cart.";
+            // Retrieve the product details to validate stock
+            var product = await _mediator.Send(new GetProductByIdQuery(productId));
+            if (product == null || product.StockQuantity <= 0)
+            {
+                _logger.LogWarning("Product {ProductId} is out of stock or does not exist.", productId);
+                TempData["ErrorMessage"] = "Product is out of stock or does not exist.";
+                return RedirectToAction("Index");
+            }
+
+            // Retrieve or create the shopping cart using cookies
+            var cartDto = await _shoppingCartQueryService.GetOrCreateCartAsync(Guid.Empty, HttpContext.RequestAborted);
+
+            // Add the product to the cart
+            var command = new AddProductToCartCommand(cartDto.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Failed to add product {ProductId} to cart {CartId}.", productId, cartDto.CartId);
+                TempData["ErrorMessage"] = "Failed to add product to cart.";
+                return RedirectToAction("Index");
+            }
+
+            _logger.LogInformation("Product {ProductId} added to cart {CartId} successfully.", productId, cartDto.CartId);
+            TempData["SuccessMessage"] = "Product added to cart successfully!";
             return RedirectToAction("Index");
         }
-
-        Console.WriteLine("Product added to cart successfully!");
-        TempData["SuccessMessage"] = "Product added to cart successfully!";
-        return RedirectToAction("Index");
-    }
-    catch (Exception ex)
-    {
-        // Log the exception
-        Console.WriteLine($"Unexpected error in AddProductToCart: {ex.Message}");
-        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-
-        // Show a generic error message to the user
-        TempData["ErrorMessage"] = "An unexpected error occurred while adding the product to the cart. Please try again later.";
-        return RedirectToAction("Index");
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while adding product {ProductId} to cart.", productId);
+            TempData["ErrorMessage"] = "An unexpected error occurred while adding the product to the cart. Please try again later.";
+            return RedirectToAction("Index");
+        }
     }
 }
 
-private Guid GetOrCreateCartId()
-{
-    return CartHelper.GetOrCreateCartId(HttpContext);
-}
 
-}

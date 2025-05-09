@@ -38,22 +38,36 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     /// <param name="cartId">The ID of the shopping cart.</param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>The shopping cart as a <see cref="CartDto"/>.</returns>
-    public async Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken)
+ public async Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken)
+{
+    _logger.LogInformation("Retrieving cart with ID: {CartId}.", cartId);
+
+    // Check if the cartId is Guid.Empty
+    if (cartId == Guid.Empty)
     {
-        _logger.LogInformation("Retrieving cart with ID: {CartId}.", cartId);
-
-        // Query: Retrieve the cart using GetCartQuery
-        var cart = await _mediator.Send(new GetCartQuery(cartId), cancellationToken);
-        if (cart == null)
-        {
-            _logger.LogWarning("Cart with ID {CartId} not found. Creating a new cart.", cartId);
-
-            // Command: Create a new cart using Mediatr
-            cart = await _mediator.Send(new CreateCartCommand(cartId), cancellationToken);
-        }
-
-        return cart;
+        _logger.LogWarning("Cart ID is Guid.Empty. Creating a new cart.");
+        return await CreateNewCartAsync(cancellationToken);
     }
+
+    // Query: Retrieve the cart using GetCartQuery
+    var cart = await _mediator.Send(new GetCartQuery(cartId), cancellationToken);
+    if (cart == null || cart.CartId == Guid.Empty)
+    {
+        _logger.LogWarning("Cart with ID {CartId} not found or invalid. Creating a new cart.", cartId);
+        return await CreateNewCartAsync(cancellationToken);
+    }
+
+    return cart;
+}
+
+private async Task<CartDto> CreateNewCartAsync(CancellationToken cancellationToken)
+{
+    var newCartId = Guid.NewGuid();
+    _logger.LogInformation("Creating a new cart with ID: {CartId}.", newCartId);
+
+    // Command: Create a new cart using Mediatr
+    return await _mediator.Send(new CreateCartCommand(newCartId), cancellationToken);
+}
 
 
 

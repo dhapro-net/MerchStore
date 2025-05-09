@@ -35,7 +35,7 @@
                                 aria-label="@(product.InStock ? "View details for " + product.Name : "Out of stock")">
                                 View Details
                             </a>
-                            <form asp-action="AddProductToCart" method="post" class="d-inline">
+                            <form asp-action="AddProductToCart" method="post" id="add-to-cart-form-@product.Id" class="d-inline">
     <input type="hidden" name="productId" value="@product.Id" />
     <button type="submit"
         class="btn btn-outline-success btn-sm @(product.InStock ? "" : "disabled")"
