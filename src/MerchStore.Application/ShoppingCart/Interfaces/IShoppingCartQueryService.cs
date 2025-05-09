@@ -1,11 +1,10 @@
-using MerchStore.Application.ShoppingCart.Dtos;
 using MerchStore.Application.ShoppingCart.DTOs;
 
 namespace MerchStore.Application.Services.Interfaces
 {
     public interface IShoppingCartQueryService
     {
-        Task<CartDto> GetCartAsync(Guid cartId);
-        Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId);
+        Task<CartDto> GetCartAsync(Guid cartId, CancellationToken cancellationToken);
+        Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId, CancellationToken cancellationToken);
     }
 }

@@ -1,9 +1,9 @@
 using MediatR;
 using MerchStore.Application.Common;
 using MerchStore.Application.ShoppingCart.Commands;
-using MerchStore.Service.ShoppingCart;
+using MerchStore.Application.ShoppingCart.Interfaces;
 
-namespace MerchStore.Application.ShoppingCart.Handlers
+namespace MerchStore.Application.ShoppingCart.Commands
 {
     public class AddItemToCartCommandHandler : IRequestHandler<AddItemToCartCommand, Result<bool>>
     {
@@ -28,7 +28,8 @@ namespace MerchStore.Application.ShoppingCart.Handlers
             var success = await _cartService.AddItemToCartAsync(
                 request.CartId,
                 request.ProductId,
-                request.Quantity);
+                request.Quantity,
+                cancellationToken);
                 
             if (!success)
                 return Result.Failure<bool>("Failed to add item to cart. The product may not exist or is unavailable.");

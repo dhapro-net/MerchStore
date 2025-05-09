@@ -1,17 +1,15 @@
-using System;
 using MediatR;
 using MerchStore.Application.ShoppingCart.DTOs;
 
 namespace MerchStore.Application.ShoppingCart.Queries
 {
-    public class GetCartQuery : IRequest<CartDto>
+    public class GetCartSummaryQuery : IRequest<CartSummaryDto>
     {
         public Guid CartId { get; set; }
-        public GetCartQuery(Guid cartId)
-        {
-            CartId = cartId;
-        }
+            public GetCartSummaryQuery(Guid cartId)
+    {
+        CartId = cartId;
     }
-
-
+    }
+    
 }

@@ -1,14 +1,18 @@
 using MerchStore.Domain.ShoppingCart;
+using MerchStore.Application.ShoppingCart.DTOs;
+using MerchStore.Domain.ValueObjects;
 
-namespace MerchStore.Service.ShoppingCart
+namespace MerchStore.Application.ShoppingCart.Interfaces
 {
     public interface IShoppingCartService
     {
-        Task<Cart> GetCartAsync(Guid cartId);
-        Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity);
+        Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken); 
+
+        Task<bool> AddItemToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken);
         Task<bool> RemoveItemFromCartAsync(Guid cartId, string productId);
         Task<bool> UpdateItemQuantityAsync(Guid cartId, string productId, int quantity);
         Task<bool> ClearCartAsync(Guid cartId);
-        Task<decimal> CalculateCartTotalAsync(Guid cartId);
+        Task<Money> CalculateCartTotalAsync(Guid cartId);
+
     }
 }

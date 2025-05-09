@@ -1,67 +1,79 @@
 using MerchStore.Application.Services.Interfaces;
-using MerchStore.Application.ShoppingCart.Dtos;
 using MerchStore.Application.ShoppingCart.DTOs;
-using MerchStore.Service.ShoppingCart;
-
-
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Application.ShoppingCart.Services
 {
     public class ShoppingCartQueryService : IShoppingCartQueryService
     {
-        
         private readonly IShoppingCartService _shoppingCartService;
-        
-        public ShoppingCartQueryService(IShoppingCartService shoppingCartService)
+        private readonly ILogger<ShoppingCartQueryService> _logger;
+
+        public ShoppingCartQueryService(IShoppingCartService shoppingCartService, ILogger<ShoppingCartQueryService> logger)
         {
             _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
-        public async Task<CartDto> GetCartAsync(Guid cartId)
+
+        public async Task<CartDto> GetCartAsync(Guid cartId, CancellationToken cancellationToken)
         {
-            
-            var cart = await _shoppingCartService.GetCartAsync(cartId);
+            _logger.LogInformation($"Fetching cart with ID: {cartId}");
+
+            var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, cancellationToken);
             if (cart == null)
             {
-                return new CartDto { Id = cartId };
+                _logger.LogWarning($"Cart with ID {cartId} not found.");
+                return new CartDto
+                {
+                    CartId = cartId,
+                    Items = new List<CartItemDto>(),
+                    TotalPrice = new Money(0, "SEK"), // Default Money object
+                    TotalItems = 0,
+                    LastUpdated = DateTime.UtcNow
+                };
             }
-            
+
             var cartDto = new CartDto
             {
-                Id = cart.CartId,
+                CartId = cart.CartId,
                 TotalPrice = cart.CalculateTotal(),
-                TotalItems = cart.Items.Sum(i => i.Quantity),
-                LastUpdated = cart.LastUpdated
-            };
-            
-            foreach (var item in cart.Items)
-            {
-                cartDto.Items.Add(new CartItemDto
+                TotalItems = cart.Items?.Sum(i => i.Quantity) ?? 0,
+                LastUpdated = cart.LastUpdated,
+                Items = cart.Items?.Select(item => new CartItemDto
                 {
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice.Amount,
+                    UnitPrice = item.UnitPrice,
                     Quantity = item.Quantity,
-                    TotalPrice = item.Quantity * item.UnitPrice.Amount
-                });
-            }
-            
+                }).ToList() ?? new List<CartItemDto>()
+            };
+
             return cartDto;
         }
-        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId)
+
+        public async Task<CartSummaryDto> GetCartSummaryAsync(Guid cartId, CancellationToken cancellationToken)
         {
-            
-            var cart = await _shoppingCartService.GetCartAsync(cartId);
+            _logger.LogInformation($"Fetching cart summary with ID: {cartId}");
+
+            var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, cancellationToken);
             if (cart == null)
             {
-                return new CartSummaryDto { CartId = cartId };
+                _logger.LogWarning($"Cart summary with ID {cartId} not found.");
+                return new CartSummaryDto
+                {
+                    CartId = cartId,
+                    ItemsCount = 0,
+                    TotalPrice = new Money(0, "USD") // Default Money object
+                };
             }
-            
+
             return new CartSummaryDto
             {
                 CartId = cart.CartId,
-                ItemsCount = cart.Items.Sum(i => i.Quantity),
-                TotalPrice = cart.CalculateTotal()
+                ItemsCount = cart.Items?.Sum(i => i.Quantity) ?? 0,
+                TotalPrice = cart.CalculateTotal() // Assuming CalculateTotal() now returns Money
             };
         }
     }

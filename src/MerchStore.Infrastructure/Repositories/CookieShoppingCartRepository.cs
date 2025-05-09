@@ -4,89 +4,113 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ShoppingCart.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Infrastructure.Repositories
 {
     public class CookieShoppingCartRepository : IShoppingCartRepository
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private const string CartCookiePrefix = "MerchStore_Cart_";
+        private const string CartCookiePrefix = "ShoppingCartId";
         private readonly CookieOptions _cookieOptions;
-        
-        public CookieShoppingCartRepository(IHttpContextAccessor httpContextAccessor)
+        private readonly ILogger<CookieShoppingCartRepository> _logger;
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = false
+        };
+
+        public CookieShoppingCartRepository(IHttpContextAccessor httpContextAccessor, ILogger<CookieShoppingCartRepository> logger)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
             _cookieOptions = new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
+                HttpOnly = false,
+                Secure = false,
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddDays(30),
                 IsEssential = true // For GDPR compliance
             };
         }
-        
-        public Task<Cart> GetByIdAsync(Guid id)
+
+        public async Task<Cart> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
+                return null;
+            }
+
             var cookieKey = GetCookieKeyForCart(id);
-            var cookieValue = _httpContextAccessor.HttpContext?.Request.Cookies[cookieKey];
-            
+            _logger.LogInformation($"Generated cookie key: {cookieKey}");
+
+            var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
+
             if (string.IsNullOrEmpty(cookieValue))
-                return Task.FromResult<Cart>(null);
-                
+            {
+                _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
+                return null;
+            }
+
             try
             {
-                var options = new JsonSerializerOptions 
-                { 
-                    PropertyNameCaseInsensitive = true 
-                };
-                
-                var cart = JsonSerializer.Deserialize<Cart>(cookieValue, options);
-                return Task.FromResult(cart);
+                var cart = JsonSerializer.Deserialize<Cart>(cookieValue, _jsonSerializerOptions);
+                if (cart == null)
+                {
+                    _logger.LogWarning($"Deserialized cart is null for cookie key '{cookieKey}'.");
+                    return null;
+                }
+
+                _logger.LogInformation($"Successfully retrieved cart with ID {id}.");
+                return cart;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Task.FromResult<Cart>(null);
+                _logger.LogError($"Error deserializing cart with ID {id}: {ex.Message}");
+                return null;
             }
         }
-        
+
         public Task AddAsync(Cart cart)
         {
-            if (cart == null) 
+            if (cart == null)
                 throw new ArgumentNullException(nameof(cart));
-                
+
             var cookieKey = GetCookieKeyForCart(cart.CartId);
             var options = new JsonSerializerOptions { WriteIndented = false };
             var serializedCart = JsonSerializer.Serialize(cart, options);
-            
+
             _httpContextAccessor.HttpContext?.Response.Cookies.Append(
                 cookieKey,
                 serializedCart,
                 _cookieOptions);
-                
+
             return Task.CompletedTask;
         }
-        
+
         public Task UpdateAsync(Cart cart)
         {
             return AddAsync(cart); // Same implementation for cookies
         }
-        
+
         public Task DeleteAsync(Guid id)
         {
             var cookieKey = GetCookieKeyForCart(id);
             _httpContextAccessor.HttpContext?.Response.Cookies.Delete(cookieKey);
             return Task.CompletedTask;
         }
-        
+
         public Task<bool> ExistsAsync(Guid id)
         {
             var cookieKey = GetCookieKeyForCart(id);
             var exists = _httpContextAccessor.HttpContext?.Request.Cookies.ContainsKey(cookieKey) ?? false;
             return Task.FromResult(exists);
         }
-        
+
         private string GetCookieKeyForCart(Guid id) => $"{CartCookiePrefix}{id}";
     }
 }

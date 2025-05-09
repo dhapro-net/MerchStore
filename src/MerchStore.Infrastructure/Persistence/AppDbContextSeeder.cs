@@ -60,36 +60,78 @@ public class AppDbContextSeeder
             var products = new List<Product>
             {
                 new Product(
-                    "Conference T-Shirt",
-                    "A comfortable cotton t-shirt with the conference logo.",
-                    // new Uri("https://example.com/images/tshirt.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
-                    Money.FromSEK(249.99m),
-                    50),
-
+                    name: "T-Shirt",
+                    description: "A comfortable cotton t-shirt",
+                    category: "Clothing",
+                    imageUrl: "https://placehold.co/100x400.jpg",
+                    price: new Money(19.99m, "SEK"),
+                    stockQuantity: 100 // Provide stockQuantity here
+                ),
                 new Product(
-                    "Developer Mug",
-                    "A ceramic mug with a funny programming joke.",
-                    // new Uri("https://example.com/images/mug.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/mug.png"),
-                    Money.FromSEK(149.50m),
-                    100),
-
+                    name: "Mug",
+                    description: "A ceramic mug for your coffee",
+                    category: "Accessories",
+                    imageUrl: "https://placehold.co/400x900.jpg",
+                    price: new Money(9.99m, "SEK"),
+                    stockQuantity: 50 // Provide stockQuantity here
+                ),
                 new Product(
-                    "Laptop Sticker Pack",
-                    "A set of 5 programming language stickers for your laptop.",
-                    // new Uri("https://example.com/images/stickers.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/stickers.png"),
-                    Money.FromSEK(79.99m),
-                    200),
-
+                    name: "Notebook",
+                    description: "A stylish notebook for your notes",
+                    category: "Stationery",
+                    imageUrl: "https://placehold.co/200x400.jpg",
+                    price: new Money(14.99m, "SEK"),
+                    stockQuantity: 75 // Provide stockQuantity here
+                ),
                 new Product(
-                    "Branded Hoodie",
-                    "A warm hoodie with the company logo, perfect for cold offices.",
-                    // new Uri("https://example.com/images/hoodie.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/hoodie.png"),
-                    Money.FromSEK(499.99m),
-                    25)
+                    name: "Backpack",
+                    description: "A durable backpack for everyday use",
+                    category: "Bags",
+                    imageUrl: "https://placehold.co/400x600.jpg",
+                    price: new Money(49.99m, "SEK"),
+                    stockQuantity: 30 // Provide stockQuantity here
+                ),
+                new Product
+                (
+    name: "Hoodie",
+    description: "A warm and cozy hoodie for chilly days",
+    category: "Clothing",
+    imageUrl: "https://placehold.co/432x400.jpg",
+    price: new Money(29.99m, "SEK"),
+    stockQuantity: 60
+),
+new Product(
+    name: "Water Bottle",
+    description: "A reusable stainless steel water bottle",
+    category: "Accessories",
+    imageUrl: "https://placehold.co/432x411.jpg",
+    price: new Money(12.99m, "SEK"),
+    stockQuantity: 120
+),
+new Product(
+    name: "Desk Lamp",
+    description: "An adjustable LED desk lamp with multiple brightness levels",
+    category: "Electronics",
+    imageUrl: "https://placehold.co/25x200.jpg",
+    price: new Money(39.99m, "SEK"),
+    stockQuantity: 40
+),
+new Product(
+    name: "Gaming Mouse",
+    description: "A high-precision gaming mouse with customizable buttons",
+    category: "Electronics",
+    imageUrl: "https://placehold.co/2000x400.jpg",
+    price: new Money(24.99m, "SEK"),
+    stockQuantity: 80
+),
+new Product(
+    name: "Yoga Mat",
+    description: "A non-slip yoga mat for your fitness routine",
+    category: "Fitness",
+    imageUrl: "https://placehold.co/400x400.jpg",
+    price: new Money(19.99m, "SEK"),
+    stockQuantity: 100
+)
             };
 
             await _context.Products.AddRangeAsync(products);
@@ -103,5 +145,5 @@ public class AppDbContextSeeder
         }
     }
 
-    
+
 }
