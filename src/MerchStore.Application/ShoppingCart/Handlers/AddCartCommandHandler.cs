@@ -16,9 +16,12 @@ public class AddCartCommandHandler : IRequestHandler<AddCartCommand>
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
     }
 
-    public async Task<Unit> Handle(AddCartCommand request, CancellationToken cancellationToken)
+   public async Task<Unit> Handle(AddCartCommand request, CancellationToken cancellationToken)
     {
-        await _repository.AddAsync(request.Cart, request.CancellationToken);
+        if (request.Cart == null)
+            throw new ArgumentNullException(nameof(request.Cart));
+
+        await _repository.AddAsync(request.Cart, cancellationToken); 
         return Unit.Value;
     }
 }

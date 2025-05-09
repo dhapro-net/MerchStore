@@ -1,6 +1,7 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Domain.ShoppingCart;
 using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Application.ShoppingCart.Services;
@@ -23,6 +24,17 @@ public class ShoppingCartCommandService : IShoppingCartCommandService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
+    public async Task AddAsync(Cart cart, CancellationToken cancellationToken)
+{
+    if (cart == null)
+        throw new ArgumentNullException(nameof(cart));
+
+    _logger.LogInformation("Adding a new cart with ID: {CartId}.", cart.CartId);
+
+    await _mediator.Send(new AddCartCommand(cart, cancellationToken));
+
+    _logger.LogInformation("Successfully added a new cart with ID: {CartId}.", cart.CartId);
+}
 
     /// <summary>
     /// Adds a product to the shopping cart.

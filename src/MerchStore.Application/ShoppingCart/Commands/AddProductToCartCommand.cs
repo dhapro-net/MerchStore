@@ -31,10 +31,11 @@ public class AddProductToCartCommand : IRequest<Result<bool>>
     /// <param name="quantity">The quantity of the product to add.</param>
     public CancellationToken CancellationToken { get; }
 
-    public AddProductToCartCommand(Guid cartId, string productId, int quantity)
+    public AddProductToCartCommand(Guid cartId, string productId, int quantity, CancellationToken cancellationToken)
     {
         CartId = cartId;
         ProductId = productId;
         Quantity = quantity;
+        CancellationToken = cancellationToken;
     }
 }

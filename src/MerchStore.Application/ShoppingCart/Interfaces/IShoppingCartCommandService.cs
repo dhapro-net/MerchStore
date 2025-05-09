@@ -23,7 +23,7 @@ public interface IShoppingCartCommandService
     /// <param name="cartId">The unique identifier of the shopping cart.</param>
     /// <param name="productId">The unique identifier of the product to remove.</param>
     /// <returns><c>true</c> if the product was removed successfully; otherwise, <c>false</c>.</returns>
-    Task<bool> RemoveProductFromCartAsync(Guid cartId, string productId);
+    Task<bool> RemoveProductFromCartAsync(Guid cartId, string productId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates the quantity of a product in the shopping cart.

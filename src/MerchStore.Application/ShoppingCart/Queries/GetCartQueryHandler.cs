@@ -53,16 +53,15 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
         _logger.LogInformation($"Successfully retrieved cart with ID {request.CartId}");
         return new CartDto
         {
-            CartId = cart.Id,
-            Products = cart.Products.Select(product => new CartProductDto
+            CartId = cart.CartId,
+            Products = cart.Products.Select(p => new CartProductDto
             {
-                ProductId = product.ProductId,
-                ProductName = product.ProductName,
-                UnitPrice = product.UnitPrice,
-                Quantity = product.Quantity
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                UnitPrice = p.UnitPrice,
+                Quantity = p.Quantity
             }).ToList(),
-            TotalPrice = cart.CalculateTotal(),
-            TotalProducts = cart.Products.Sum(i => i.Quantity),
+            TotalPrice = new Money(cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK"),
             LastUpdated = cart.LastUpdated
         };
     }

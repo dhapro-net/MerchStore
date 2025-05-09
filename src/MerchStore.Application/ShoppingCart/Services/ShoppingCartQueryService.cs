@@ -40,30 +40,33 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     /// <returns>The shopping cart as a <see cref="CartDto"/>.</returns>
     public async Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Retrieving or creating cart with ID: {CartId}.", cartId);
+        _logger.LogInformation("Retrieving cart with ID: {CartId}.", cartId);
 
-        // Attempt to retrieve the cart using Mediatr
+        // Query: Retrieve the cart using GetCartQuery
         var cart = await _mediator.Send(new GetCartQuery(cartId), cancellationToken);
         if (cart == null)
         {
             _logger.LogWarning("Cart with ID {CartId} not found. Creating a new cart.", cartId);
 
-            // Create a new cart
-            cart = Cart.Create(cartId, _logger as ILogger<Cart>);
-
-            // Add the new cart using Mediatr
-            await _mediator.Send(new AddCartCommand(cart, cancellationToken));
+            // Command: Create a new cart using Mediatr
+            cart = await _mediator.Send(new CreateCartCommand(cartId), cancellationToken);
         }
 
-        // Map the cart to a CartDto
-        return MapToCartDto(cart);
+        return cart;
     }
+
+
+
+
 
     /// <summary>
     /// Retrieves or creates a shopping cart.
     /// </summary>
     public async Task<CartDto> GetCartAsync(GetCartQuery query, CancellationToken cancellationToken)
     {
+        if (query == null)
+            throw new ArgumentNullException(nameof(query));
+
         _logger.LogInformation("Fetching cart with ID: {CartId}.", query.CartId);
 
         var cart = await _mediator.Send(query, cancellationToken);
@@ -73,53 +76,19 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
             return CreateEmptyCartDto(query.CartId);
         }
 
-        return MapToCartDto(cart);
+        return cart;
     }
 
     public async Task<Money> CalculateCartTotalAsync(Guid cartId)
     {
         _logger.LogInformation("Calculating total for cart with ID: {CartId}.", cartId);
 
-        // Retrieve the cart using Mediatr
-        var cart = await _mediator.Send(new GetCartQuery(cartId));
-        if (cart == null)
-        {
-            _logger.LogWarning("Cart with ID {CartId} not found. Returning default total.", cartId);
-            return new Money(0, "SEK");
-        }
-
-        // Map CartDto.Products to CartProduct domain model
-        var products = cart.Products.Select(dto => new CartProduct(
-            dto.ProductId,
-            dto.ProductName,
-            dto.UnitPrice,
-            dto.Quantity
-        )).ToList();
-
-        // Use CartCalculationService to calculate the total
-        return _cartCalculationService.CalculateTotal(products);
+        // Use Mediatr to send the CalculateCartTotalQuery
+        var total = await _mediator.Send(new CalculateCartTotalQuery(cartId));
+        return total;
     }
 
-    /// <summary>
-    /// Retrieves the shopping cart details.
-    /// </summary>
-    public async Task<CartDto> GetCartAsync(Guid cartId, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Fetching cart with ID: {CartId}.", cartId);
 
-        var cart = await _mediator.Send(new GetCartQuery(cartId), cancellationToken);
-        if (cart == null)
-        {
-            _logger.LogWarning("Cart with ID {CartId} not found.", cartId);
-            return CreateEmptyCartDto(cartId);
-        }
-
-        return MapToCartDto(cart);
-    }
-
-    /// <summary>
-    /// Retrieves a summary of the shopping cart.
-    /// </summary>
     /// <summary>
     /// Retrieves a summary of the shopping cart.
     /// </summary>
@@ -127,30 +96,8 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     {
         _logger.LogInformation("Fetching cart summary with ID: {CartId}.", query.CartId);
 
-        var cart = await _mediator.Send(query, cancellationToken);
-        if (cart == null)
-        {
-            _logger.LogWarning("Cart summary with ID {CartId} not found.", query.CartId);
-            return new CartSummaryDto
-            {
-                CartId = query.CartId,
-                ProductCount = 0,
-                TotalPrice = new Money(0, "SEK") // Default total price
-            };
-        }
-
-        // Use CalculateCartTotalAsync to calculate the total price
-        var totalPrice = await CalculateCartTotalAsync(cart.CartId);
-
-        // Use ProductCountAsync to get the total number of products
-        var productCount = await ProductCountAsync(cart.CartId, cancellationToken);
-
-        return new CartSummaryDto
-        {
-            CartId = cart.CartId,
-            ProductCount = productCount,
-            TotalPrice = totalPrice
-        };
+        // Use Mediatr to send the GetCartSummaryQuery
+        return await _mediator.Send(query, cancellationToken);
     }
 
     /// <summary>
@@ -199,46 +146,16 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
 
         _logger.LogInformation("Fetching product {ProductId} from cart with ID {CartId}.", productId, cartId);
 
-        var cart = await _mediator.Send(new GetCartQuery(cartId), cancellationToken);
-        var product = cart?.Products.FirstOrDefault(i => i.ProductId == productId);
-        if (product == null)
-        {
-            _logger.LogWarning("Product {ProductId} not found in cart with ID {CartId}.", productId, cartId);
-            return null;
-        }
-
-        return new CartProductDto
-        {
-            ProductId = product.ProductId,
-            ProductName = product.ProductName,
-            UnitPrice = product.UnitPrice,
-            Quantity = product.Quantity
-        };
+        // Use Mediatr to send the GetProductQuery
+        return await _mediator.Send(new GetProductQuery(cartId, productId), cancellationToken);
     }
 
-    /// <summary>
-    /// Maps a shopping cart to a CartDto.
-    /// </summary>
-    private CartDto MapToCartDto(Cart cart)
-    {
-        return new CartDto
-        {
-            CartId = cart.CartId,
-            TotalPrice = cart.CalculateTotal(),
-            TotalProducts = cart.Products.Sum(i => i.Quantity),
-            LastUpdated = cart.LastUpdated,
-            Products = cart.Products.Select(product => new CartProductDto
-            {
-                ProductId = product.ProductId,
-                ProductName = product.ProductName,
-                UnitPrice = product.UnitPrice,
-                Quantity = product.Quantity
-            }).ToList()
-        };
-    }
+ 
 
     /// <summary>
     /// Creates an empty CartDto.
+    /// 
+    ///Should be a mapper class I think.
     /// </summary>
     private CartDto CreateEmptyCartDto(Guid cartId)
     {

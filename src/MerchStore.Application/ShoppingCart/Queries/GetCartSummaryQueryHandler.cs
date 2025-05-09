@@ -1,42 +1,48 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.DTOs;
-using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Application.ShoppingCart.Queries;
+using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
-namespace MerchStore.Application.ShoppingCart.Queries;
+namespace MerchStore.Application.ShoppingCart.Handlers;
 
 /// <summary>
-/// Handles the query to retrieve the summary of a shopping cart.
+/// Handles the retrieval of a shopping cart summary.
 /// </summary>
 public class GetCartSummaryQueryHandler : IRequestHandler<GetCartSummaryQuery, CartSummaryDto>
 {
-    private readonly IShoppingCartQueryService _queryService;
+    private readonly IMediator _mediator;
     private readonly ILogger<GetCartSummaryQueryHandler> _logger;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GetCartSummaryQueryHandler"/> class.
-    /// </summary>
-    /// <param name="queryService">The shopping cart query service.</param>
-    /// <param name="logger">The logger for logging operations.</param>
-    public GetCartSummaryQueryHandler(IShoppingCartQueryService queryService, ILogger<GetCartSummaryQueryHandler> logger)
+    public GetCartSummaryQueryHandler(IMediator mediator, ILogger<GetCartSummaryQueryHandler> logger)
     {
-        _queryService = queryService ?? throw new ArgumentNullException(nameof(queryService));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    /// <summary>
-    /// Handles the query to retrieve the summary of a shopping cart.
-    /// </summary>
-    /// <param name="request">The query containing the cart ID.</param>
-    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>The shopping cart summary as a <see cref="CartSummaryDto"/>.</returns>
     public async Task<CartSummaryDto> Handle(GetCartSummaryQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"Retrieving summary for cart with ID: {request.CartId}");
+        _logger.LogInformation("Handling GetCartSummaryQuery for cart ID: {CartId}.", request.CartId);
 
-        var cartSummary = await _queryService.GetCartSummaryAsync(request.CartId, cancellationToken);
+        // Retrieve the cart using Mediatr
+        var cart = await _mediator.Send(new GetCartQuery(request.CartId), cancellationToken);
+        if (cart == null)
+        {
+            _logger.LogWarning("Cart with ID {CartId} not found. Returning default summary.", request.CartId);
+            return new CartSummaryDto
+            {
+                CartId = request.CartId,
+                ProductCount = 0,
+                TotalPrice = new Money(0, "SEK") // Default total price
+            };
+        }
 
-        _logger.LogInformation($"Successfully retrieved summary for cart with ID: {request.CartId}");
-        return cartSummary;
+        // Map the cart to a CartSummaryDto
+        return new CartSummaryDto
+        {
+            CartId = cart.CartId,
+            ProductCount = cart.Products.Sum(p => p.Quantity),
+            TotalPrice = new Money(cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK")
+        };
     }
 }

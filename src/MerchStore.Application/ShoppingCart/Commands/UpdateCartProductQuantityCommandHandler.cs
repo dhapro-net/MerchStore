@@ -10,7 +10,7 @@ namespace MerchStore.Application.ShoppingCart.Commands;
 /// </summary>
 public class UpdateCartProductQuantityCommandHandler : IRequestHandler<UpdateCartProductQuantityCommand, Result<bool>>
 {
-    private readonly IShoppingCartService _cartService;
+    private readonly IShoppingCartCommandService _cartService;
     private readonly ILogger<UpdateCartProductQuantityCommandHandler> _logger;
 
     /// <summary>
@@ -18,7 +18,7 @@ public class UpdateCartProductQuantityCommandHandler : IRequestHandler<UpdateCar
     /// </summary>
     /// <param name="cartService">The shopping cart service.</param>
     /// <param name="logger">The logger for logging operations.</param>
-    public UpdateCartProductQuantityCommandHandler(IShoppingCartService cartService, ILogger<UpdateCartProductQuantityCommandHandler> logger)
+    public UpdateCartProductQuantityCommandHandler(IShoppingCartCommandService cartService, ILogger<UpdateCartProductQuantityCommandHandler> logger)
     {
         _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

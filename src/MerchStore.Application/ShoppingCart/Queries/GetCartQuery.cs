@@ -1,12 +1,12 @@
 using MediatR;
-using MerchStore.Domain.ShoppingCart;
+using MerchStore.Application.ShoppingCart.DTOs;
 
 namespace MerchStore.Application.ShoppingCart.Queries;
 
 /// <summary>
 /// Query to retrieve a shopping cart.
 /// </summary>
-public class GetCartQuery : IRequest<Cart>
+public class GetCartQuery : IRequest<CartDto>
 {
     public Guid CartId { get; }
 
