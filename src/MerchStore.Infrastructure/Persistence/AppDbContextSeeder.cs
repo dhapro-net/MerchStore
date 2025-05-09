@@ -63,7 +63,7 @@ public class AppDbContextSeeder
                     "Canvas for decorating",
                     "A high-quality canvas for decorating your workspace.",
                     // new Uri("https://example.com/images/tshirt.jpg"),
-                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/canvas.png"),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/canvas01.png"),
                     Money.FromSEK(249.99m),
                     50),
 
