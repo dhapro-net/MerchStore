@@ -6,6 +6,7 @@ using MerchStore.WebUI.Models.ShoppingCart;
 using MerchStore.Application.ShoppingCart.DTOs;
 using MerchStore.Domain.ValueObjects;
 using MerchStore.WebUI.Models;
+using MerchStore.WebUI.Helpers;
 
 public class ShoppingCartController : Controller
 {
@@ -90,23 +91,7 @@ public class ShoppingCartController : Controller
     }
 
     private Guid GetOrCreateCartId()
-    {
-        var cartCookieKey = "ShoppingCartId";
-
-        if (Request.Cookies.TryGetValue(cartCookieKey, out var cartIdString) && Guid.TryParse(cartIdString, out var cartId))
-        {
-            return cartId;
-        }
-
-        cartId = Guid.NewGuid();
-        Response.Cookies.Append(cartCookieKey, cartId.ToString(), new CookieOptions
-        {
-            Expires = DateTime.UtcNow.AddDays(7),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict
-        });
-
-        return cartId;
-    }
+{
+    return CartHelper.GetOrCreateCartId(HttpContext);
+}
 }

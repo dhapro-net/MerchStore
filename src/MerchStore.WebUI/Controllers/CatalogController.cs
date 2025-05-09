@@ -4,17 +4,21 @@ using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
 using MerchStore.Application.ShoppingCart.Commands;
 using Microsoft.AspNetCore.Authorization;
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.WebUI.Helpers;
 
 namespace MerchStore.WebUI.Controllers;
 
 public class CatalogController : Controller
 {
     private readonly IMediator _mediator;
+private readonly IShoppingCartService _shoppingCartService;
 
-    public CatalogController(IMediator mediator)
-    {
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    }
+    public CatalogController(IMediator mediator, IShoppingCartService shoppingCartService)
+{
+    _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
+}
 
     // GET: Catalog
     public async Task<IActionResult> Index()
@@ -90,8 +94,9 @@ public class CatalogController : Controller
         }
     }
     [HttpPost]
-    public async Task<IActionResult> AddToCart(Guid productId)
-    {
+    [HttpPost]
+public async Task<IActionResult> AddToCart(Guid productId)
+{
     try
     {
         if (productId == Guid.Empty)
@@ -101,15 +106,17 @@ public class CatalogController : Controller
             return RedirectToAction("Index");
         }
 
+        // Get or create the cart
         var cartId = GetOrCreateCartId();
-        Console.WriteLine($"Using CartId: {cartId}");
+        var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, HttpContext.RequestAborted);
 
-        var result = await _mediator.Send(new AddItemToCartCommand(cartId, productId.ToString(), 1));
+        // Add the item to the cart
+        var success = await _shoppingCartService.AddItemToCartAsync(cart.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
 
-        if (!result.IsSuccess)
+        if (!success)
         {
-            Console.WriteLine($"Error adding item to cart: {result.Error}");
-            TempData["ErrorMessage"] = result.Error;
+            Console.WriteLine("Error adding item to cart.");
+            TempData["ErrorMessage"] = "Failed to add item to cart.";
             return RedirectToAction("Index");
         }
 
@@ -128,27 +135,10 @@ public class CatalogController : Controller
         return RedirectToAction("Index");
     }
 }
-    private Guid GetOrCreateCartId()
-    {
-        const string cartCookieKey = "ShoppingCartId";
 
-        if (Request.Cookies.TryGetValue(cartCookieKey, out var cartIdString) && Guid.TryParse(cartIdString, out var cartId))
-        {
-            Console.WriteLine($"Retrieved CartId from cookie: {cartId}");
-            return cartId;
-        }
-
-        cartId = Guid.NewGuid();
-        Console.WriteLine($"Generated new CartId: {cartId}");
-        Response.Cookies.Append(cartCookieKey, cartId.ToString(), new CookieOptions
-        {
-            Expires = DateTime.UtcNow.AddDays(7),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict
-        });
-
-        return cartId;
-    }
+private Guid GetOrCreateCartId()
+{
+    return CartHelper.GetOrCreateCartId(HttpContext);
+}
 
 }

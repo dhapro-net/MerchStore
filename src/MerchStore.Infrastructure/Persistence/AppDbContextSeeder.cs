@@ -63,7 +63,7 @@ public class AppDbContextSeeder
                     name: "T-Shirt",
                     description: "A comfortable cotton t-shirt",
                     category: "Clothing",
-                    imageUrl: "https://placehold.co/400x400.jpg",
+                    imageUrl: "https://placehold.co/100x400.jpg",
                     price: new Money(19.99m, "SEK"),
                     stockQuantity: 100 // Provide stockQuantity here
                 ),
@@ -71,7 +71,7 @@ public class AppDbContextSeeder
                     name: "Mug",
                     description: "A ceramic mug for your coffee",
                     category: "Accessories",
-                    imageUrl: "https://placehold.co/400x400.jpg",
+                    imageUrl: "https://placehold.co/400x900.jpg",
                     price: new Money(9.99m, "SEK"),
                     stockQuantity: 50 // Provide stockQuantity here
                 ),
@@ -79,7 +79,7 @@ public class AppDbContextSeeder
                     name: "Notebook",
                     description: "A stylish notebook for your notes",
                     category: "Stationery",
-                    imageUrl: "https://placehold.co/400x400.jpg",
+                    imageUrl: "https://placehold.co/200x400.jpg",
                     price: new Money(14.99m, "SEK"),
                     stockQuantity: 75 // Provide stockQuantity here
                 ),
@@ -87,7 +87,7 @@ public class AppDbContextSeeder
                     name: "Backpack",
                     description: "A durable backpack for everyday use",
                     category: "Bags",
-                    imageUrl: "https://placehold.co/400x400.jpg",
+                    imageUrl: "https://placehold.co/400x600.jpg",
                     price: new Money(49.99m, "SEK"),
                     stockQuantity: 30 // Provide stockQuantity here
                 ),
@@ -96,7 +96,7 @@ public class AppDbContextSeeder
     name: "Hoodie",
     description: "A warm and cozy hoodie for chilly days",
     category: "Clothing",
-    imageUrl: "https://placehold.co/400x400.jpg",
+    imageUrl: "https://placehold.co/432x400.jpg",
     price: new Money(29.99m, "SEK"),
     stockQuantity: 60
 ),
@@ -104,7 +104,7 @@ new Product(
     name: "Water Bottle",
     description: "A reusable stainless steel water bottle",
     category: "Accessories",
-    imageUrl: "https://placehold.co/400x400.jpg",
+    imageUrl: "https://placehold.co/432x411.jpg",
     price: new Money(12.99m, "SEK"),
     stockQuantity: 120
 ),
@@ -112,7 +112,7 @@ new Product(
     name: "Desk Lamp",
     description: "An adjustable LED desk lamp with multiple brightness levels",
     category: "Electronics",
-    imageUrl: "https://placehold.co/400x400.jpg",
+    imageUrl: "https://placehold.co/25x200.jpg",
     price: new Money(39.99m, "SEK"),
     stockQuantity: 40
 ),
@@ -120,7 +120,7 @@ new Product(
     name: "Gaming Mouse",
     description: "A high-precision gaming mouse with customizable buttons",
     category: "Electronics",
-    imageUrl: "https://placehold.co/400x400.jpg",
+    imageUrl: "https://placehold.co/2000x400.jpg",
     price: new Money(24.99m, "SEK"),
     stockQuantity: 80
 ),

@@ -16,6 +16,7 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+
 builder.Services.AddLogging(logging =>
 {
     logging.AddConsole();

@@ -35,29 +35,43 @@ namespace MerchStore.Infrastructure.Repositories
             };
         }
 
-        public Task<Cart> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Cart> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
+                return null;
+            }
+
             var cookieKey = GetCookieKeyForCart(id);
-            var cookieValue = _httpContextAccessor.HttpContext?.Request.Cookies[cookieKey];
+            _logger.LogInformation($"Generated cookie key: {cookieKey}");
+
+            var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
 
             if (string.IsNullOrEmpty(cookieValue))
             {
                 _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
-                return Task.FromResult<Cart>(null);
+                return null;
             }
 
             try
             {
                 var cart = JsonSerializer.Deserialize<Cart>(cookieValue, _jsonSerializerOptions);
+                if (cart == null)
+                {
+                    _logger.LogWarning($"Deserialized cart is null for cookie key '{cookieKey}'.");
+                    return null;
+                }
+
                 _logger.LogInformation($"Successfully retrieved cart with ID {id}.");
-                return Task.FromResult(cart);
+                return cart;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error deserializing cart with ID {id}: {ex.Message}");
-                return Task.FromResult<Cart>(null);
+                return null;
             }
         }
 

@@ -17,16 +17,22 @@ namespace MerchStore.Application.ShoppingCart.Services
         private readonly ILogger<ShoppingCartService> _logger;
         private readonly IShoppingCartRepository _cartRepository;
         private readonly IProductRepository _productRepository;
+        private readonly ILoggerFactory _loggerFactory;
 
 
-        public ShoppingCartService(IMediator mediator, IShoppingCartRepository cartRepository, IProductRepository productRepository, ILogger<ShoppingCartService> logger)
+        public ShoppingCartService(
+            IMediator mediator,
+            IShoppingCartRepository cartRepository,
+            IProductRepository productRepository,
+            ILogger<ShoppingCartService> logger,
+            ILoggerFactory loggerFactory)
         {
+
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _cartRepository = cartRepository ?? throw new ArgumentNullException(nameof(cartRepository));
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
-
-
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
 
@@ -38,8 +44,14 @@ namespace MerchStore.Application.ShoppingCart.Services
             if (cart == null)
             {
                 _logger.LogWarning($"Cart with ID {cartId} not found. Creating a new cart.");
-                cart = Cart.Create(cartId);
-                await _cartRepository.AddAsync(cart);
+
+                // Use a logging scope for cart creation
+                using (_logger.BeginScope("Cart Creation Scope"))
+                {
+                    var cartLogger = _loggerFactory.CreateLogger<Cart>(); // Create an ILogger<Cart>
+                    cart = Cart.Create(cartId, cartLogger);
+                    await _cartRepository.AddAsync(cart);
+                }
             }
 
             return new CartDto
