@@ -60,35 +60,36 @@ public class AppDbContextSeeder
             var products = new List<Product>
             {
                 new Product(
-                    "Conference T-Shirt",
-                    "A comfortable cotton t-shirt with the conference logo.",
+                    "Canvas for decorating",
+                    "A high-quality canvas for decorating your workspace.",
                     // new Uri("https://example.com/images/tshirt.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/tshirt.png"),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/canvas.png"),
                     Money.FromSEK(249.99m),
                     50),
 
                 new Product(
-                    "Developer Mug",
-                    "A ceramic mug with a funny programming joke.",
+                    "Littier dragon Coaster",
+                    "A coaster with a cute dragon design.",
                     // new Uri("https://example.com/images/mug.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/mug.png"),
-                    Money.FromSEK(149.50m),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/coaster.png"),
+                    Money.FromSEK(99.50m),
                     100),
 
                 new Product(
-                    "Laptop Sticker Pack",
-                    "A set of 5 programming language stickers for your laptop.",
+                    "Hoodie",
+                    "A comfortable hoodie with a cute design.",
                     // new Uri("https://example.com/images/stickers.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/stickers.png"),
-                    Money.FromSEK(79.99m),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/hoodie.png"),
+                    Money.FromSEK(179.99m),
                     200),
 
                 new Product(
-                    "Branded Hoodie",
-                    "A warm hoodie with the company logo, perfect for cold offices.",
+                    "cute dragon sticker",
+                    "A cute dragon sticker for your laptop or notebook.",
+                    
                     // new Uri("https://example.com/images/hoodie.jpg"),
-                    new Uri("https://merchstore202503311226.blob.core.windows.net/images/hoodie.png"),
-                    Money.FromSEK(499.99m),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png"),
+                    Money.FromSEK(19.99m),
                     25)
             };
 
