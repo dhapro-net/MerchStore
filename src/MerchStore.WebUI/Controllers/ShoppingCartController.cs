@@ -4,18 +4,17 @@ using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.WebUI.Models.ShoppingCart;
 using MerchStore.WebUI.Models;
 using System.ComponentModel.DataAnnotations;
-using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Application.Catalog.Queries;
 
 public class ShoppingCartController : Controller
 {
     private readonly IMediator _mediator;
     private readonly ILogger<ShoppingCartController> _logger;
-    private readonly IShoppingCartQueryService _shoppingCartQueryService;
+    private readonly CookieShoppingCartService _cookieShoppingCartService;
 
-
-    public ShoppingCartController(IShoppingCartQueryService shoppingCartQueryService, IMediator mediator, ILogger<ShoppingCartController> logger)
+    public ShoppingCartController(CookieShoppingCartService cookieShoppingCartService, IMediator mediator, ILogger<ShoppingCartController> logger)
     {
-        _shoppingCartQueryService = shoppingCartQueryService ?? throw new ArgumentNullException(nameof(shoppingCartQueryService));
+        _cookieShoppingCartService = cookieShoppingCartService ?? throw new ArgumentNullException(nameof(cookieShoppingCartService));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -23,30 +22,27 @@ public class ShoppingCartController : Controller
     /// <summary>
     /// Displays the shopping cart.
     /// </summary>
-    /// <summary>
-    /// Displays the shopping cart.
-    /// </summary>
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         try
         {
-            // Directly call the GetOrCreateCartAsync method from the ShoppingCartQueryService
-            var cartDto = await _shoppingCartQueryService.GetOrCreateCartAsync(Guid.Empty, HttpContext.RequestAborted);
+            // Retrieve or create the cart
+            var cart = _cookieShoppingCartService.GetOrCreateCart(Guid.Empty);
 
-            // Map CartDto to ShoppingCartViewModel
+            // Map Cart to ShoppingCartViewModel
             var viewModel = new ShoppingCartViewModel
             {
-                CartId = cartDto.CartId,
-                Products = cartDto.Products?.Select(product => new ShoppingCartProductViewModel
+                CartId = cart.CartId,
+                Products = cart.Products.Select(product => new ShoppingCartProductViewModel
                 {
                     ProductId = product.ProductId,
                     ProductName = product.ProductName,
                     UnitPrice = product.UnitPrice.Amount, // Map Money.Amount to decimal
                     Quantity = product.Quantity
-                }).ToList() ?? new List<ShoppingCartProductViewModel>(), // Fallback to an empty list
-                TotalPrice = cartDto.TotalPrice.Amount, // Map Money.Amount to decimal
-                TotalProducts = cartDto.TotalProducts,
-                LastUpdated = cartDto.LastUpdated
+                }).ToList(),
+                TotalPrice = cart.CalculateTotal().Amount, // Calculate total price
+                TotalProducts = cart.Products.Sum(p => p.Quantity),
+                LastUpdated = cart.LastUpdated
             };
 
             return View(viewModel);
@@ -58,28 +54,36 @@ public class ShoppingCartController : Controller
             return View("Error", CreateErrorViewModel("An error occurred while loading the shopping cart."));
         }
     }
+
     /// <summary>
     /// Adds a product to the shopping cart.
     /// </summary>
+    /// <param name="productId">The ID of the product to add.</param>
+    /// <param name="quantity">The quantity of the product to add.</param>
     [HttpPost]
     public async Task<IActionResult> AddProductToCartAsync(string productId, int quantity)
     {
         try
         {
-            // Use the GetOrCreateCartAsync method to retrieve or create the cart
-            var cartDto = await _shoppingCartQueryService.GetOrCreateCartAsync(Guid.Empty, HttpContext.RequestAborted);
+            // Retrieve product details using Mediator
+            var product = await _mediator.Send(new GetProductByIdQuery(Guid.Parse(productId)));
 
-            // Use Mediatr to send the AddProductToCartCommand
-            var command = new AddProductToCartCommand(cartDto.CartId, productId, quantity, HttpContext.RequestAborted);
-            await _mediator.Send(command);
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = "The product could not be found.";
+                return RedirectToAction("Index");
+            }
+
+            // Retrieve or create the cart
+            var cart = _cookieShoppingCartService.GetOrCreateCart(Guid.Empty);
+
+            // Add the product to the cart
+            cart.AddProduct(productId, product.Name, product.Price, quantity);
+
+            // Save the updated cart to cookies
+            _cookieShoppingCartService.SaveCart(cart);
 
             TempData["SuccessMessage"] = "Product added to cart successfully!";
-            return RedirectToAction("Index");
-        }
-        catch (ValidationException ex)
-        {
-            _logger.LogWarning(ex, "Validation error occurred while adding product {ProductId} to the cart.", productId);
-            TempData["ErrorMessage"] = ex.Message;
             return RedirectToAction("Index");
         }
         catch (Exception ex)
@@ -89,7 +93,26 @@ public class ShoppingCartController : Controller
         }
     }
 
+    /// <summary>
+    /// Clears the shopping cart.
+    /// </summary>
+    [HttpPost]
+    public IActionResult ClearCart()
+    {
+        try
+        {
+            // Clear the cart from cookies
+            _cookieShoppingCartService.ClearCart(Guid.Empty);
 
+            TempData["SuccessMessage"] = "Shopping cart cleared successfully!";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while clearing the shopping cart.");
+            return View("Error", CreateErrorViewModel("An error occurred while clearing the shopping cart."));
+        }
+    }
 
     /// <summary>
     /// Creates an error view model with the specified message.
@@ -98,7 +121,8 @@ public class ShoppingCartController : Controller
     {
         return new ErrorViewModel
         {
-            Message = message
+            Message = message,
+            RequestId = HttpContext.TraceIdentifier
         };
     }
 }

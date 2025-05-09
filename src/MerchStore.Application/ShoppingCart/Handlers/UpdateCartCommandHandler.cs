@@ -1,6 +1,5 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.Commands;
-using MerchStore.Domain.ShoppingCart.Interfaces;
 
 namespace MerchStore.Application.ShoppingCart.Handlers;
 
@@ -9,16 +8,16 @@ namespace MerchStore.Application.ShoppingCart.Handlers;
 /// </summary>
 public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand>
 {
-    private readonly IShoppingCartCommandRepository _repository;
-
-    public UpdateCartCommandHandler(IShoppingCartCommandRepository repository)
+    public Task<Unit> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-    }
+        if (request.Cart == null)
+        {
+            throw new ArgumentNullException(nameof(request.Cart), "Cart cannot be null.");
+        }
 
-    public async Task<Unit> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
-    {
-        await _repository.UpdateAsync(request.Cart);
-        return Unit.Value;
+        // Perform any additional business logic here if needed
+        // For example, validate the cart or log the update operation
+
+        return Task.FromResult(Unit.Value);
     }
 }

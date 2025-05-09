@@ -3,13 +3,13 @@ using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ShoppingCart.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using MerchStore.Application.ShoppingCart.Mappers;
 
 namespace MerchStore.Infrastructure.Repositories
 {
     public class CookieShoppingCartRepository : IShoppingCartCommandRepository, IShoppingCartQueryRepository
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private const string CartCookiePrefix = "ShoppingCartId";
         private readonly CookieOptions _cookieOptions;
         private readonly ILogger<CookieShoppingCartRepository> _logger;
         private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
@@ -17,6 +17,7 @@ namespace MerchStore.Infrastructure.Repositories
             PropertyNameCaseInsensitive = true,
             WriteIndented = false
         };
+        private const string CartCookiePrefix = "ShoppingCart_";
 
         public CookieShoppingCartRepository(IHttpContextAccessor httpContextAccessor, ILogger<CookieShoppingCartRepository> logger)
         {
@@ -25,8 +26,8 @@ namespace MerchStore.Infrastructure.Repositories
 
             _cookieOptions = new CookieOptions
             {
-                HttpOnly = false,
-                Secure = false,
+                HttpOnly = true,
+                Secure = true,
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddDays(30),
                 IsEssential = true // For GDPR compliance
@@ -35,34 +36,29 @@ namespace MerchStore.Infrastructure.Repositories
 
         public async Task<Cart?> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
         {
+            if (id == Guid.Empty)
+            {
+                _logger.LogWarning("Attempted to retrieve a cart with Guid.Empty. Returning null.");
+                return null;
+            }
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
+                return null;
+            }
+
+            var cookieKey = GetCookieKeyForCart(id);
+            var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
+
+            if (string.IsNullOrEmpty(cookieValue))
+            {
+                _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
+                return null;
+            }
+
             try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // Check for Guid.Empty
-                if (id == Guid.Empty)
-                {
-                    _logger.LogWarning("Attempted to retrieve a cart with Guid.Empty. Returning null.");
-                    return null;
-                }
-
-                if (_httpContextAccessor.HttpContext == null)
-                {
-                    _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
-                    return null;
-                }
-
-                var cookieKey = GetCookieKeyForCart(id);
-                _logger.LogInformation($"Generated cookie key: {cookieKey}");
-
-                var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
-
-                if (string.IsNullOrEmpty(cookieValue))
-                {
-                    _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
-                    return null;
-                }
-
                 var cart = JsonSerializer.Deserialize<Cart>(cookieValue, _jsonSerializerOptions);
                 if (cart == null)
                 {
@@ -73,14 +69,9 @@ namespace MerchStore.Infrastructure.Repositories
                 _logger.LogInformation($"Successfully retrieved cart with ID {id}.");
                 return cart;
             }
-            catch (OperationCanceledException)
-            {
-                _logger.LogWarning("Operation was canceled while retrieving cart with ID {CartId}.", id);
-                return null;
-            }
             catch (Exception ex)
             {
-                _logger.LogError($"Error deserializing cart with ID {id}: {ex.Message}");
+                _logger.LogError(ex, "Error deserializing cart with ID {CartId}.", id);
                 return null;
             }
         }
@@ -111,15 +102,31 @@ namespace MerchStore.Infrastructure.Repositories
 
         public Task DeleteAsync(Guid id)
         {
+            if (id == Guid.Empty)
+            {
+                _logger.LogWarning("Attempted to delete a cart with Guid.Empty. Operation skipped.");
+                return Task.CompletedTask;
+            }
+
             var cookieKey = GetCookieKeyForCart(id);
             _httpContextAccessor.HttpContext?.Response.Cookies.Delete(cookieKey);
+
+            _logger.LogInformation("Cart with ID {CartId} deleted from cookies.", id);
             return Task.CompletedTask;
         }
 
         public Task<bool> ExistsAsync(Guid id)
         {
+            if (id == Guid.Empty)
+            {
+                _logger.LogWarning("Attempted to check existence of a cart with Guid.Empty. Returning false.");
+                return Task.FromResult(false);
+            }
+
             var cookieKey = GetCookieKeyForCart(id);
             var exists = _httpContextAccessor.HttpContext?.Request.Cookies.ContainsKey(cookieKey) ?? false;
+
+            _logger.LogInformation("Cart with ID {CartId} exists: {Exists}.", id, exists);
             return Task.FromResult(exists);
         }
 

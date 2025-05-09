@@ -8,27 +8,9 @@ namespace MerchStore.Application.ShoppingCart.Commands;
 /// </summary>
 public class AddProductToCartCommand : IRequest<Result<bool>>
 {
-    /// <summary>
-    /// Gets or sets the unique identifier of the shopping cart.
-    /// </summary>
-    public Guid CartId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unique identifier of the product to add.
-    /// </summary>
-    public string ProductId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the quantity of the product to add.
-    /// </summary>
-    public int Quantity { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AddProductToCartCommand"/> class.
-    /// </summary>
-    /// <param name="cartId">The unique identifier of the shopping cart.</param>
-    /// <param name="productId">The unique identifier of the product to add.</param>
-    /// <param name="quantity">The quantity of the product to add.</param>
+    public Guid CartId { get; }
+    public string ProductId { get; }
+    public int Quantity { get; }
     public CancellationToken CancellationToken { get; }
 
     public AddProductToCartCommand(Guid cartId, string productId, int quantity, CancellationToken cancellationToken)

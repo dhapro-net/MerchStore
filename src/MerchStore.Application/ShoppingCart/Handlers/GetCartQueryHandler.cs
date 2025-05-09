@@ -1,9 +1,8 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.DTOs;
 using MerchStore.Application.ShoppingCart.Queries;
-using MerchStore.Domain.ShoppingCart;
-using MerchStore.Domain.ShoppingCart.Interfaces;
 using MerchStore.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Application.ShoppingCart.Handlers;
 
@@ -12,37 +11,39 @@ namespace MerchStore.Application.ShoppingCart.Handlers;
 /// </summary>
 public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
 {
-    private readonly IShoppingCartQueryRepository _repository;
+    private readonly ILogger<GetCartQueryHandler> _logger;
 
-    public GetCartQueryHandler(IShoppingCartQueryRepository repository)
+    public GetCartQueryHandler(ILogger<GetCartQueryHandler> logger)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CartDto> Handle(GetCartQuery request, CancellationToken cancellationToken)
-{
-    // Retrieve the cart from the repository
-    var cart = await _repository.GetCartByIdAsync(request.CartId, cancellationToken);
-
-    // Return null if the cart does not exist or has an invalid ID
-    if (cart == null || cart.CartId == Guid.Empty)
+    public Task<CartDto> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
-        return null;
-    }
-
-    // Map Cart to CartDto
-    return new CartDto
-    {
-        CartId = cart.CartId,
-        Products = cart.Products.Select(p => new CartProductDto
+        if (request.Cart == null)
         {
-            ProductId = p.ProductId,
-            ProductName = p.ProductName,
-            UnitPrice = p.UnitPrice,
-            Quantity = p.Quantity
-        }).ToList(),
-        TotalPrice = new Money(cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK"),
-        LastUpdated = cart.LastUpdated
-    };
-}
+            _logger.LogWarning("GetCartQuery failed: Cart is null.");
+            return Task.FromResult<CartDto>(null);
+        }
+
+        _logger.LogInformation("Mapping cart with ID {CartId} to CartDto.", request.Cart.CartId);
+
+        // Map Cart to CartDto
+        var cartDto = new CartDto
+        {
+            CartId = request.Cart.CartId,
+            Products = request.Cart.Products.Select(p => new CartProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                UnitPrice = p.UnitPrice,
+                Quantity = p.Quantity
+            }).ToList(),
+            TotalPrice = new Money(request.Cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK"),
+            LastUpdated = request.Cart.LastUpdated
+        };
+
+        _logger.LogInformation("Successfully mapped cart with ID {CartId} to CartDto.", request.Cart.CartId);
+        return Task.FromResult(cartDto);
+    }
 }

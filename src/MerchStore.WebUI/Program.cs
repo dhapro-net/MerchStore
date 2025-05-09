@@ -16,6 +16,9 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddScoped<CookieShoppingCartService>();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddLogging(logging =>
 {

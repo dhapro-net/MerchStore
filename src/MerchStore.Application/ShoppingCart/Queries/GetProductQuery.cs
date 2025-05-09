@@ -1,19 +1,17 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.DTOs;
+using MerchStore.Domain.ShoppingCart;
 
 namespace MerchStore.Application.ShoppingCart.Queries;
 
-/// <summary>
-/// Query to retrieve a specific product from a shopping cart.
-/// </summary>
 public class GetProductQuery : IRequest<CartProductDto?>
 {
-    public Guid CartId { get; }
+    public Cart Cart { get; }
     public string ProductId { get; }
 
-    public GetProductQuery(Guid cartId, string productId)
+    public GetProductQuery(Cart cart, string productId)
     {
-        CartId = cartId;
-        ProductId = productId;
+        Cart = cart ?? throw new ArgumentNullException(nameof(cart));
+        ProductId = productId ?? throw new ArgumentNullException(nameof(productId));
     }
 }

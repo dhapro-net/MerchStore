@@ -24,25 +24,48 @@ public class ShoppingCartCommandService : IShoppingCartCommandService
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
+
+    /// <summary>
+    /// Adds a new cart.
+    /// </summary>
     public async Task AddAsync(Cart cart, CancellationToken cancellationToken)
-{
-    if (cart == null)
-        throw new ArgumentNullException(nameof(cart));
+    {
+        if (cart == null)
+        {
+            throw new ArgumentNullException(nameof(cart));
+        }
 
-    _logger.LogInformation("Adding a new cart with ID: {CartId}.", cart.CartId);
+        _logger.LogInformation("Adding a new cart with ID: {CartId}.", cart.CartId);
 
-    await _mediator.Send(new AddCartCommand(cart, cancellationToken));
+        // Send the AddCartCommand to the appropriate handler
+        await _mediator.Send(new AddCartCommand(cart, cancellationToken));
 
-    _logger.LogInformation("Successfully added a new cart with ID: {CartId}.", cart.CartId);
-}
+        _logger.LogInformation("Successfully added a new cart with ID: {CartId}.", cart.CartId);
+    }
 
     /// <summary>
     /// Adds a product to the shopping cart.
     /// </summary>
     public async Task<bool> AddProductToCartAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken)
     {
+        if (cartId == Guid.Empty)
+        {
+            throw new ArgumentException("Cart ID cannot be empty.", nameof(cartId));
+        }
+
+        if (string.IsNullOrEmpty(productId))
+        {
+            throw new ArgumentException("Product ID cannot be null or empty.", nameof(productId));
+        }
+
+        if (quantity <= 0)
+        {
+            throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
+        }
+
         _logger.LogInformation("Adding ProductId: {ProductId} with Quantity: {Quantity} to CartId: {CartId}.", productId, quantity, cartId);
 
+        // Send the AddProductToCartCommand to the appropriate handler
         var result = await _mediator.Send(new AddProductToCartCommand(cartId, productId, quantity, cancellationToken));
         if (!result.IsSuccess)
         {
@@ -59,8 +82,19 @@ public class ShoppingCartCommandService : IShoppingCartCommandService
     /// </summary>
     public async Task<bool> RemoveProductFromCartAsync(Guid cartId, string productId, CancellationToken cancellationToken)
     {
+        if (cartId == Guid.Empty)
+        {
+            throw new ArgumentException("Cart ID cannot be empty.", nameof(cartId));
+        }
+
+        if (string.IsNullOrEmpty(productId))
+        {
+            throw new ArgumentException("Product ID cannot be null or empty.", nameof(productId));
+        }
+
         _logger.LogInformation("Removing ProductId: {ProductId} from CartId: {CartId}.", productId, cartId);
 
+        // Send the RemoveProductFromCartCommand to the appropriate handler
         var result = await _mediator.Send(new RemoveProductFromCartCommand(cartId, productId, cancellationToken));
         if (!result.IsSuccess)
         {
@@ -77,8 +111,24 @@ public class ShoppingCartCommandService : IShoppingCartCommandService
     /// </summary>
     public async Task<bool> UpdateProductQuantityAsync(Guid cartId, string productId, int quantity)
     {
+        if (cartId == Guid.Empty)
+        {
+            throw new ArgumentException("Cart ID cannot be empty.", nameof(cartId));
+        }
+
+        if (string.IsNullOrEmpty(productId))
+        {
+            throw new ArgumentException("Product ID cannot be null or empty.", nameof(productId));
+        }
+
+        if (quantity <= 0)
+        {
+            throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
+        }
+
         _logger.LogInformation("Updating quantity for ProductId: {ProductId} to {Quantity} in CartId: {CartId}.", productId, quantity, cartId);
 
+        // Send the UpdateCartProductQuantityCommand to the appropriate handler
         var result = await _mediator.Send(new UpdateCartProductQuantityCommand(cartId, productId, quantity));
         if (!result.IsSuccess)
         {
@@ -95,8 +145,14 @@ public class ShoppingCartCommandService : IShoppingCartCommandService
     /// </summary>
     public async Task<bool> ClearCartAsync(Guid cartId, CancellationToken cancellationToken)
     {
+        if (cartId == Guid.Empty)
+        {
+            throw new ArgumentException("Cart ID cannot be empty.", nameof(cartId));
+        }
+
         _logger.LogInformation("Clearing all products from CartId: {CartId}.", cartId);
 
+        // Send the ClearCartCommand to the appropriate handler
         var result = await _mediator.Send(new ClearCartCommand(cartId));
         if (!result.IsSuccess)
         {

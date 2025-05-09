@@ -88,7 +88,7 @@ namespace MerchStore.Domain.ShoppingCart
             AddDomainEvent(new CartClearedEvent(CartId));
         }
 
-        public void RemoveProduct(string productId)
+        public bool RemoveProduct(string productId)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
@@ -102,18 +102,21 @@ namespace MerchStore.Domain.ShoppingCart
 
                 // Add domain event
                 AddDomainEvent(new CartProductRemovedEvent(CartId, productId));
+
+                return true; // Indicate that the product was successfully removed
             }
+
+            return false; // Indicate that the product was not found
         }
 
-        public void UpdateQuantity(string productId, int quantity)
+        public bool UpdateQuantity(string productId, int quantity)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
 
             if (quantity <= 0)
             {
-                RemoveProduct(productId);
-                return;
+                return RemoveProduct(productId); // Return whether the product was removed
             }
 
             var product = Products.FirstOrDefault(i => i.ProductId == productId);
@@ -122,7 +125,10 @@ namespace MerchStore.Domain.ShoppingCart
             {
                 product.UpdateQuantity(quantity);
                 UpdateLastModified();
+                return true; // Indicate that the quantity was successfully updated
             }
+
+            return false; // Indicate that the product was not found
         }
 
         private void UpdateLastModified()

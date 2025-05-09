@@ -10,42 +10,41 @@ namespace MerchStore.Application.ShoppingCart.Handlers;
 /// </summary>
 public class GetProductQueryHandler : IRequestHandler<GetProductQuery, CartProductDto?>
 {
-    private readonly IMediator _mediator;
     private readonly ILogger<GetProductQueryHandler> _logger;
 
-    public GetProductQueryHandler(IMediator mediator, ILogger<GetProductQueryHandler> logger)
+    public GetProductQueryHandler(ILogger<GetProductQueryHandler> logger)
     {
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<CartProductDto?> Handle(GetProductQuery request, CancellationToken cancellationToken)
+    public Task<CartProductDto?> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling GetProductQuery for product {ProductId} in cart {CartId}.", request.ProductId, request.CartId);
-
-        // Retrieve the cart using Mediatr
-        var cart = await _mediator.Send(new GetCartQuery(request.CartId), cancellationToken);
-        if (cart == null)
+        if (request.Cart == null)
         {
-            _logger.LogWarning("Cart with ID {CartId} not found.", request.CartId);
-            return null;
+            _logger.LogWarning("GetProductQuery failed: Cart is null.");
+            return Task.FromResult<CartProductDto?>(null);
         }
 
+        _logger.LogInformation("Handling GetProductQuery for product {ProductId} in cart {CartId}.", request.ProductId, request.Cart.CartId);
+
         // Find the product in the cart
-        var product = cart.Products.FirstOrDefault(p => p.ProductId == request.ProductId);
+        var product = request.Cart.Products.FirstOrDefault(p => p.ProductId == request.ProductId);
         if (product == null)
         {
-            _logger.LogWarning("Product {ProductId} not found in cart with ID {CartId}.", request.ProductId, request.CartId);
-            return null;
+            _logger.LogWarning("Product {ProductId} not found in cart with ID {CartId}.", request.ProductId, request.Cart.CartId);
+            return Task.FromResult<CartProductDto?>(null);
         }
 
         // Map the product to a CartProductDto
-        return new CartProductDto
+        var productDto = new CartProductDto
         {
             ProductId = product.ProductId,
             ProductName = product.ProductName,
             UnitPrice = product.UnitPrice,
             Quantity = product.Quantity
         };
+
+        _logger.LogInformation("Successfully retrieved product {ProductId} from cart {CartId}.", request.ProductId, request.Cart.CartId);
+        return Task.FromResult(productDto);
     }
 }

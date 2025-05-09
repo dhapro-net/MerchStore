@@ -50,8 +50,6 @@ public static class DependencyInjection
         // Register DbContext seeder
         services.AddScoped<AppDbContextSeeder>();
 
-        // Register HttpContextAccessor for cookie access
-        services.AddHttpContextAccessor();
 
         // Register cookie-based shopping cart repositories
         services.AddScoped<IShoppingCartQueryRepository, CookieShoppingCartRepository>();
@@ -61,9 +59,10 @@ public static class DependencyInjection
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
         services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
 
+
         return services;
     }
-        public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
+    public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
         var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();

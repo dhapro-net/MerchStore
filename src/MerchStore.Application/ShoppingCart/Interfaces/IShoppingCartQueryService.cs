@@ -9,13 +9,6 @@ namespace MerchStore.Application.ShoppingCart.Interfaces;
 /// </summary>
 public interface IShoppingCartQueryService
 {
-    /// <summary>
-    /// Retrieves or creates a shopping cart.
-    /// </summary>
-    /// <param name="cartId">The unique identifier of the shopping cart.</param>
-    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>The shopping cart details as a <see cref="CartDto"/>.</returns>
-    Task<CartDto> GetOrCreateCartAsync(Guid cartId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Calculates the total price of the shopping cart.

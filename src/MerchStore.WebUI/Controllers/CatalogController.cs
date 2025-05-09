@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
-using MerchStore.Application.ShoppingCart.Commands;
-using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.WebUI.Models;
+using Microsoft.Extensions.Logging;
+
 namespace MerchStore.WebUI.Controllers;
 
 /// <summary>
@@ -13,19 +14,19 @@ public class CatalogController : Controller
 {
     private readonly IMediator _mediator;
     private readonly ILogger<CatalogController> _logger;
-    private readonly IShoppingCartQueryService _shoppingCartQueryService; // Add this field
+    private readonly CookieShoppingCartService _cookieShoppingCartService;
 
     /// <summary>
     /// Constructor for CatalogController.
     /// </summary>
     /// <param name="mediator">Mediator for sending queries and commands.</param>
     /// <param name="logger">Logger for structured logging.</param>
-    /// <param name="shoppingCartQueryService">Service for shopping cart queries.</param>
-    public CatalogController(IMediator mediator, ILogger<CatalogController> logger, IShoppingCartQueryService shoppingCartQueryService)
+    /// <param name="cookieShoppingCartService">Service for managing shopping cart cookies.</param>
+    public CatalogController(IMediator mediator, ILogger<CatalogController> logger, CookieShoppingCartService cookieShoppingCartService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _shoppingCartQueryService = shoppingCartQueryService ?? throw new ArgumentNullException(nameof(shoppingCartQueryService)); // Inject the service
+        _cookieShoppingCartService = cookieShoppingCartService ?? throw new ArgumentNullException(nameof(cookieShoppingCartService));
     }
 
     /// <summary>
@@ -111,52 +112,67 @@ public class CatalogController : Controller
     /// Adds a product to the shopping cart.
     /// </summary>
     /// <param name="productId">The ID of the product to add.</param>
+    /// <param name="quantity">The quantity of the product to add.</param>
     [HttpPost]
-    public async Task<IActionResult> AddProductToCart(Guid productId)
+public async Task<IActionResult> AddProductToCartAsync(string productId, int quantity)
+{
+    try
     {
-        if (productId == Guid.Empty)
+        // Retrieve product details using Mediator
+        var product = await _mediator.Send(new GetProductByIdQuery(Guid.Parse(productId)));
+
+        if (product == null)
         {
-            _logger.LogWarning("Invalid ProductId received.");
-            TempData["ErrorMessage"] = "Invalid product ID.";
+            TempData["ErrorMessage"] = "The product could not be found.";
             return RedirectToAction("Index");
         }
 
+        // Retrieve or create the cart
+        var cart = _cookieShoppingCartService.GetOrCreateCart(Guid.Empty);
+
+        // Add the product to the cart
+        cart.AddProduct(productId, product.Name, product.Price, quantity);
+
+        // Save the updated cart to cookies
+        _cookieShoppingCartService.SaveCart(cart);
+
+        TempData["SuccessMessage"] = "Product added to cart successfully!";
+        return RedirectToAction("Index");
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error occurred while adding product {ProductId} to the cart.", productId);
+        return View("Error", CreateErrorViewModel("An error occurred while adding the product to the cart."));
+    }
+}
+
+    /// <summary>
+    /// Clears the shopping cart.
+    /// </summary>
+    [HttpPost]
+    public IActionResult ClearCart()
+    {
         try
         {
-            // Retrieve the product details to validate stock
-            var product = await _mediator.Send(new GetProductByIdQuery(productId));
-            if (product == null || product.StockQuantity <= 0)
-            {
-                _logger.LogWarning("Product {ProductId} is out of stock or does not exist.", productId);
-                TempData["ErrorMessage"] = "Product is out of stock or does not exist.";
-                return RedirectToAction("Index");
-            }
+            // Clear the cart from cookies
+            _cookieShoppingCartService.ClearCart(Guid.Empty);
 
-            // Retrieve or create the shopping cart using cookies
-            var cartDto = await _shoppingCartQueryService.GetOrCreateCartAsync(Guid.Empty, HttpContext.RequestAborted);
-
-            // Add the product to the cart
-            var command = new AddProductToCartCommand(cartDto.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
-            var result = await _mediator.Send(command);
-
-            if (!result.IsSuccess)
-            {
-                _logger.LogError("Failed to add product {ProductId} to cart {CartId}.", productId, cartDto.CartId);
-                TempData["ErrorMessage"] = "Failed to add product to cart.";
-                return RedirectToAction("Index");
-            }
-
-            _logger.LogInformation("Product {ProductId} added to cart {CartId} successfully.", productId, cartDto.CartId);
-            TempData["SuccessMessage"] = "Product added to cart successfully!";
+            TempData["SuccessMessage"] = "Shopping cart cleared successfully!";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while adding product {ProductId} to cart.", productId);
-            TempData["ErrorMessage"] = "An unexpected error occurred while adding the product to the cart. Please try again later.";
-            return RedirectToAction("Index");
+            _logger.LogError(ex, "Error occurred while clearing the shopping cart.");
+            return View("Error", CreateErrorViewModel("An error occurred while clearing the shopping cart."));
         }
     }
+
+    private ErrorViewModel CreateErrorViewModel(string errorMessage)
+    {
+        return new ErrorViewModel
+        {
+            Message = errorMessage,
+            RequestId = HttpContext.TraceIdentifier,
+        };
+    }
 }
-
-

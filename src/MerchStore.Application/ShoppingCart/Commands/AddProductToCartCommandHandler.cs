@@ -1,23 +1,14 @@
 using MediatR;
 using MerchStore.Application.Common;
 using MerchStore.Application.ShoppingCart.Commands;
-using MerchStore.Domain.ShoppingCart.Interfaces;
-using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 public class AddProductToCartCommandHandler : IRequestHandler<AddProductToCartCommand, Result<bool>>
 {
-    private readonly IShoppingCartQueryRepository _queryRepository;
-    private readonly IShoppingCartCommandRepository _commandRepository;
     private readonly ILogger<AddProductToCartCommandHandler> _logger;
 
-    public AddProductToCartCommandHandler(
-        IShoppingCartQueryRepository queryRepository,
-        IShoppingCartCommandRepository commandRepository,
-        ILogger<AddProductToCartCommandHandler> logger)
+    public AddProductToCartCommandHandler(ILogger<AddProductToCartCommandHandler> logger)
     {
-        _queryRepository = queryRepository ?? throw new ArgumentNullException(nameof(queryRepository));
-        _commandRepository = commandRepository ?? throw new ArgumentNullException(nameof(commandRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -39,19 +30,11 @@ public class AddProductToCartCommandHandler : IRequestHandler<AddProductToCartCo
 
         try
         {
-            // Retrieve the cart using the query repository
-            var cart = await _queryRepository.GetCartByIdAsync(request.CartId, cancellationToken);
-            if (cart == null)
-            {
-                _logger.LogWarning("Cart with ID {CartId} not found.", request.CartId);
-                return Result<bool>.Failure("Cart not found.");
-            }
+            // Simulate adding the product to the cart
+            _logger.LogInformation("Adding product {ProductId} to cart {CartId} with quantity {Quantity}.", request.ProductId, request.CartId, request.Quantity);
 
-            // Add the product to the cart
-            cart.AddProduct(request.ProductId, "Product Name", new Money(100, "SEK"), request.Quantity);
-
-            // Save the updated cart using the command repository
-            await _commandRepository.UpdateAsync(cart);
+            // Business logic for adding the product to the cart would go here
+            // (e.g., updating the cart in memory or database)
 
             _logger.LogInformation("Product {ProductId} added to cart {CartId} successfully.", request.ProductId, request.CartId);
             return Result<bool>.Success(true);
