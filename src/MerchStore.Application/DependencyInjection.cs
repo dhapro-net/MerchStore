@@ -1,10 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using MerchStore.Application.Services.Interfaces;
 using MediatR;
 using System.Reflection;
 using MerchStore.Application.ShoppingCart.Services;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Application.Catalog.Queries;
+using MerchStore.Application.ShoppingCart.Handlers;
+using MerchStore.Domain.Services;
 
 
 namespace MerchStore.Application;
@@ -16,13 +17,16 @@ public static class DependencyInjection
 
 
         services.AddMediatR(
-            Assembly.GetExecutingAssembly(),
-            typeof(DependencyInjection).Assembly,
-            typeof(GetAllProductsQueryHandler).Assembly
-        );
+    Assembly.GetExecutingAssembly(),
+    typeof(DependencyInjection).Assembly,
+    typeof(GetAllProductsQueryHandler).Assembly,
+    typeof(AddCartCommandHandler).Assembly
+);
+        services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
-        services.AddScoped<IShoppingCartService, ShoppingCartService>();
-        
+        // leaving this here just in case it seems like a good idea to use later services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddScoped<CartCalculationService>();
+
 
         return services;
     }

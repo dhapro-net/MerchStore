@@ -27,7 +27,6 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Register DbContext with in-memory database
-        // In a real application, you'd use a real database
         services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase("MerchStoreDb"));
 
@@ -58,27 +57,10 @@ public static class DependencyInjection
         services.AddScoped<IShoppingCartQueryRepository, CookieShoppingCartRepository>();
         services.AddScoped<IShoppingCartCommandRepository, CookieShoppingCartRepository>();
 
-        services.AddScoped<IShoppingCartService, ShoppingCartService>();
-        // Register Unit of Work
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-
-
+        // Register ShoppingCart services (split into Query and Command services)
+        services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
+        services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
 
         return services;
-    }
-
-    /// <summary>
-    /// Seeds the database with initial data.
-    /// This is an extension method on IServiceProvider to allow it to be called from Program.cs.
-    /// </summary>
-    /// <param name="serviceProvider">The service provider to resolve dependencies</param>
-    /// <returns>A task representing the asynchronous operation</returns>
-    public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
-    {
-        using var scope = serviceProvider.CreateScope();
-        var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
-
-        await seeder.SeedAsync();
     }
 }

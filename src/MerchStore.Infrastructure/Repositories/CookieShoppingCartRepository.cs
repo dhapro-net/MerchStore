@@ -75,26 +75,28 @@ namespace MerchStore.Infrastructure.Repositories
             }
         }
 
-        public Task AddAsync(Cart cart)
+        public Task AddAsync(Cart cart, CancellationToken cancellationToken)
         {
             if (cart == null)
                 throw new ArgumentNullException(nameof(cart));
 
             var cookieKey = GetCookieKeyForCart(cart.CartId);
-            var options = new JsonSerializerOptions { WriteIndented = false };
-            var serializedCart = JsonSerializer.Serialize(cart, options);
+            var serializedCart = JsonSerializer.Serialize(cart, _jsonSerializerOptions);
 
             _httpContextAccessor.HttpContext?.Response.Cookies.Append(
                 cookieKey,
                 serializedCart,
                 _cookieOptions);
 
+            _logger.LogInformation("Cart with ID {CartId} added to cookies.", cart.CartId);
+
             return Task.CompletedTask;
         }
 
         public Task UpdateAsync(Cart cart)
         {
-            return AddAsync(cart); // Same implementation for cookies
+            _logger.LogInformation("Updating cart with ID {CartId} in cookies.", cart.CartId);
+            return AddAsync(cart, CancellationToken.None);
         }
 
         public Task DeleteAsync(Guid id)
