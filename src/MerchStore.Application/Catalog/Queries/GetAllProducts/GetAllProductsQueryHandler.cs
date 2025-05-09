@@ -23,7 +23,7 @@ namespace MerchStore.Application.Catalog.Queries
                 Name = p.Name,
                 Description = p.Description,
                 Price = new Money(p.Price.Amount, p.Price.Currency), 
-                ImageUrl = new Uri(p.ImageUrl), 
+                ImageUrl = string.IsNullOrEmpty(p.ImageUrl) ? null : new Uri(p.ImageUrl), 
                 StockQuantity = p.StockQuantity
             }).ToList();
         }
