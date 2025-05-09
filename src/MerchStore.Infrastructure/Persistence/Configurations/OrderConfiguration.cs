@@ -35,8 +35,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasColumnType("decimal(18,2)")
             .HasConversion(moneyConverter);
 
-        // Configure the relationship with OrderItem
-        builder.HasMany(o => o.Items)
+        // Configure the relationship with OrderProduct
+        builder.HasMany(o => o.Products)
             .WithOne(i => i.Order)
             .HasForeignKey(i => i.OrderId)
             .OnDelete(DeleteBehavior.Cascade);

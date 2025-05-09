@@ -28,9 +28,9 @@ namespace MerchStore.Application.ShoppingCart.Services
                 return new CartDto
                 {
                     CartId = cartId,
-                    Items = new List<CartItemDto>(),
+                    Product = new List<CartProductDto>(),
                     TotalPrice = new Money(0, "SEK"), // Default Money object
-                    TotalItems = 0,
+                    TotalProduct = 0,
                     LastUpdated = DateTime.UtcNow
                 };
             }
@@ -39,15 +39,15 @@ namespace MerchStore.Application.ShoppingCart.Services
             {
                 CartId = cart.CartId,
                 TotalPrice = cart.CalculateTotal(),
-                TotalItems = cart.Items?.Sum(i => i.Quantity) ?? 0,
+                TotalProduct = cart.Product?.Sum(i => i.Quantity) ?? 0,
                 LastUpdated = cart.LastUpdated,
-                Items = cart.Items?.Select(item => new CartItemDto
+                Product = cart.Product?.Select(product => new CartProductDto
                 {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
-                    Quantity = item.Quantity,
-                }).ToList() ?? new List<CartItemDto>()
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName,
+                    UnitPrice = product.UnitPrice,
+                    Quantity = product.Quantity,
+                }).ToList() ?? new List<CartProductDto>()
             };
 
             return cartDto;
@@ -64,7 +64,7 @@ namespace MerchStore.Application.ShoppingCart.Services
                 return new CartSummaryDto
                 {
                     CartId = cartId,
-                    ItemsCount = 0,
+                    ProductCount = 0,
                     TotalPrice = new Money(0, "USD") // Default Money object
                 };
             }
@@ -72,7 +72,7 @@ namespace MerchStore.Application.ShoppingCart.Services
             return new CartSummaryDto
             {
                 CartId = cart.CartId,
-                ItemsCount = cart.Items?.Sum(i => i.Quantity) ?? 0,
+                ProductCount = cart.Product?.Sum(i => i.Quantity) ?? 0,
                 TotalPrice = cart.CalculateTotal() // Assuming CalculateTotal() now returns Money
             };
         }

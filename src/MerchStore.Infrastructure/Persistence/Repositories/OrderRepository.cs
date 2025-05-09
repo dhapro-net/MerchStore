@@ -24,7 +24,7 @@ public class OrderRepository : Repository<Order, Guid>, IOrderRepository
     public async Task<Order?> GetOrderByIdAsync(Guid orderId)
     {
         return await _context.Orders
-            .Include(o => o.Items) // Include related OrderItems
+            .Include(o => o.Products) // Include related OrderProducts
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
@@ -33,7 +33,7 @@ public class OrderRepository : Repository<Order, Guid>, IOrderRepository
     {
         return await _context.Orders
             .Where(o => o.CreatedDate >= startDate && o.CreatedDate <= endDate)
-            .Include(o => o.Items) // Include related OrderItems
+            .Include(o => o.Products) // Include related OrderProducts
             .ToListAsync();
     }
 

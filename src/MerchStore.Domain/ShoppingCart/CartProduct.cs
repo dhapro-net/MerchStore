@@ -3,7 +3,7 @@ using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Domain.ShoppingCart
 {
-    public class CartItem
+    public class CartProduct
     {
         public string ProductId { get; private set; }
         public string ProductName { get; private set; }
@@ -11,7 +11,7 @@ namespace MerchStore.Domain.ShoppingCart
         public int Quantity { get; private set; }
         public Money TotalPrice => UnitPrice * Quantity;
 
-        public CartItem(string productId, string productName, Money unitPrice, int quantity)
+        public CartProduct(string productId, string productName, Money unitPrice, int quantity)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentNullException(nameof(productId));

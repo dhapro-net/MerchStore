@@ -25,9 +25,9 @@ namespace MerchStore.Application.ShoppingCart.Queries
                 return new CartDto
                 {
                     CartId = request.CartId,
-                    Items = new List<CartItemDto>(),
+                    Product = new List<CartProductDto>(),
                     TotalPrice = new Money(0, "SEK"),
-                    TotalItems = 0,
+                    TotalProduct = 0,
                     LastUpdated = DateTime.UtcNow
                 };
             }
@@ -36,15 +36,15 @@ namespace MerchStore.Application.ShoppingCart.Queries
             return new CartDto
             {
                 CartId = cart.Id,
-                Items = cart.Items.Select(item => new CartItemDto
+                Product = cart.Product.Select(product => new CartProductDto
                 {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
-                    Quantity = item.Quantity
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName,
+                    UnitPrice = product.UnitPrice,
+                    Quantity = product.Quantity
                 }).ToList(),
                 TotalPrice = cart.CalculateTotal(), // Use the CalculateTotal method
-                TotalItems = cart.ItemCount(),
+                TotalProduct = cart.ProductCount(),
                 LastUpdated = cart.LastUpdated
             };
         }

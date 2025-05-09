@@ -8,9 +8,9 @@ namespace MerchStore.Application.Services.Interfaces
     {
         Task GetCartAsync(GetCartQuery query);
         Task GetCartSummaryAsync(GetCartSummaryQuery query);
-        Task AddItemToCartAsync(AddItemToCartCommand command);
-        Task RemoveItemFromCartAsync(RemoveItemFromCartCommand command);
-        Task UpdateCartItemQuantityAsync(UpdateCartItemQuantityCommand command);
+        Task AddProductToCartAsync(AddProductToCartCommand command);
+        Task RemoveProductFromCartAsync(RemoveProductFromCartCommand command);
+        Task UpdateCartProductQuantityAsync(UpdateCartProductQuantityCommand command);
         Task ClearCartAsync(ClearCartCommand command);
     }
 }

@@ -9,7 +9,7 @@ public class Order : Entity<Guid>
     public string CustomerName { get; private set; }
     public string Address { get; private set; }
     public Money TotalPrice { get; private set; }
-    public List<OrderItem> Items { get; private set; } = new List<OrderItem>();
+    public List<OrderProduct> Products { get; private set; } = new List<OrderProduct>();
     public DateTime CreatedDate { get; private set; }
 
     private Order() { }

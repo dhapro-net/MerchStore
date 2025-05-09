@@ -5,16 +5,16 @@ using MerchStore.Application.ShoppingCart.Interfaces;
 
 namespace MerchStore.Application.ShoppingCart.Commands
 {
-    public class AddItemToCartCommandHandler : IRequestHandler<AddItemToCartCommand, Result<bool>>
+    public class AddProductToCartCommandHandler : IRequestHandler<AddProductToCartCommand, Result<bool>>
     {
         private readonly IShoppingCartService _cartService;
         
-        public AddItemToCartCommandHandler(IShoppingCartService cartService)
+        public AddProductToCartCommandHandler(IShoppingCartService cartService)
         {
             _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
         }
         
-        public async Task<Result<bool>> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
+        public async Task<Result<bool>> Handle(AddProductToCartCommand request, CancellationToken cancellationToken)
         {
             if (request.CartId == Guid.Empty)
                 return Result.Failure<bool>("Cart ID cannot be empty");
@@ -25,14 +25,14 @@ namespace MerchStore.Application.ShoppingCart.Commands
             if (request.Quantity <= 0)
                 return Result.Failure<bool>("Quantity must be greater than zero");
                 
-            var success = await _cartService.AddItemToCartAsync(
+            var success = await _cartService.AddProductToCartAsync(
                 request.CartId,
                 request.ProductId,
                 request.Quantity,
                 cancellationToken);
                 
             if (!success)
-                return Result.Failure<bool>("Failed to add item to cart. The product may not exist or is unavailable.");
+                return Result.Failure<bool>("Failed to add product to cart. The product may not exist or is unavailable.");
                 
             return Result.Success(true);
         }

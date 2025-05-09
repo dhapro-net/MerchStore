@@ -27,30 +27,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.Items)
-                                {
-                                    <tr>
-                                        <td>
-                                            <span>@item.ProductName</span>
-                                        </td>
-                                        <td>@item.UnitPrice.ToString("C")</td>
-                                        <td>
-                                            <form asp-action="UpdateQuantity" method="post" class="d-inline">
-                                                <input type="hidden" name="ProductId" value="@item.ProductId" />
-                                                <input type="number" name="Quantity" value="@item.Quantity" min="1"
-                                                    class="form-control form-control-sm quantity-input" />
-                                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                                            </form>
-                                        </td>
-                                        <td>@item.TotalPrice.ToString("C")</td>
-                                        <td>
-                                            <form asp-action="RemoveItem" method="post" class="d-inline">
-                                                <input type="hidden" name="ProductId" value="@item.ProductId" />
-                                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                }
+                                @foreach (var product in Model.Items)
+{
+    <tr>
+        <td>
+            <span>@product.ProductName</span>
+        </td>
+        <td>@product.UnitPrice.ToString("C")</td>
+        <td>
+            <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                <input type="hidden" name="ProductId" value="@product.ProductId" />
+                <input type="number" name="Quantity" value="@product.Quantity" min="1"
+                    class="form-control form-control-sm quantity-input" />
+                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+            </form>
+        </td>
+        <td>@product.TotalPrice.ToString("C")</td>
+        <td>
+            <form asp-action="RemoveProduct" method="post" class="d-inline">
+                <input type="hidden" name="ProductId" value="@product.ProductId" />
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+            </form>
+        </td>
+    </tr>
+}
                             </tbody>
                             <tfoot>
                                 <tr>

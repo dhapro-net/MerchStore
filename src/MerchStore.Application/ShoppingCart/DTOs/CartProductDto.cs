@@ -2,7 +2,7 @@ using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Application.ShoppingCart.DTOs
 {
-    public class CartItemDto
+    public class CartProductDto
     {
         public string ProductId { get; set; }
         public string ProductName { get; set; }

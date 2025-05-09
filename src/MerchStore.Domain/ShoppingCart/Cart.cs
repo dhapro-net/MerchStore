@@ -18,7 +18,7 @@ namespace MerchStore.Domain.ShoppingCart
             private set => Id = value;
         }
 
-        public List<CartItem> Items { get; private set; } = new List<CartItem>();
+        public List<CartProduct> Products { get; private set; } = new List<CartProduct>();
         public DateTime CreatedAt { get; private set; }
         public DateTime LastUpdated { get; private set; }
 
@@ -27,15 +27,15 @@ namespace MerchStore.Domain.ShoppingCart
         {
         }
 
-        public Cart(Guid cartId, List<CartItem> items, DateTime createdAt, DateTime lastUpdated)
+        public Cart(Guid cartId, List<CartProduct> products, DateTime createdAt, DateTime lastUpdated)
         {
             CartId = cartId;
-            Items = items ?? new List<CartItem>();
+            Products = products ?? new List<CartProduct>();
             CreatedAt = createdAt;
             LastUpdated = lastUpdated;
         }
 
-        public void AddItem(string productId, string name, Money price, int quantity)
+        public void AddProduct(string productId, string name, Money price, int quantity)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
@@ -43,37 +43,37 @@ namespace MerchStore.Domain.ShoppingCart
             if (quantity <= 0)
                 throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
 
-            var existingItem = Items.FirstOrDefault(i => i.ProductId == productId);
+            var existingProduct = Products.FirstOrDefault(i => i.ProductId == productId);
 
-            if (existingItem != null)
+            if (existingProduct != null)
             {
-                existingItem.UpdateQuantity(existingItem.Quantity + quantity);
+                existingProduct.UpdateQuantity(existingProduct.Quantity + quantity);
             }
             else
             {
-                var newItem = new CartItem(
+                var newProduct = new CartProduct(
                     productId,
                     name,
                     price,
                     quantity
                 );
 
-                Items.Add(newItem);
+                Products.Add(newProduct);
             }
 
             UpdateLastModified();
 
             // Add domain event
-            AddDomainEvent(new CartItemAddedEvent(CartId, productId, name, price, quantity));
+            AddDomainEvent(new CartProductAddedEvent(CartId, productId, name, price, quantity));
         }
 
         public Money CalculateTotal()
         {
-            if (!Items.Any())
+            if (!Products.Any())
                 return new Money(0, "SEK"); // Default to 0 with a default currency
 
-            var totalAmount = Items
-                .Select(item => item.UnitPrice * item.Quantity) // Multiply Money by quantity
+            var totalAmount = Products
+                .Select(product => product.UnitPrice * product.Quantity) // Multiply Money by quantity
                 .Aggregate((sum, next) => sum + next); // Sum up Money objects
 
             return totalAmount;
@@ -81,27 +81,27 @@ namespace MerchStore.Domain.ShoppingCart
 
         public void Clear()
         {
-            Items.Clear();
+            Products.Clear();
             UpdateLastModified();
 
             // Add domain event
             AddDomainEvent(new CartClearedEvent(CartId));
         }
 
-        public void RemoveItem(string productId)
+        public void RemoveProduct(string productId)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
 
-            var itemToRemove = Items.FirstOrDefault(i => i.ProductId == productId);
+            var productToRemove = Products.FirstOrDefault(i => i.ProductId == productId);
 
-            if (itemToRemove != null)
+            if (productToRemove != null)
             {
-                Items.Remove(itemToRemove);
+                Products.Remove(productToRemove);
                 UpdateLastModified();
 
                 // Add domain event
-                AddDomainEvent(new CartItemRemovedEvent(CartId, productId));
+                AddDomainEvent(new CartProductRemovedEvent(CartId, productId));
             }
         }
 
@@ -112,15 +112,15 @@ namespace MerchStore.Domain.ShoppingCart
 
             if (quantity <= 0)
             {
-                RemoveItem(productId);
+                RemoveProduct(productId);
                 return;
             }
 
-            var item = Items.FirstOrDefault(i => i.ProductId == productId);
+            var product = Products.FirstOrDefault(i => i.ProductId == productId);
 
-            if (item != null)
+            if (product != null)
             {
-                item.UpdateQuantity(quantity);
+                product.UpdateQuantity(quantity);
                 UpdateLastModified();
             }
         }
@@ -139,21 +139,21 @@ namespace MerchStore.Domain.ShoppingCart
                 throw new ArgumentNullException(nameof(logger));
 
             // Create a new cart with default values
-            var cart = new Cart(cartId, new List<CartItem>(), DateTime.UtcNow, DateTime.UtcNow);
+            var cart = new Cart(cartId, new List<CartProduct>(), DateTime.UtcNow, DateTime.UtcNow);
             logger.LogInformation($"Cart created with ID: {cartId}");
 
             return cart;
         }
 
         // Domain methods to query cart state
-        public bool HasItems() => Items.Any();
+        public bool HasProducts() => Products.Any();
 
-        public int ItemCount() => Items.Sum(i => i.Quantity);
+        public int ProductCount() => Products.Sum(i => i.Quantity);
 
         public bool ContainsProduct(string productId) =>
-            Items.Any(i => i.ProductId == productId);
+            Products.Any(i => i.ProductId == productId);
 
-        public CartItem GetItem(string productId) =>
-            Items.FirstOrDefault(i => i.ProductId == productId);
+        public CartProduct GetProduct(string productId) =>
+            Products.FirstOrDefault(i => i.ProductId == productId);
     }
 }

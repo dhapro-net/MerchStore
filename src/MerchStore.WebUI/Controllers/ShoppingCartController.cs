@@ -32,9 +32,9 @@ public class ShoppingCartController : Controller
                 cartDto = new CartDto
                 {
                     CartId = cartId,
-                    Items = new List<CartItemDto>(),
+                    Products = new List<CartProductDto>(),
                     TotalPrice = new Money(0, "SEK"),
-                    TotalItems = 0,
+                    TotalProducts = 0,
                     LastUpdated = DateTime.UtcNow
                 };
             }
@@ -43,15 +43,15 @@ public class ShoppingCartController : Controller
             var viewModel = new ShoppingCartViewModel
             {
                 CartId = cartDto.CartId,
-                Items = cartDto.Items?.Select(item => new ShoppingCartItemViewModel
+                Products = cartDto.Products?.Select(product => new ShoppingCartProductViewModel
                 {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice.Amount, // Map Money.Amount to decimal
-                    Quantity = item.Quantity
-                }).ToList() ?? new List<ShoppingCartItemViewModel>(), // Fallback to an empty list
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName,
+                    UnitPrice = product.UnitPrice.Amount, // Map Money.Amount to decimal
+                    Quantity = product.Quantity
+                }).ToList() ?? new List<ShoppingCartProductViewModel>(), // Fallback to an empty list
                 TotalPrice = cartDto.TotalPrice.Amount, // Map Money.Amount to decimal
-                TotalItems = cartDto.TotalItems,
+                TotalProducts = cartDto.TotalProducts,
                 LastUpdated = cartDto.LastUpdated
             };
 
@@ -69,22 +69,22 @@ public class ShoppingCartController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddItemToCartAsync(string productId, int quantity)
+    public async Task<IActionResult> AddProductToCartAsync(string productId, int quantity)
     {
         try
         {
             var cartId = GetOrCreateCartId();
             // Use the constructor to instantiate the command
-            var command = new AddItemToCartCommand(cartId, productId, quantity);
+            var command = new AddProductToCartCommand(cartId, productId, quantity);
             await _mediator.Send(command);
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in AddItemToCartAsync");
+            _logger.LogError(ex, "Error in AddProductToCartAsync");
             var errorViewModel = new ErrorViewModel
             {
-                Message = "An error occurred while adding the item to the cart."
+                Message = "An error occurred while adding the product to the cart."
             };
             return View("Error", errorViewModel);
         }

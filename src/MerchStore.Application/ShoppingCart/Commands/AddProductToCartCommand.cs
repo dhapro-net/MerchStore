@@ -1,17 +1,19 @@
-using System;
 using MediatR;
 using MerchStore.Application.Common;
 
 namespace MerchStore.Application.ShoppingCart.Commands
 {
-    public class RemoveItemFromCartCommand : IRequest<Result<bool>>
+    public class AddProductToCartCommand : IRequest<Result<bool>>
     {
         public Guid CartId { get; set; }
         public string ProductId { get; set; }
-        public RemoveItemFromCartCommand(Guid cartId, string productId)
+        public int Quantity { get; set; }
+
+                public AddProductToCartCommand(Guid cartId, string productId, int quantity)
         {
             CartId = cartId;
             ProductId = productId;
+            Quantity = quantity;
         }
     }
 }
