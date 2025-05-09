@@ -7,9 +7,9 @@ public class OrderProduct
     public Guid Id { get; set; } // Primary Key
     public Guid ProductId { get; set; } // Foreign Key to Product
     public string ProductName { get; set; }
-    public Money Price { get; set; }
+    public Money UnitPrice { get; set; }
     public int Quantity { get; set; }
-    public Money TotalPrice => new Money(Price.Amount * Quantity, Price.Currency);
+    public Money TotalPrice => new Money(UnitPrice.Amount * Quantity, UnitPrice.Currency);
 
     // Foreign key to the Order
     public Guid OrderId { get; set; }
