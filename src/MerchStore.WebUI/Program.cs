@@ -37,6 +37,7 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
+    app.UseDeveloperExceptionPage(); // Show detailed error messages in development
     // In development, seed the database with test data using the extension method
     app.Services.SeedDatabaseAsync().Wait();
 }

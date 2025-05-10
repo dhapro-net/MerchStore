@@ -3,12 +3,11 @@ using MediatR;
 using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
 using MerchStore.WebUI.Models;
-using Microsoft.Extensions.Logging;
 
 namespace MerchStore.WebUI.Controllers;
 
 /// <summary>
-/// Controller for managing the product catalog and shopping cart operations.
+/// Manages product catalog and shopping cart operations.
 /// </summary>
 public class CatalogController : Controller
 {
@@ -16,12 +15,6 @@ public class CatalogController : Controller
     private readonly ILogger<CatalogController> _logger;
     private readonly CookieShoppingCartService _cookieShoppingCartService;
 
-    /// <summary>
-    /// Constructor for CatalogController.
-    /// </summary>
-    /// <param name="mediator">Mediator for sending queries and commands.</param>
-    /// <param name="logger">Logger for structured logging.</param>
-    /// <param name="cookieShoppingCartService">Service for managing shopping cart cookies.</param>
     public CatalogController(IMediator mediator, ILogger<CatalogController> logger, CookieShoppingCartService cookieShoppingCartService)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -36,10 +29,8 @@ public class CatalogController : Controller
     {
         try
         {
-            // Send the query to get all products
             var products = await _mediator.Send(new GetAllProductsQuery());
 
-            // Map ProductDto to ProductCardViewModel
             var productViewModels = products.Select(p => new ProductCardViewModel
             {
                 Id = p.Id,
@@ -47,13 +38,12 @@ public class CatalogController : Controller
                 TruncatedDescription = p.Description.Length > 100
                     ? p.Description.Substring(0, 97) + "..."
                     : p.Description,
-                FormattedPrice = p.Price.Amount.ToString("C"), // Format price as currency
+                FormattedPrice = p.Price.Amount.ToString("C"),
                 PriceAmount = p.Price.Amount,
                 ImageUrl = p.ImageUrl?.ToString(),
                 StockQuantity = p.StockQuantity,
             }).ToList();
 
-            // Create the product catalog view model
             var viewModel = new ProductCatalogViewModel
             {
                 FeaturedProducts = productViewModels
@@ -63,33 +53,28 @@ public class CatalogController : Controller
         }
         catch (Exception ex)
         {
-            // Log the exception
-            _logger.LogError(ex, "Error occurred while loading the product catalog.");
-
-            // Show an error message to the user
+            _logger.LogError(ex, "Error loading the product catalog.");
             ViewBag.ErrorMessage = "An error occurred while loading products. Please try again later.";
             return View("Error");
         }
     }
 
     /// <summary>
-    /// Displays the details of a specific product.
+    /// Displays details of a specific product.
     /// </summary>
-    /// <param name="id">The ID of the product.</param>
+    /// <param name="id">The product ID.</param>
     public async Task<IActionResult> Details(Guid id)
     {
         try
         {
-            // Send the query to get product details
             var product = await _mediator.Send(new GetProductByIdQuery(id));
 
-            // Map ProductDto to ProductDetailsViewModel
             var viewModel = new ProductDetailsViewModel
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
-                FormattedPrice = product.Price.Amount.ToString("C"), // Format price as currency
+                FormattedPrice = product.Price.Amount.ToString("C"),
                 PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
                 StockQuantity = product.StockQuantity,
@@ -99,10 +84,7 @@ public class CatalogController : Controller
         }
         catch (Exception ex)
         {
-            // Log the exception
-            _logger.LogError(ex, "Error occurred while loading product details for ProductId: {ProductId}", id);
-
-            // Show an error message to the user
+            _logger.LogError(ex, "Error loading product details for ProductId: {ProductId}", id);
             ViewBag.ErrorMessage = "An error occurred while loading the product. Please try again later.";
             return View("Error");
         }
@@ -111,40 +93,46 @@ public class CatalogController : Controller
     /// <summary>
     /// Adds a product to the shopping cart.
     /// </summary>
-    /// <param name="productId">The ID of the product to add.</param>
-    /// <param name="quantity">The quantity of the product to add.</param>
+    /// <param name="productId">The product ID.</param>
+    /// <param name="quantity">The quantity to add.</param>
     [HttpPost]
-public async Task<IActionResult> AddProductToCartAsync(string productId, int quantity)
-{
-    try
+    public async Task<IActionResult> AddProductToCart(string productId, int quantity)
     {
-        // Retrieve product details using Mediator
-        var product = await _mediator.Send(new GetProductByIdQuery(Guid.Parse(productId)));
-
-        if (product == null)
+        if (string.IsNullOrEmpty(productId))
         {
-            TempData["ErrorMessage"] = "The product could not be found.";
+            TempData["ErrorMessage"] = "Product ID cannot be null or empty.";
             return RedirectToAction("Index");
         }
 
-        // Retrieve or create the cart
-        var cart = _cookieShoppingCartService.GetOrCreateCart(Guid.Empty);
+        if (quantity <= 0)
+        {
+            TempData["ErrorMessage"] = "Quantity must be greater than zero.";
+            return RedirectToAction("Index");
+        }
 
-        // Add the product to the cart
-        cart.AddProduct(productId, product.Name, product.Price, quantity);
+        try
+        {
+            var product = await _mediator.Send(new GetProductByIdQuery(Guid.Parse(productId)));
 
-        // Save the updated cart to cookies
-        _cookieShoppingCartService.SaveCart(cart);
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = "The product could not be found.";
+                return RedirectToAction("Index");
+            }
 
-        TempData["SuccessMessage"] = "Product added to cart successfully!";
-        return RedirectToAction("Index");
+            var cart = _cookieShoppingCartService.GetOrCreateCart();
+            cart.AddProduct(productId, product.Name, product.Price, quantity);
+            _cookieShoppingCartService.SaveCart(cart);
+
+            TempData["SuccessMessage"] = "Product added to cart successfully!";
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding product {ProductId} to the cart.", productId);
+            return View("Error", CreateErrorViewModel("An error occurred while adding the product to the cart."));
+        }
     }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error occurred while adding product {ProductId} to the cart.", productId);
-        return View("Error", CreateErrorViewModel("An error occurred while adding the product to the cart."));
-    }
-}
 
     /// <summary>
     /// Clears the shopping cart.
@@ -154,19 +142,20 @@ public async Task<IActionResult> AddProductToCartAsync(string productId, int qua
     {
         try
         {
-            // Clear the cart from cookies
-            _cookieShoppingCartService.ClearCart(Guid.Empty);
-
+            _cookieShoppingCartService.ClearCart();
             TempData["SuccessMessage"] = "Shopping cart cleared successfully!";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while clearing the shopping cart.");
+            _logger.LogError(ex, "Error clearing the shopping cart.");
             return View("Error", CreateErrorViewModel("An error occurred while clearing the shopping cart."));
         }
     }
 
+    /// <summary>
+    /// Creates an error view model with the specified message.
+    /// </summary>
     private ErrorViewModel CreateErrorViewModel(string errorMessage)
     {
         return new ErrorViewModel

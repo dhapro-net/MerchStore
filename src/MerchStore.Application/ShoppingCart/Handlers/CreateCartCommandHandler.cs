@@ -5,7 +5,8 @@ using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-
+namespace MerchStore.Application.ShoppingCart.Handlers
+{
 public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, CartDto>
 {
     private readonly ILogger<CreateCartCommandHandler> _logger;
@@ -36,4 +37,5 @@ public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, CartD
             LastUpdated = DateTime.UtcNow
         };
     }
+}
 }

@@ -2,19 +2,27 @@ using MerchStore.Domain.ShoppingCart;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Service for managing the shopping cart stored in browser cookies.
+/// </summary>
 public class CookieShoppingCartService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<CookieShoppingCartService> _logger;
-    private readonly ILogger<Cart> _cartLogger;
-    private const string CartCookiePrefix = "ShoppingCart_";
-
+    private readonly IHttpContextAccessor _httpContextAccessor; // Provides access to the current HTTP context.
+    private readonly ILogger<CookieShoppingCartService> _logger; // Logger for logging messages related to this service.
+    private readonly ILogger<Cart> _cartLogger; // Logger for logging messages related to the Cart domain object.
+    private const string CartCookieName = "ShoppingCart"; // The name of the cookie used to store the shopping cart.
     private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
     {
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = false
+        PropertyNameCaseInsensitive = true, // Allows case-insensitive property matching during serialization/deserialization.
+        WriteIndented = false // Keeps the serialized JSON compact.
     };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CookieShoppingCartService"/> class.
+    /// </summary>
+    /// <param name="logger">Logger for this service.</param>
+    /// <param name="cartLogger">Logger for the Cart domain object.</param>
+    /// <param name="httpContextAccessor">Provides access to the current HTTP context.</param>
     public CookieShoppingCartService(
         ILogger<CookieShoppingCartService> logger,
         ILogger<Cart> cartLogger,
@@ -25,42 +33,43 @@ public class CookieShoppingCartService
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
-    public Cart? GetCart(Guid cartId)
+    /// <summary>
+    /// Retrieves the shopping cart from the browser cookie.
+    /// </summary>
+    /// <returns>The deserialized <see cref="Cart"/> object, or null if the cart does not exist or cannot be deserialized.</returns>
+    public Cart? GetCart()
     {
-        if (cartId == Guid.Empty)
-        {
-            _logger.LogWarning("Cart ID is Guid.Empty. Returning null.");
-            return null;
-        }
-
         if (_httpContextAccessor.HttpContext == null)
         {
             _logger.LogError("HttpContext is null. Unable to retrieve cart.");
             return null;
         }
 
-        var cookieKey = $"{CartCookiePrefix}{cartId}";
-        var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[cookieKey];
+        var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[CartCookieName];
 
         if (string.IsNullOrEmpty(cookieValue))
         {
-            _logger.LogWarning("Cart cookie with key '{CookieKey}' not found.", cookieKey);
+            _logger.LogWarning("Cart cookie '{CartCookieName}' not found.");
             return null;
         }
 
         try
         {
             var cart = JsonSerializer.Deserialize<Cart>(cookieValue, _jsonSerializerOptions);
-            _logger.LogInformation("Successfully retrieved cart with ID {CartId} from cookie.", cartId);
+            _logger.LogInformation("Successfully retrieved cart from cookie.");
             return cart;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to deserialize cart with ID {CartId} from cookie.", cartId);
+            _logger.LogError(ex, "Failed to deserialize cart from cookie.");
             return null;
         }
     }
 
+    /// <summary>
+    /// Saves the shopping cart to the browser cookie.
+    /// </summary>
+    /// <param name="cart">The <see cref="Cart"/> object to save.</param>
     public void SaveCart(Cart cart)
     {
         if (cart == null)
@@ -75,59 +84,52 @@ public class CookieShoppingCartService
             return;
         }
 
-        var cookieKey = $"{CartCookiePrefix}{cart.CartId}";
         var serializedCart = JsonSerializer.Serialize(cart, _jsonSerializerOptions);
 
-        _logger.LogInformation("Saving cart with ID {CartId} to cookie. Cookie key: {CookieKey}", cart.CartId, cookieKey);
+        _logger.LogInformation("Saving cart to cookie with name '{CartCookieName}'.");
 
-        _httpContextAccessor.HttpContext.Response.Cookies.Append(cookieKey, serializedCart, new CookieOptions
+        _httpContextAccessor.HttpContext.Response.Cookies.Append(CartCookieName, serializedCart, new CookieOptions
         {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Lax,
-            Expires = DateTime.UtcNow.AddDays(30)
+            HttpOnly = true, // Prevents client-side scripts from accessing the cookie.
+            Secure = true, // Ensures the cookie is only sent over HTTPS.
+            SameSite = SameSiteMode.Lax, // Restricts cross-site cookie usage.
+            Expires = DateTime.UtcNow.AddDays(30) // Sets the cookie to expire in 30 days.
         });
 
-        _logger.LogInformation("Cart with ID {CartId} successfully saved to cookie.", cart.CartId);
+        _logger.LogInformation("Cart successfully saved to cookie.");
     }
 
-    public void ClearCart(Guid cartId)
+    /// <summary>
+    /// Clears the shopping cart by deleting the cookie.
+    /// </summary>
+    public void ClearCart()
     {
-        if (cartId == Guid.Empty)
-        {
-            _logger.LogWarning("Cart ID is Guid.Empty. Cannot clear cart.");
-            return;
-        }
-
         if (_httpContextAccessor.HttpContext == null)
         {
             _logger.LogError("HttpContext is null. Unable to clear cart.");
             return;
         }
 
-        var cookieKey = $"{CartCookiePrefix}{cartId}";
-        _httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieKey);
+        _httpContextAccessor.HttpContext.Response.Cookies.Delete(CartCookieName);
 
-        _logger.LogInformation("Cart with ID {CartId} cleared from cookie.", cartId);
+        _logger.LogInformation("Cart cleared from cookie.");
     }
 
-    public Cart GetOrCreateCart(Guid cartId)
+    /// <summary>
+    /// Retrieves the shopping cart from the cookie, or creates a new one if it does not exist.
+    /// </summary>
+    /// <returns>The <see cref="Cart"/> object.</returns>
+    public Cart GetOrCreateCart()
     {
-        if (cartId == Guid.Empty)
-        {
-            _logger.LogWarning("Cart ID is Guid.Empty. Generating a new Cart ID.");
-            cartId = Guid.NewGuid();
-        }
+        _logger.LogInformation("Retrieving or creating cart.");
 
-        _logger.LogInformation("Retrieving or creating cart with ID: {CartId}.", cartId);
-
-        var cart = GetCart(cartId);
+        var cart = GetCart();
         if (cart == null)
         {
-            _logger.LogWarning("Cart with ID {CartId} not found. Creating a new cart.", cartId);
+            _logger.LogWarning("Cart not found. Creating a new cart.");
 
-            cart = Cart.Create(cartId, _cartLogger);
-            SaveCart(cart);
+            cart = Cart.Create(Guid.NewGuid(), _cartLogger); // Creates a new cart with a unique ID.
+            SaveCart(cart); // Saves the newly created cart to the cookie.
         }
 
         return cart;

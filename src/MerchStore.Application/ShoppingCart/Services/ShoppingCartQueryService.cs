@@ -18,12 +18,6 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     private readonly ILogger<ShoppingCartQueryService> _logger;
     private readonly ILogger<Cart> _cartLogger;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ShoppingCartQueryService"/> class.
-    /// </summary>
-    /// <param name="mediator">The Mediatr instance for sending commands and queries.</param>
-    /// <param name="logger">The logger for logging operations.</param>
-    /// <param name="cartLogger">The logger for logging cart-specific operations.</param>
     public ShoppingCartQueryService(IMediator mediator, ILogger<ShoppingCartQueryService> logger, ILogger<Cart> cartLogger)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -58,14 +52,19 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     {
         _logger.LogInformation("Calculating total for cart with ID: {CartId}.", cartId);
 
-        // Create a Cart object using the factory method
         var cart = Cart.Create(cartId, _cartLogger);
-
-        // Pass the Cart object to the GetCartQuery
         var query = new GetCartQuery(cart);
 
-        // Use Mediatr to send the CalculateCartTotalQuery
-        return await _mediator.Send(query);
+        var cartDto = await _mediator.Send(query);
+
+        if (cartDto == null)
+        {
+            _logger.LogWarning("Cart with ID {CartId} not found. Returning zero total.", cartId);
+            return new Money(0, "SEK");
+        }
+
+        var totalPrice = cartDto.Products.Sum(product => product.UnitPrice.Amount * product.Quantity);
+        return new Money(totalPrice, "SEK");
     }
 
     /// <summary>
@@ -77,8 +76,6 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
             throw new ArgumentNullException(nameof(query));
 
         _logger.LogInformation("Fetching cart summary with ID: {CartId}.", query.Cart.CartId);
-
-        // Use Mediatr to send the GetCartSummaryQuery
         return await _mediator.Send(query, cancellationToken);
     }
 
@@ -89,10 +86,7 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     {
         _logger.LogInformation("Checking if cart with ID {CartId} has products.", cartId);
 
-        // Create a Cart object using the factory method
         var cart = Cart.Create(cartId, _cartLogger);
-
-        // Pass the Cart object to the GetCartQuery
         var query = new GetCartQuery(cart);
 
         var cartDto = await _mediator.Send(query, cancellationToken);
@@ -106,10 +100,7 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
     {
         _logger.LogInformation("Getting product count for cart with ID {CartId}.", cartId);
 
-        // Create a Cart object using the factory method
         var cart = Cart.Create(cartId, _cartLogger);
-
-        // Pass the Cart object to the GetCartQuery
         var query = new GetCartQuery(cart);
 
         var cartDto = await _mediator.Send(query, cancellationToken);
@@ -126,10 +117,7 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
 
         _logger.LogInformation("Checking if cart with ID {CartId} contains product {ProductId}.", cartId, productId);
 
-        // Create a Cart object using the factory method
         var cart = Cart.Create(cartId, _cartLogger);
-
-        // Pass the Cart object to the GetCartQuery
         var query = new GetCartQuery(cart);
 
         var cartDto = await _mediator.Send(query, cancellationToken);
@@ -146,13 +134,24 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
 
         _logger.LogInformation("Fetching product {ProductId} from cart with ID {CartId}.", productId, cartId);
 
-        // Create a Cart object using the factory method
         var cart = Cart.Create(cartId, _cartLogger);
-
-        // Pass the Cart object to the GetCartQuery
         var query = new GetCartQuery(cart);
 
-        // Use Mediatr to send the GetProductQuery
-        return await _mediator.Send(query, cancellationToken);
+        var cartDto = await _mediator.Send(query, cancellationToken);
+
+        if (cartDto == null)
+        {
+            _logger.LogWarning("Cart with ID {CartId} not found.", cartId);
+            return null;
+        }
+
+        var product = cartDto.Products.FirstOrDefault(p => p.ProductId == productId);
+
+        if (product == null)
+        {
+            _logger.LogWarning("Product with ID {ProductId} not found in cart {CartId}.", productId, cartId);
+        }
+
+        return product;
     }
 }

@@ -1,13 +1,11 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.DTOs;
-using MerchStore.Application.ShoppingCart.Queries;
 using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-
-namespace MerchStore.Application.ShoppingCart.Handlers;
+namespace MerchStore.Application.ShoppingCart.Queries;
 
 /// <summary>
-/// Handles the GetCartQuery.
+/// Handles the query to retrieve a shopping cart.
 /// </summary>
 public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
 {
@@ -40,6 +38,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
                 Quantity = p.Quantity
             }).ToList(),
             TotalPrice = new Money(request.Cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK"),
+            TotalProducts = request.Cart.Products.Sum(p => p.Quantity),
             LastUpdated = request.Cart.LastUpdated
         };
 

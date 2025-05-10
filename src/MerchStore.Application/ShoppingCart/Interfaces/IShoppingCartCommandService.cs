@@ -25,14 +25,15 @@ public interface IShoppingCartCommandService
     /// <returns><c>true</c> if the product was removed successfully; otherwise, <c>false</c>.</returns>
     Task<bool> RemoveProductFromCartAsync(Guid cartId, string productId, CancellationToken cancellationToken);
 
-    /// <summary>
-    /// Updates the quantity of a product in the shopping cart.
-    /// </summary>
-    /// <param name="cartId">The unique identifier of the shopping cart.</param>
-    /// <param name="productId">The unique identifier of the product to update.</param>
-    /// <param name="quantity">The new quantity of the product.</param>
-    /// <returns><c>true</c> if the quantity was updated successfully; otherwise, <c>false</c>.</returns>
-    Task<bool> UpdateProductQuantityAsync(Guid cartId, string productId, int quantity);
+   /// <summary>
+/// Updates the quantity of a product in the shopping cart.
+/// </summary>
+/// <param name="cartId">The unique identifier of the shopping cart.</param>
+/// <param name="productId">The unique identifier of the product to update.</param>
+/// <param name="quantity">The new quantity of the product.</param>
+/// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+/// <returns><c>true</c> if the quantity was updated successfully; otherwise, <c>false</c>.</returns>
+Task<bool> UpdateProductQuantityAsync(Guid cartId, string productId, int quantity, CancellationToken cancellationToken);
 
     /// <summary>
     /// Clears all products from the shopping cart.

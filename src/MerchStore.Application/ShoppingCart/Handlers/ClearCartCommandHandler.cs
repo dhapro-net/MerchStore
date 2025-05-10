@@ -3,7 +3,8 @@ using MerchStore.Application.Common;
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using Microsoft.Extensions.Logging;
-
+namespace MerchStore.Application.ShoppingCart.Handlers
+{
 public class ClearCartCommandHandler : IRequestHandler<ClearCartCommand, Result<bool>>
 {
     private readonly ILogger<ClearCartCommandHandler> _logger;
@@ -37,4 +38,5 @@ public class ClearCartCommandHandler : IRequestHandler<ClearCartCommand, Result<
             return Task.FromResult(Result.Failure<bool>("An unexpected error occurred while clearing the shopping cart."));
         }
     }
+}
 }

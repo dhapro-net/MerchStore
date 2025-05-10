@@ -2,7 +2,8 @@ using MediatR;
 using MerchStore.Application.ShoppingCart.Queries;
 using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-
+namespace MerchStore.Application.ShoppingCart.Handlers
+{
 public class CalculateCartTotalQueryHandler : IRequestHandler<CalculateCartTotalQuery, Money>
 {
     private readonly ILogger<CalculateCartTotalQueryHandler> _logger;
@@ -28,4 +29,5 @@ public class CalculateCartTotalQueryHandler : IRequestHandler<CalculateCartTotal
 
         return Task.FromResult(total);
     }
+}
 }
