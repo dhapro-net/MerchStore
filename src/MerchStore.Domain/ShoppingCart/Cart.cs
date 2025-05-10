@@ -88,7 +88,7 @@ namespace MerchStore.Domain.ShoppingCart
             AddDomainEvent(new CartClearedEvent(CartId));
         }
 
-        public bool RemoveProduct(string productId)
+        public void RemoveProduct(string productId)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
@@ -102,21 +102,18 @@ namespace MerchStore.Domain.ShoppingCart
 
                 // Add domain event
                 AddDomainEvent(new CartProductRemovedEvent(CartId, productId));
-
-                return true; // Indicate that the product was successfully removed
             }
-
-            return false; // Indicate that the product was not found
         }
 
-        public bool UpdateQuantity(string productId, int quantity)
+        public void UpdateQuantity(string productId, int quantity)
         {
             if (string.IsNullOrEmpty(productId))
                 throw new ArgumentException("Product ID cannot be null or empty", nameof(productId));
 
             if (quantity <= 0)
             {
-                return RemoveProduct(productId); // Return whether the product was removed
+                RemoveProduct(productId);
+                return;
             }
 
             var product = Products.FirstOrDefault(i => i.ProductId == productId);
@@ -125,10 +122,7 @@ namespace MerchStore.Domain.ShoppingCart
             {
                 product.UpdateQuantity(quantity);
                 UpdateLastModified();
-                return true; // Indicate that the quantity was successfully updated
             }
-
-            return false; // Indicate that the product was not found
         }
 
         private void UpdateLastModified()
@@ -151,5 +145,15 @@ namespace MerchStore.Domain.ShoppingCart
             return cart;
         }
 
+        // Domain methods to query cart state
+        public bool HasProducts() => Products.Any();
+
+        public int ProductCount() => Products.Sum(i => i.Quantity);
+
+        public bool ContainsProduct(string productId) =>
+            Products.Any(i => i.ProductId == productId);
+
+        public CartProduct GetProduct(string productId) =>
+            Products.FirstOrDefault(i => i.ProductId == productId);
     }
 }

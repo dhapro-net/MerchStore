@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MerchStore.Domain.Entities;
+using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Infrastructure.Persistence;
 
@@ -28,29 +29,14 @@ public class AppDbContext : DbContext
         // This scans for all IEntityTypeConfiguration implementations and applies them
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-        modelBuilder.Entity<Order>(entity =>
+    modelBuilder.Entity<Order>(entity =>
+    {
+        entity.OwnsOne(o => o.PaymentInfo, paymentInfo =>
         {
-            entity.OwnsOne(o => o.PaymentInfo, paymentInfo =>
-            {
-                paymentInfo.Property(p => p.CardNumber).IsRequired();
-                paymentInfo.Property(p => p.ExpirationDate).IsRequired();
-                paymentInfo.Property(p => p.CVV).IsRequired();
-            });
+            paymentInfo.Property(p => p.CardNumber).IsRequired();
+            paymentInfo.Property(p => p.ExpirationDate).IsRequired();
+            paymentInfo.Property(p => p.CVV).IsRequired();
         });
-        modelBuilder.Entity<OrderProduct>(entity =>
-        {
-            entity.HasKey(op => op.Id);
-
-            entity.Property(op => op.ProductId).IsRequired();
-            entity.Property(op => op.ProductName).IsRequired().HasMaxLength(255);
-            entity.Property(op => op.Quantity).IsRequired();
-            entity.Property(op => op.OrderId).IsRequired();
-
-            entity.OwnsOne(op => op.UnitPrice, money =>
-            {
-                money.Property(m => m.Amount).HasColumnName("UnitPrice_Amount").IsRequired();
-                money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").IsRequired();
-            });
-        });
+    });
     }
 }
