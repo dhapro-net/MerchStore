@@ -1,15 +1,15 @@
 using MediatR;
-using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ValueObjects;
 
-namespace MerchStore.Application.ShoppingCart.Queries;
-
-public class CalculateCartTotalQuery : IRequest<Money>
+namespace MerchStore.Application.ShoppingCart.Queries
 {
-    public Cart Cart { get; }
-
-    public CalculateCartTotalQuery(Cart cart)
+    public class CalculateCartTotalQuery : IRequest<Money>
     {
-        Cart = cart ?? throw new ArgumentNullException(nameof(cart));
+        public Guid CartId { get; }
+
+        public CalculateCartTotalQuery(Guid cartId)
+        {
+            CartId = cartId;
+        }
     }
 }

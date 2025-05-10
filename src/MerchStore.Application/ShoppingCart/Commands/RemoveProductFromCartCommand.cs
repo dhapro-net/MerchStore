@@ -1,17 +1,17 @@
+using System;
 using MediatR;
 using MerchStore.Application.Common;
-using MerchStore.Domain.ShoppingCart;
 
-namespace MerchStore.Application.ShoppingCart.Commands;
-
-public class RemoveProductFromCartCommand : IRequest<Result<bool>>
+namespace MerchStore.Application.ShoppingCart.Commands
 {
-    public Cart Cart { get; }
-    public string ProductId { get; }
-
-    public RemoveProductFromCartCommand(Cart cart, string productId)
+    public class RemoveProductFromCartCommand : IRequest<Result<bool>>
     {
-        Cart = cart ?? throw new ArgumentNullException(nameof(cart));
-        ProductId = productId ?? throw new ArgumentNullException(nameof(productId));
+        public Guid CartId { get; set; }
+        public string ProductId { get; set; }
+        public RemoveProductFromCartCommand(Guid cartId, string productId)
+        {
+            CartId = cartId;
+            ProductId = productId;
+        }
     }
 }
