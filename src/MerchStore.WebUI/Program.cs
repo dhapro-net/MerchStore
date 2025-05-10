@@ -16,6 +16,9 @@ builder.Services.AddApplication();
 // Add Infrastructure services - this includes DbContext, Repositories, etc.
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddScoped<CookieShoppingCartService>();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddLogging(logging =>
 {
@@ -34,6 +37,7 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
+    app.UseDeveloperExceptionPage(); // Show detailed error messages in development
     // In development, seed the database with test data using the extension method
     app.Services.SeedDatabaseAsync().Wait();
 }

@@ -27,14 +27,16 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Register DbContext with in-memory database
-        // In a real application, you'd use a real database
         services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase("MerchStoreDb"));
 
         // Register repositories
-        services.AddScoped<IProductRepository, ProductRepository>();
-
-        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
+        services.AddScoped<IOrderCommandRepository, OrderCommandRepository>();
+        services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
+        services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
+        services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
+        services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -48,28 +50,18 @@ public static class DependencyInjection
         // Register DbContext seeder
         services.AddScoped<AppDbContextSeeder>();
 
-        // Register HttpContextAccessor for cookie access
-        services.AddHttpContextAccessor();
 
-        // Register cookie-based shopping cart repository
-        services.AddScoped<IShoppingCartRepository, CookieShoppingCartRepository>();
+        // Register cookie-based shopping cart repositories
+        services.AddScoped<IShoppingCartQueryRepository, CookieShoppingCartRepository>();
+        services.AddScoped<IShoppingCartCommandRepository, CookieShoppingCartRepository>();
 
-        services.AddScoped<IShoppingCartService, ShoppingCartService>();
-        // Register Unit of Work
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        
-        services.AddScoped<IOrderRepository, OrderRepository>();
+        // Register ShoppingCart services (split into Query and Command services)
+        services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
+        services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
 
 
         return services;
     }
-
-    /// <summary>
-    /// Seeds the database with initial data.
-    /// This is an extension method on IServiceProvider to allow it to be called from Program.cs.
-    /// </summary>
-    /// <param name="serviceProvider">The service provider to resolve dependencies</param>
-    /// <returns>A task representing the asynchronous operation</returns>
     public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
