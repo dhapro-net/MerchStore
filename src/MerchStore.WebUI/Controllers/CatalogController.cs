@@ -1,27 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
-using MerchStore.Application.Services.Interfaces;
+using MediatR;
+using MerchStore.Application.Catalog.Queries;
 using MerchStore.WebUI.Models.Catalog;
+using MerchStore.Application.ShoppingCart.Commands;
+using Microsoft.AspNetCore.Authorization;
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.WebUI.Helpers;
 
 namespace MerchStore.WebUI.Controllers;
 
 public class CatalogController : Controller
 {
-    private readonly ICatalogService _catalogService;
+    private readonly IMediator _mediator;
+private readonly IShoppingCartService _shoppingCartService;
 
-    public CatalogController(ICatalogService catalogService)
-    {
-        _catalogService = catalogService;
-    }
+    public CatalogController(IMediator mediator, IShoppingCartService shoppingCartService)
+{
+    _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+    _shoppingCartService = shoppingCartService ?? throw new ArgumentNullException(nameof(shoppingCartService));
+}
 
     // GET: Catalog
     public async Task<IActionResult> Index()
     {
         try
         {
-            // Get all products from the service
-            var products = await _catalogService.GetAllProductsAsync();
+            // Send the query to get all products
+            var products = await _mediator.Send(new GetAllProductsQuery());
 
-            // Map domain entities to view models
+            // Map ProductDto to ProductCardViewModel
             var productViewModels = products.Select(p => new ProductCardViewModel
             {
                 Id = p.Id,
@@ -29,10 +36,10 @@ public class CatalogController : Controller
                 TruncatedDescription = p.Description.Length > 100
                     ? p.Description.Substring(0, 97) + "..."
                     : p.Description,
-                FormattedPrice = p.Price.ToString(),
+                FormattedPrice = p.Price.Amount.ToString("C"), // Format price as currency
                 PriceAmount = p.Price.Amount,
                 ImageUrl = p.ImageUrl?.ToString(),
-                StockQuantity = p.StockQuantity
+                StockQuantity = p.StockQuantity,
             }).ToList();
 
             // Create the product catalog view model
@@ -46,7 +53,6 @@ public class CatalogController : Controller
         catch (Exception ex)
         {
             // Log the exception
-            // In a real application, you should use a proper logging framework
             Console.WriteLine($"Error in ProductCatalog: {ex.Message}");
 
             // Show an error message to the user
@@ -60,25 +66,19 @@ public class CatalogController : Controller
     {
         try
         {
-            // Get the specific product from the service
-            var product = await _catalogService.GetProductByIdAsync(id);
+            // Send the query to get product details
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
 
-            // Return 404 if product not found
-            if (product is null)
-            {
-                return NotFound();
-            }
-
-            // Map domain entity to view model
+            // Map ProductDto to ProductDetailsViewModel
             var viewModel = new ProductDetailsViewModel
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
-                FormattedPrice = product.Price.ToString(),
+                FormattedPrice = product.Price.Amount.ToString("C"), // Format price as currency
                 PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
-                StockQuantity = product.StockQuantity
+                StockQuantity = product.StockQuantity,
             };
 
             return View(viewModel);
@@ -93,4 +93,52 @@ public class CatalogController : Controller
             return View("Error");
         }
     }
+    [HttpPost]
+    [HttpPost]
+public async Task<IActionResult> AddProductToCart(Guid productId)
+{
+    try
+    {
+        if (productId == Guid.Empty)
+        {
+            Console.WriteLine("Invalid ProductId received.");
+            TempData["ErrorMessage"] = "Invalid product ID.";
+            return RedirectToAction("Index");
+        }
+
+        // Get or create the cart
+        var cartId = GetOrCreateCartId();
+        var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId, HttpContext.RequestAborted);
+
+        // Add the product to the cart
+        var success = await _shoppingCartService.AddProductToCartAsync(cart.CartId, productId.ToString(), 1, HttpContext.RequestAborted);
+
+        if (!success)
+        {
+            Console.WriteLine("Error adding product to cart.");
+            TempData["ErrorMessage"] = "Failed to add product to cart.";
+            return RedirectToAction("Index");
+        }
+
+        Console.WriteLine("Product added to cart successfully!");
+        TempData["SuccessMessage"] = "Product added to cart successfully!";
+        return RedirectToAction("Index");
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+        Console.WriteLine($"Unexpected error in AddProductToCart: {ex.Message}");
+        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+        // Show a generic error message to the user
+        TempData["ErrorMessage"] = "An unexpected error occurred while adding the product to the cart. Please try again later.";
+        return RedirectToAction("Index");
+    }
+}
+
+private Guid GetOrCreateCartId()
+{
+    return CartHelper.GetOrCreateCartId(HttpContext);
+}
+
 }

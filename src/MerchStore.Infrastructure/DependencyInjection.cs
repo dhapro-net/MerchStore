@@ -3,10 +3,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.Interfaces;
+using MerchStore.Domain.ShoppingCart.Interfaces;
 using MerchStore.Infrastructure.Persistence;
 using MerchStore.Infrastructure.Persistence.Repositories;
 using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations;
 using MerchStore.Infrastructure.ExternalServices.Reviews;
+using MerchStore.Infrastructure.Repositories;
+using MerchStore.Application.ShoppingCart.Interfaces;
+using MerchStore.Application.ShoppingCart.Services;
+
 
 namespace MerchStore.Infrastructure;
 
@@ -36,6 +41,8 @@ public static class DependencyInjection
         // Register repositories
         services.AddScoped<IProductRepository, ProductRepository>();
 
+        services.AddScoped<IOrderRepository, OrderRepository>();
+
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -47,6 +54,19 @@ public static class DependencyInjection
 
         // Register DbContext seeder
         services.AddScoped<AppDbContextSeeder>();
+
+        // Register HttpContextAccessor for cookie access
+        services.AddHttpContextAccessor();
+
+        // Register cookie-based shopping cart repository
+        services.AddScoped<IShoppingCartRepository, CookieShoppingCartRepository>();
+
+        services.AddScoped<IShoppingCartService, ShoppingCartService>();
+        // Register Unit of Work
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        services.AddScoped<IOrderRepository, OrderRepository>();
+
 
         return services;
     }
@@ -73,6 +93,7 @@ public static class DependencyInjection
     {
         using var scope = serviceProvider.CreateScope();
         var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
+
         await seeder.SeedAsync();
     }
 }

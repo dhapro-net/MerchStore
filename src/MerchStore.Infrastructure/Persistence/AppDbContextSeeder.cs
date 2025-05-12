@@ -91,6 +91,7 @@ public class AppDbContextSeeder
                     new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png"),
                     Money.FromSEK(19.99m),
                     25)
+
             };
 
             await _context.Products.AddRangeAsync(products);
@@ -103,4 +104,6 @@ public class AppDbContextSeeder
             _logger.LogInformation("Database already contains products. Skipping product seed.");
         }
     }
+
+
 }

@@ -8,6 +8,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
+
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Update the JSON options configuration to use our custom policy
@@ -91,6 +95,11 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader()  // Allow any headers
                    .AllowAnyMethod(); // Allow any HTTP method
         });
+
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
 });
 
 var app = builder.Build();
@@ -122,6 +131,8 @@ app.UseCors("AllowAllOrigins");
 // Add authentication middleware
 app.UseAuthentication();
 // Add authorization middleware
+app.UseCookiePolicy();
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -133,5 +144,6 @@ app.MapControllerRoute(
 
 
 app.MapMinimalProductEndpoints();
+
 
 app.Run();
