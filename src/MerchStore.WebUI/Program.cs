@@ -95,6 +95,7 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader()  // Allow any headers
                    .AllowAnyMethod(); // Allow any HTTP method
         });
+});
 
 builder.Services.AddLogging(logging =>
 {
@@ -147,3 +148,4 @@ app.MapMinimalProductEndpoints();
 
 
 app.Run();
+
