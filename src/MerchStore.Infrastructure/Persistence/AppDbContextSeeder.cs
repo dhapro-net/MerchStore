@@ -60,78 +60,38 @@ public class AppDbContextSeeder
             var products = new List<Product>
             {
                 new Product(
-                    name: "T-Shirt",
-                    description: "A comfortable cotton t-shirt",
-                    category: "Clothing",
-                    imageUrl: "https://placehold.co/100x400.jpg",
-                    price: new Money(19.99m, "SEK"),
-                    stockQuantity: 100 // Provide stockQuantity here
-                ),
+                    "Canvas for decorating",
+                    "A high-quality canvas for decorating your workspace.",
+                    // new Uri("https://example.com/images/tshirt.jpg"),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/canvas01.png"),
+                    Money.FromSEK(249.99m),
+                    50),
+
                 new Product(
-                    name: "Mug",
-                    description: "A ceramic mug for your coffee",
-                    category: "Accessories",
-                    imageUrl: "https://placehold.co/400x900.jpg",
-                    price: new Money(9.99m, "SEK"),
-                    stockQuantity: 50 // Provide stockQuantity here
-                ),
+                    "Littier dragon Coaster",
+                    "A coaster with a cute dragon design.",
+                    // new Uri("https://example.com/images/mug.jpg"),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/coaster.png"),
+                    Money.FromSEK(99.50m),
+                    100),
+
                 new Product(
-                    name: "Notebook",
-                    description: "A stylish notebook for your notes",
-                    category: "Stationery",
-                    imageUrl: "https://placehold.co/200x400.jpg",
-                    price: new Money(14.99m, "SEK"),
-                    stockQuantity: 75 // Provide stockQuantity here
-                ),
+                    "Hoodie",
+                    "A comfortable hoodie with a cute design.",
+                    // new Uri("https://example.com/images/stickers.jpg"),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/hoodie.png"),
+                    Money.FromSEK(179.99m),
+                    200),
+
                 new Product(
-                    name: "Backpack",
-                    description: "A durable backpack for everyday use",
-                    category: "Bags",
-                    imageUrl: "https://placehold.co/400x600.jpg",
-                    price: new Money(49.99m, "SEK"),
-                    stockQuantity: 30 // Provide stockQuantity here
-                ),
-                new Product
-                (
-    name: "Hoodie",
-    description: "A warm and cozy hoodie for chilly days",
-    category: "Clothing",
-    imageUrl: "https://placehold.co/432x400.jpg",
-    price: new Money(29.99m, "SEK"),
-    stockQuantity: 60
-),
-new Product(
-    name: "Water Bottle",
-    description: "A reusable stainless steel water bottle",
-    category: "Accessories",
-    imageUrl: "https://placehold.co/432x411.jpg",
-    price: new Money(12.99m, "SEK"),
-    stockQuantity: 120
-),
-new Product(
-    name: "Desk Lamp",
-    description: "An adjustable LED desk lamp with multiple brightness levels",
-    category: "Electronics",
-    imageUrl: "https://placehold.co/25x200.jpg",
-    price: new Money(39.99m, "SEK"),
-    stockQuantity: 40
-),
-new Product(
-    name: "Gaming Mouse",
-    description: "A high-precision gaming mouse with customizable buttons",
-    category: "Electronics",
-    imageUrl: "https://placehold.co/2000x400.jpg",
-    price: new Money(24.99m, "SEK"),
-    stockQuantity: 80
-),
-new Product(
-    name: "Yoga Mat",
-    description: "A non-slip yoga mat for your fitness routine",
-    category: "Fitness",
-    imageUrl: "https://placehold.co/400x400.jpg",
-    price: new Money(19.99m, "SEK"),
-    stockQuantity: 100
-)
+                    "cute dragon sticker",
+                    "A cute dragon sticker for your laptop or notebook.",
+                    
+                    // new Uri("https://example.com/images/hoodie.jpg"),
+                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png"),
+                    Money.FromSEK(19.99m),
+                    25)
+
             };
 
             await _context.Products.AddRangeAsync(products);

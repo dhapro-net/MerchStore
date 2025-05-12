@@ -23,6 +23,9 @@ public static class DependencyInjection
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
         services.AddScoped<IShoppingCartService, ShoppingCartService>();
         
+        services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<IReviewService, ReviewService>();
+
 
         return services;
     }
