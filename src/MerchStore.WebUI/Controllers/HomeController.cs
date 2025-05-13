@@ -57,34 +57,34 @@ public class HomeController : Controller
         {
             // Populate hero slides
             HeroSlides = new List<HeroSlideViewModel>
-                {
-                    new HeroSlideViewModel
-                    {
-                        ImageUrl = "/img/canvas02.png",
-                        Heading = "Premium Headphones",
-                        Description = "Experience crystal clear sound with our latest wireless headphones. Perfect for music lovers and professionals alike.",
-                        ButtonText = "Learn More",
-                        ButtonUrl = "#"
-                    },
-                    new HeroSlideViewModel
-                    {
-                        ImageUrl = "/img/hoodie03.jpg",
-                        Heading = "Smart Watch",
-                        Description = "Stay connected and track your fitness with our feature-rich smartwatch. Water-resistant and long battery life.",
-                        ButtonText = "Learn More",
-                        ButtonUrl = "#"
-                    },
-                    new HeroSlideViewModel
-                    {
-                        ImageUrl = "/img/coaster01.png",
-                        Heading = "Wireless Earbuds",
-                        Description = "Compact and powerful wireless earbuds with noise cancellation. Perfect for your daily commute.",
-                        ButtonText = "Learn More",
-                        ButtonUrl = "#"
-                    }
-                },
+{
+    new HeroSlideViewModel
+    {
+        ImageUrl = "/img/canvas02.png",
+        Heading = "20% Off Canvas Prints!",
+        Description = "Brighten your space with our bold and artistic canvas designs. This week only!",
+        ButtonText = "Shop Canvas",
+        ButtonUrl = "#"
+    },
+    new HeroSlideViewModel
+    {
+        ImageUrl = "/img/hoodie03.jpg",
+        Heading = "Comfy Hoodies Are Here",
+        Description = "Get cozy in style – limited edition colors just dropped.",
+        ButtonText = "Explore Hoodies",
+        ButtonUrl = "#"
+    },
+    new HeroSlideViewModel
+    {
+        ImageUrl = "/img/coaster01.png",
+        Heading = "Sip in Style ☕",
+        Description = "Check out our coffee coasters – a small touch with big personality.",
+        ButtonText = "Shop Coasters",
+        ButtonUrl = "#"
+    }
+},
 
-             PopularProducts = productCards,
+            PopularProducts = productCards,
 
             // Newsletter section
             Newsletter = new NewsletterViewModel

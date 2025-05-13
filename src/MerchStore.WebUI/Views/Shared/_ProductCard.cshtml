@@ -3,7 +3,7 @@
 <div class="col-md-4">
     <div class="styled-product-card">
         <div class="product-card-top">
-            <span class="badge-new">NEW</span>
+            <span class="badge-new">Popular</span>
             <span class="wishlist-icon"><i class="far fa-heart"></i></span>
         </div>
         <div class="product-card-image">
@@ -14,7 +14,7 @@
             }
         </div>
         <div class="product-card-info">
-            <div class="product-category">Popular</div>
+            
             <div class="product-title">@Model.Name</div>
             <div class="product-price">@Model.FormattedPrice</div>
             <div class="product-rating">
@@ -37,7 +37,7 @@
                     (<a href="@Url.Action("Product", "Reviews", new { id = Model.Id })">@Model.ReviewCount</a>)
                 </span>
             </div>
-            <button class="btn btn-outline-dark w-100 add-to-bag-btn">ADD TO BAG</button>
+            <a href="@Url.Action("Catalog", "Home")" class="btn btn-outline-dark w-100 add-to-bag-btn">ADD TO BAG</a>
         </div>
     </div>
 </div>
