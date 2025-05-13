@@ -5,6 +5,7 @@ using System.Reflection;
 using MerchStore.Application.ShoppingCart.Services;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Application.Catalog.Queries;
+using MerchStore.Application.Services.Implementations;
 
 
 namespace MerchStore.Application;
