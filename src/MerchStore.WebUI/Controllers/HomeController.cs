@@ -5,6 +5,7 @@ using MerchStore.WebUI.Models.Home;
 using MerchStore.WebUI.Models.Catalog;
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.WebUI.Helpers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MerchStore.WebUI.Controllers;
 
@@ -27,6 +28,10 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var products = await _catalogService.GetAllProductsAsync();
+
+        var canvas = products.FirstOrDefault(p => p.Name.Contains("Canvas"));
+        var hoodie = products.FirstOrDefault(p => p.Name.Contains("Hoodie"));
+        var coaster = products.FirstOrDefault(p => p.Name.Contains("Coaster"));
         // Get the top 3 products based on some criteria (e.g., best-selling, highest rated, etc.)
         // For simplicity, let's just take the first 3 products
         var topProducts = products.Take(6).ToList();
@@ -58,13 +63,14 @@ public class HomeController : Controller
             // Populate hero slides
             HeroSlides = new List<HeroSlideViewModel>
 {
+
     new HeroSlideViewModel
     {
         ImageUrl = "/img/canvas02.png",
         Heading = "20% Off Canvas Prints!",
         Description = "Brighten your space with our bold and artistic canvas designs. This week only!",
         ButtonText = "Shop Canvas",
-        ButtonUrl = "#"
+        ButtonUrl = canvas != null ? Url.Action("Details", "Catalog", new { id = canvas.Id }) : "#"
     },
     new HeroSlideViewModel
     {
@@ -72,7 +78,7 @@ public class HomeController : Controller
         Heading = "Comfy Hoodies Are Here",
         Description = "Get cozy in style – limited edition colors just dropped.",
         ButtonText = "Explore Hoodies",
-        ButtonUrl = "#"
+        ButtonUrl = hoodie != null ? Url.Action("Details", "Catalog", new { id = hoodie.Id }) : "#"
     },
     new HeroSlideViewModel
     {
@@ -80,7 +86,7 @@ public class HomeController : Controller
         Heading = "Sip in Style ☕",
         Description = "Check out our coffee coasters – a small touch with big personality.",
         ButtonText = "Shop Coasters",
-        ButtonUrl = "#"
+        ButtonUrl = coaster != null ? Url.Action("Details", "Catalog", new { id = coaster.Id }) : "#"
     }
 },
 
@@ -125,6 +131,10 @@ public class HomeController : Controller
     public IActionResult Privacy()
     {
         return View();
+    }
+    public IActionResult About()
+    {
+        return View(); // Looks for Views/Home/About.cshtml
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,3 +1,4 @@
+
 @model MerchStore.WebUI.Models.Catalog.ProductCardViewModel
 
 <div class="col-md-4">
@@ -37,10 +38,11 @@
                     (<a href="@Url.Action("Product", "Reviews", new { id = Model.Id })">@Model.ReviewCount</a>)
                 </span>
             </div>
-            <a asp-controller="Catalog" asp-action="Details" asp-route-id="@Model.Id"
-                class="btn btn-outline-dark w-100 add-to-bag-btn">
-                View Product
-            </a>
+            <form asp-controller="ShoppingCart" asp-action="AddProductToCart" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <button type="submit" class="btn btn-outline-dark w-100 add-to-bag-btn">Add to Bag</button>
+            </form>
+
 
         </div>
     </div>
