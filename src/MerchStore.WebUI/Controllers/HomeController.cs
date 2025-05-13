@@ -29,7 +29,7 @@ public class HomeController : Controller
         var products = await _catalogService.GetAllProductsAsync();
         // Get the top 3 products based on some criteria (e.g., best-selling, highest rated, etc.)
         // For simplicity, let's just take the first 3 products
-        var topProducts = products.Take(3).ToList();
+        var topProducts = products.Take(6).ToList();
 
         var productCards = new List<ProductCardViewModel>();
 
@@ -89,8 +89,8 @@ public class HomeController : Controller
             // Newsletter section
             Newsletter = new NewsletterViewModel
             {
-                Heading = "Nail your first purchase with 15% off",
-                Subheading = "By signing up to receive latest product drops, discounts and more from Wella brands straight to your inbox."
+                Heading = "For your first purchase with 15% off",
+                Subheading = "Sign up to get exclusive deals, new arrivals, and special offers delivered to your inbox."
             },
 
             // Shipping features
@@ -98,21 +98,21 @@ public class HomeController : Controller
                 {
                     new ShippingFeatureViewModel
                     {
-                        Icon = "fa-truck",
+                        Icon = "bi bi-truck",
                         Title = "Free Shipping",
                         Description = "from 1000 kr of purchase"
                     },
                     new ShippingFeatureViewModel
                     {
-                        Icon = "fa-store",
+                        Icon = "bi bi-shop",
                         Title = "Come meet us in our store",
                         Description = ""
                     },
                     new ShippingFeatureViewModel
                     {
-                        Icon = "fa-undo",
+                        Icon = "bi bi-arrow-counterclockwise",
                         Title = "Easy returns",
-                        Description = "Return within 30 days for a full refund, no questions asked."
+                        Description = "Return within 30 days for a full refund."
                     }
                 }
         };
