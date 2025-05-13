@@ -62,33 +62,37 @@ public class AppDbContextSeeder
                 new Product(
                     "Canvas for decorating",
                     "A high-quality canvas for decorating your workspace.",
+                    "Home Decoration",
                     // new Uri("https://example.com/images/tshirt.jpg"),
-                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/canvas01.png"),
+                    "https://somethingpicture20250509.blob.core.windows.net/picture/canvas01.png",
                     Money.FromSEK(249.99m),
                     50),
 
                 new Product(
                     "Littier dragon Coaster",
                     "A coaster with a cute dragon design.",
+                    "Home Decoration",
                     // new Uri("https://example.com/images/mug.jpg"),
-                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/coaster.png"),
+                    "https://somethingpicture20250509.blob.core.windows.net/picture/coaster.png",
                     Money.FromSEK(99.50m),
                     100),
 
                 new Product(
                     "Hoodie",
                     "A comfortable hoodie with a cute design.",
+                    "clothes",
                     // new Uri("https://example.com/images/stickers.jpg"),
-                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/hoodie.png"),
+                    "https://somethingpicture20250509.blob.core.windows.net/picture/hoodie.png",
                     Money.FromSEK(179.99m),
                     200),
 
                 new Product(
                     "cute dragon sticker",
                     "A cute dragon sticker for your laptop or notebook.",
+                    "stationery",
                     
                     // new Uri("https://example.com/images/hoodie.jpg"),
-                    new Uri("https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png"),
+                    "https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png",
                     Money.FromSEK(19.99m),
                     25)
 
