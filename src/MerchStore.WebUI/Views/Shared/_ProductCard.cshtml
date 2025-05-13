@@ -14,7 +14,7 @@
             }
         </div>
         <div class="product-card-info">
-            
+
             <div class="product-title">@Model.Name</div>
             <div class="product-price">@Model.FormattedPrice</div>
             <div class="product-rating">
@@ -37,7 +37,11 @@
                     (<a href="@Url.Action("Product", "Reviews", new { id = Model.Id })">@Model.ReviewCount</a>)
                 </span>
             </div>
-            <a href="@Url.Action("Catalog", "Home")" class="btn btn-outline-dark w-100 add-to-bag-btn">ADD TO BAG</a>
+            <a asp-controller="Catalog" asp-action="Details" asp-route-id="@Model.Id"
+                class="btn btn-outline-dark w-100 add-to-bag-btn">
+                View Product
+            </a>
+
         </div>
     </div>
 </div>
