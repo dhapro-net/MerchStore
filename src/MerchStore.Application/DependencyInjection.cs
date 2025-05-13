@@ -5,6 +5,8 @@ using System.Reflection;
 using MerchStore.Application.ShoppingCart.Services;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Application.Catalog.Queries;
+using MerchStore.Application.Services.Implementations;
+
 
 
 namespace MerchStore.Application;
@@ -21,8 +23,7 @@ public static class DependencyInjection
             typeof(GetAllProductsQueryHandler).Assembly
         );
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
-        services.AddScoped<IShoppingCartService, ShoppingCartService>();
-        
+        services.AddScoped<IShoppingCartService, ShoppingCartService>();  
         services.AddScoped<ICatalogService, CatalogService>();
         services.AddScoped<IReviewService, ReviewService>();
 
