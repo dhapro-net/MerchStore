@@ -1,8 +1,94 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model MerchStore.WebUI.Models.Home.HomePageViewModel
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<!-- Hero Carousel Section -->
+<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        @for (int i = 0; i < Model.HeroSlides.Count; i++)
+        {
+            var slide = Model.HeroSlides[i];
+            var active = i == 0 ? "active" : "";
+
+            <div class="carousel-item @active">
+                <div class="carousel-content">
+                    <div class="carousel-image">
+                        <img src="@slide.ImageUrl" class="d-block w-100" alt="@slide.Heading" />
+                    </div>
+                    <div class="carousel-text">
+                        <h2>@slide.Heading</h2>
+                        <p>@slide.Description</p>
+                        <a href="@slide.ButtonUrl" class="btn btn-primary">@slide.ButtonText</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
 </div>
+
+
+
+<!-- Popular Products -->
+<div class="container mt-5">
+    <h2 class="product-herder">Our Popular Products</h2>
+    <div class="row g-4 mt-3">
+        @foreach (var product in Model.PopularProducts)
+        {
+            @await Html.PartialAsync("_ProductCard", product)
+        }
+    </div>
+</div>
+
+<!-- Explore More Button Section -->
+<div class="container text-center my-5">
+    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-dark btn-lg explore-more-btn">
+        Explore More <i class="fas fa-arrow-right ms-2"></i>
+    </a>
+</div>
+
+<!-- Shipping/Info Container -->
+<div class="shipping-container">
+    <div class="shipping-feature">
+        @foreach (var feature in Model.ShippingFeatures)
+        {
+            <div class="feature-card">
+                <i class="fas @feature.Icon"></i>
+                <h4>@feature.Title</h4>
+                @if (!string.IsNullOrEmpty(feature.Description))
+                {
+                    <p>@feature.Description</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Newsletter Subscription Section -->
+<section class="newsletter-section">
+    <div class="container">
+        <h2>@Model.Newsletter.Heading</h2>
+        <p>@Model.Newsletter.Subheading</p>
+        <form class="newsletter-form">
+            <input type="email" class="newsletter-input" placeholder="Enter your email address *" required>
+            <div class="newsletter-radio-group">
+                <label><input type="radio" name="userType" checked> Nail Obsessed</label>
+                <label><input type="radio" name="userType"> Nail Professional</label>
+            </div>
+            <button type="submit" class="newsletter-btn">SIGN ME UP</button>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/site.js"></script>
+}

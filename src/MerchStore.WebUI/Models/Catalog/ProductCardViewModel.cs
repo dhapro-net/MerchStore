@@ -16,4 +16,6 @@ public class ProductCardViewModel
     public string Description { get; set; } = string.Empty; 
     public string Category { get; set; } = string.Empty; 
     public bool IsFeatured { get; set; }
+    public double AverageRating { get; set; }
+    public int ReviewCount { get; set; }
 }
