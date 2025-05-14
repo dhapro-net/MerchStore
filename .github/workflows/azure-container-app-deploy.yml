@@ -78,7 +78,7 @@ jobs:
       with:
         resourceGroup: ${{ env.RESOURCE_GROUP }}
         containerAppName: ${{ env.CONTAINER_APP_NAME }}
-        imageToDeploy: ${{ env.REGISTRY }}/${{ github.repository_owner }}/merchstore:${{ env.IMAGE_TAG }}
+        imageToDeploy: ${{ env.REGISTRY }}/dhapro-net/merchstore:${{ env.IMAGE_TAG }}
         
     - name: Azure logout
       run: az logout
