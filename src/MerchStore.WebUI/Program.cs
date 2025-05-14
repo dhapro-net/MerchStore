@@ -95,6 +95,7 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader()  // Allow any headers
                    .AllowAnyMethod(); // Allow any HTTP method
         });
+});
 
 builder.Services.AddLogging(logging =>
 {
@@ -139,7 +140,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Landing}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 
@@ -147,3 +148,4 @@ app.MapMinimalProductEndpoints();
 
 
 app.Run();
+

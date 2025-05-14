@@ -132,7 +132,7 @@ public async Task<IActionResult> AddProductToCart(Guid productId)
 
         // Show a generic error message to the user
         TempData["ErrorMessage"] = "An unexpected error occurred while adding the product to the cart. Please try again later.";
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", "ShoppingCart");
     }
 }
 
@@ -140,5 +140,7 @@ private Guid GetOrCreateCartId()
 {
     return CartHelper.GetOrCreateCartId(HttpContext);
 }
+
+
 
 }
