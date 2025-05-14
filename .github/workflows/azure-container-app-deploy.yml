@@ -10,17 +10,14 @@ on:
 env:
   CONTAINER_APP_NAME: merchstore-containerapp
   RESOURCE_GROUP: SomethingCreative  # Replace with your resource group name
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/merchstore
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -39,12 +36,11 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release
       
-    - name: Log in to GitHub Container Registry
+    - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
       
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -54,7 +50,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/merchstore:${{ env.IMAGE_TAG }},${{ env.REGISTRY }}/${{ github.repository_owner }}/merchstore:latest
+        tags: ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }},${{ env.DOCKER_IMAGE }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
         platforms: linux/amd64
@@ -64,9 +60,6 @@ jobs:
     needs: build
     if: github.event_name != 'pull_request'  # Only deploy on push to main or manual trigger
     
-    permissions:
-      contents: read
-      
     steps:
     - name: Azure login
       uses: azure/login@v1
@@ -78,7 +71,7 @@ jobs:
       with:
         resourceGroup: ${{ env.RESOURCE_GROUP }}
         containerAppName: ${{ env.CONTAINER_APP_NAME }}
-        imageToDeploy: ${{ env.REGISTRY }}/dhapro-net/merchstore:${{ env.IMAGE_TAG }}
+        imageToDeploy: ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
         
     - name: Azure logout
       run: az logout
