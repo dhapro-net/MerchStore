@@ -1,0 +1,49 @@
+
+@model MerchStore.WebUI.Models.Catalog.ProductCardViewModel
+
+<div class="col-md-4">
+    <div class="styled-product-card">
+        <div class="product-card-top">
+            <span class="badge-new">Popular</span>
+            <span class="wishlist-icon"><i class="far fa-heart"></i></span>
+        </div>
+        <div class="product-card-image">
+            <img class="main-img" src="@Model.ImageUrl" alt="@Model.Name" />
+            @if (!string.IsNullOrEmpty(Model.HoverImageUrl))
+            {
+                <img class="hover-img" src="@Model.HoverImageUrl" alt="@Model.Name hover" />
+            }
+        </div>
+        <div class="product-card-info">
+
+            <div class="product-title">@Model.Name</div>
+            <div class="product-price">@Model.FormattedPrice</div>
+            <div class="product-rating">
+                @{
+                    var fullStars = (int)Math.Floor(Model.AverageRating);
+                    var emptyStars = 5 - fullStars;
+                }
+
+                @for (int i = 0; i < fullStars; i++)
+                {
+                    <i class="bi bi-star-fill text-warning"></i>
+                }
+                @for (int i = 0; i < emptyStars; i++)
+                {
+                    <i class="bi bi-star text-warning"></i>
+                }
+
+                <span class="review-count">
+                    @Model.AverageRating.ToString("0.0")
+                    (<a href="@Url.Action("Product", "Reviews", new { id = Model.Id })">@Model.ReviewCount</a>)
+                </span>
+            </div>
+            <form asp-controller="ShoppingCart" asp-action="AddProductToCart" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <button type="submit" class="btn btn-outline-dark w-100 add-to-bag-btn">Add to Bag</button>
+            </form>
+
+
+        </div>
+    </div>
+</div>
