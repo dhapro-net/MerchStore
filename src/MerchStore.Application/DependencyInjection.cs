@@ -10,7 +10,6 @@ using MerchStore.Application.Services.Implementations;
 using MerchStore.Application.Services.Interfaces;
 
 
-
 namespace MerchStore.Application;
 
 public static class DependencyInjection
@@ -28,7 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
         
-        services.AddScoped<ICatalogService, CatalogService>();
+        //services.AddScoped<ICatalogService, CatalogService>();
         services.AddScoped<IReviewService, ReviewService>();
 
         // leaving this here just in case it seems like a good idea to use later services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
