@@ -4,7 +4,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
 
 using Microsoft.Extensions.DependencyInjection;
 using MerchStore.Domain.Interfaces;
-using MerchStore.Infrastructure.Persistence.Repositories;
+using MerchStore.Infrastructure.Persistence.Repositories; // Ensure this namespace contains ProductRepository
 using MerchStore.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using ReviewApiFunction;
@@ -25,7 +25,12 @@ var host = new HostBuilder()
             options.UseInMemoryDatabase("MerchStoreDb"));
 
         // ✅ Register Repositories
-        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
+        services.AddScoped<IOrderCommandRepository, OrderCommandRepository>();
+        services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
+        services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
+        services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
+        services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
 
         // ✅ Register Seeder
         services.AddScoped<AppDbContextSeeder>();
