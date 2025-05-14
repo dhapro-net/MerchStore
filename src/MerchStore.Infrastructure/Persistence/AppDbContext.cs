@@ -8,6 +8,9 @@ public class AppDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
 
+    //Completed orders stored in database
+    public DbSet<Order> Orders { get; set; }
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
@@ -24,5 +27,30 @@ public class AppDbContext : DbContext
         // Apply entity configurations from the current assembly
         // This scans for all IEntityTypeConfiguration implementations and applies them
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.OwnsOne(o => o.PaymentInfo, paymentInfo =>
+            {
+                paymentInfo.Property(p => p.CardNumber).IsRequired();
+                paymentInfo.Property(p => p.ExpirationDate).IsRequired();
+                paymentInfo.Property(p => p.CVV).IsRequired();
+            });
+        });
+        modelBuilder.Entity<OrderProduct>(entity =>
+        {
+            entity.HasKey(op => op.Id);
+
+            entity.Property(op => op.ProductId).IsRequired();
+            entity.Property(op => op.ProductName).IsRequired().HasMaxLength(255);
+            entity.Property(op => op.Quantity).IsRequired();
+            entity.Property(op => op.OrderId).IsRequired();
+
+            entity.OwnsOne(op => op.UnitPrice, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("UnitPrice_Amount").IsRequired();
+                money.Property(m => m.Currency).HasColumnName("UnitPrice_Currency").IsRequired();
+            });
+        });
     }
 }

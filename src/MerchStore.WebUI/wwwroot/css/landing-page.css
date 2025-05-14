@@ -1,0 +1,69 @@
+.landing-body {
+    margin: 0;
+    padding: 0;
+    background-color: #000; /* Or any color you prefer */
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.landing-container {
+    text-align: center;
+    max-width: 80%;
+}
+
+h1 {
+    font-size: 80px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 10px 0;
+    height: 100px;
+    position: relative;
+    color: #ffe5db;
+    overflow: hidden;
+}
+
+.hidden-text {
+    display: block;
+    transform: translateY(100%); /* Initially hide text below its container */
+    opacity: 0;
+}
+
+.enter-site-link {
+    margin-top: 2rem;
+}
+
+.enter-site-link a {
+    font-size: 20px;
+    text-align: center;
+    background: transparent;
+    color: #ffe5db;
+    border: 1px solid #ffe5db;
+    padding: 18px 35px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.enter-site-link a:hover {
+    background-color: #ffe5db;
+    color: #000;
+}
+/* For larger screens */
+@media (min-width: 768px) {
+    h1 {
+        font-size: 120px;
+        height: 150px;
+    }
+}
+
+@media (min-width: 1200px) {
+    h1 {
+        font-size: 150px;
+        height: 180px;
+    }
+}

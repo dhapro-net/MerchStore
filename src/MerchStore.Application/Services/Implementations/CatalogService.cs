@@ -11,20 +11,20 @@ namespace MerchStore.Application.Services.Implementations;
 /// </summary>
 public class CatalogService : ICatalogService
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IProductQueryRepository _productQueryRepository;
 
-    public CatalogService(IProductRepository productRepository)
+    public CatalogService(IProductQueryRepository productQueryRepository)
     {
-        _productRepository = productRepository;
+        _productQueryRepository = productQueryRepository;
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductsAsync()
+    public async Task<IEnumerable<Product>> GetAllProductsAsync(CancellationToken cancellationToken)
     {
-        return await _productRepository.GetAllAsync();
+        return await _productQueryRepository.GetAllProductsAsync(cancellationToken);
     }
 
-    public async Task<Product?> GetProductByIdAsync(Guid id)
+    public async Task<Product?> GetProductByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _productRepository.GetByIdAsync(id);
+        return await _productQueryRepository.GetProductByIdAsync(id, cancellationToken);
     }
 }

@@ -1,0 +1,17 @@
+using MediatR;
+using MerchStore.Application.ShoppingCart.DTOs;
+using MerchStore.Domain.ShoppingCart;
+
+namespace MerchStore.Application.ShoppingCart.Queries;
+
+public class GetCartQuery : IRequest<CartDto>
+{
+    public Cart Cart { get; }
+
+    public Guid CartId => Cart.CartId; // Expose CartId from the Cart object
+
+    public GetCartQuery(Cart cart)
+    {
+        Cart = cart ?? throw new ArgumentNullException(nameof(cart));
+    }
+}
