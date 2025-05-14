@@ -7,9 +7,9 @@ namespace MerchStore.Application.Catalog.Queries
 {
     public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDto>
     {
-        private readonly IProductRepository _repository;
+        private readonly IProductQueryRepository _repository;
 
-        public GetProductByIdQueryHandler(IProductRepository repository)
+        public GetProductByIdQueryHandler(IProductQueryRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }

@@ -17,7 +17,7 @@ public class OrderProductConfiguration : IEntityTypeConfiguration<OrderProduct>
         builder.Property(oi => oi.ProductId).IsRequired();
         builder.Property(oi => oi.ProductName).IsRequired().HasMaxLength(100);
         // Configure the Money value object for Price
-        builder.OwnsOne(oi => oi.Price, price =>
+        builder.OwnsOne(oi => oi.UnitPrice, price =>
         {
             price.Property(p => p.Amount).HasColumnType("decimal(18,2)").IsRequired();
             price.Property(p => p.Currency).HasMaxLength(3).IsRequired();
