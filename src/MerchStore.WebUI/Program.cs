@@ -1,4 +1,6 @@
 using MerchStore.Application;
+using MerchStore.Application.Services.Implementations;
+using MerchStore.Application.Services.Interfaces;
 using MerchStore.Infrastructure;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Endpoints;
@@ -13,6 +15,9 @@ using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+
 
 // Update the JSON options configuration to use our custom policy
 builder.Services.AddControllersWithViews()
