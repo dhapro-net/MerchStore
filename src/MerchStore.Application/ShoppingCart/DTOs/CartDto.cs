@@ -10,11 +10,5 @@ namespace MerchStore.Application.ShoppingCart.DTOs
         public int TotalProducts { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        // Method to calculate the total price
-        public Money CalculateTotal()
-        {
-            var totalAmount = Products.Sum(product => (product.UnitPrice?.Amount ?? 0) * product.Quantity);
-            return new Money(totalAmount, "SEK");
-        }
     }
 }

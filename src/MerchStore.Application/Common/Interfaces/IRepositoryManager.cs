@@ -32,18 +32,36 @@ namespace MerchStore.Application.Common.Interfaces;
 public interface IRepositoryManager
 {
     /// <summary>
-    /// Gets the product repository.
+    /// Gets the product query repository.
     /// </summary>
     /// <remarks>
-    /// This property provides access to product-specific data operations without exposing
-    /// the concrete implementation details to the application layer.
+    /// Provides access to product-specific read operations.
     /// </remarks>
-    IProductRepository ProductRepository { get; }
+    IProductQueryRepository ProductQueryRepository { get; }
 
-        /// <summary>
-    /// Gets the order repository.
+    /// <summary>
+    /// Gets the product command repository.
     /// </summary>
-    IOrderRepository OrderRepository { get; }
+    /// <remarks>
+    /// Provides access to product-specific write operations.
+    /// </remarks>
+    IProductCommandRepository ProductCommandRepository { get; }
+
+    /// <summary>
+    /// Gets the order query repository.
+    /// </summary>
+    /// <remarks>
+    /// Provides access to order-specific read operations.
+    /// </remarks>
+    IOrderQueryRepository OrderQueryRepository { get; }
+
+    /// <summary>
+    /// Gets the order command repository.
+    /// </summary>
+    /// <remarks>
+    /// Provides access to order-specific write operations.
+    /// </remarks>
+    IOrderCommandRepository OrderCommandRepository { get; }
 
     /// <summary>
     /// Gets the unit of work to commit transactions.
