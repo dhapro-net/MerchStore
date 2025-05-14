@@ -16,12 +16,12 @@ public class ReviewsController : Controller
     }
 
     // GET: Reviews
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         try
         {
             // Get all products
-            var products = await _catalogService.GetAllProductsAsync();
+            var products = await _catalogService.GetAllProductsAsync(cancellationToken);
             var viewModel = new ProductReviewsViewModel
             {
                 Products = products.ToList()
@@ -46,12 +46,12 @@ public class ReviewsController : Controller
     }
 
     // GET: Reviews/Product/{id}
-    public async Task<IActionResult> Product(Guid id)
+    public async Task<IActionResult> Product(Guid id, CancellationToken cancellationToken)
     {
         try
         {
             // Get the product by ID
-            var product = await _catalogService.GetProductByIdAsync(id);
+            var product = await _catalogService.GetProductByIdAsync(id, cancellationToken);
 
             if (product is null)
             {

@@ -25,9 +25,9 @@ public class HomeController : Controller
 
 
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        var products = await _catalogService.GetAllProductsAsync();
+        var products = await _catalogService.GetAllProductsAsync(cancellationToken);
 
         var canvas = products.FirstOrDefault(p => p.Name.Contains("Canvas"));
         var hoodie = products.FirstOrDefault(p => p.Name.Contains("Hoodie"));

@@ -7,6 +7,7 @@ using MerchStore.Application.Catalog.Queries;
 using MerchStore.Application.ShoppingCart.Handlers;
 using MerchStore.Domain.Services;
 using MerchStore.Application.Services.Implementations;
+using MerchStore.Application.Services.Interfaces;
 
 
 
@@ -26,7 +27,6 @@ public static class DependencyInjection
 );
         services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
-        services.AddScoped<IShoppingCartService, ShoppingCartService>();
         
         services.AddScoped<ICatalogService, CatalogService>();
         services.AddScoped<IReviewService, ReviewService>();

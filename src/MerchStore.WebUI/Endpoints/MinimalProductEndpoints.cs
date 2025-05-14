@@ -33,12 +33,12 @@ public static class MinimalProductEndpoints
     }
 
 
-    private static async Task<IResult> GetAllProducts(ICatalogService catalogService)
+    private static async Task<IResult> GetAllProducts(ICatalogService catalogService, CancellationToken cancellationToken)
     {
         try
         {
             // Get all products from the service
-            var products = await catalogService.GetAllProductsAsync();
+            var products = await catalogService.GetAllProductsAsync(cancellationToken);
 
             // Map domain entities to response objects
             var response = products.Select(p => new MinimalProductResponse
@@ -61,12 +61,12 @@ public static class MinimalProductEndpoints
         }
     }
 
-    private static async Task<IResult> GetProductById(Guid id, ICatalogService catalogService)
+    private static async Task<IResult> GetProductById(Guid id, ICatalogService catalogService, CancellationToken cancellationToken)
     {
         try
         {
             // Get the specific product from the service
-            var product = await catalogService.GetProductByIdAsync(id);
+            var product = await catalogService.GetProductByIdAsync(id, cancellationToken);
 
             // Return 404 Not Found if the product doesn't exist
             if (product is null)

@@ -22,12 +22,12 @@ public class BasicProductsApiController : ControllerBase
     
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<BasicProductDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
         {
             // Get all products from the service
-            var products = await _catalogService.GetAllProductsAsync();
+            var products = await _catalogService.GetAllProductsAsync(cancellationToken);
 
             // Map domain entities to DTOs
             var productDtos = products.Select(p => new BasicProductDto
@@ -58,12 +58,12 @@ public class BasicProductsApiController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
             // Get the specific product from the service
-            var product = await _catalogService.GetProductByIdAsync(id);
+            var product = await _catalogService.GetProductByIdAsync(id, cancellationToken);
 
             // Return 404 Not Found if the product doesn't exist
             if (product is null)
