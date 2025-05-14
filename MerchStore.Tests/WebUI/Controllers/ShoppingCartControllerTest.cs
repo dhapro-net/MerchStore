@@ -32,6 +32,8 @@ namespace MerchStore.WebUI.Tests.Controllers
             );
         }
 
+        #region Index
+
         [Fact]
         public async Task Index_ReturnsViewWithCart_WhenCartExists()
         {
@@ -73,6 +75,10 @@ namespace MerchStore.WebUI.Tests.Controllers
             Assert.Equal("An error occurred while loading the shopping cart.", viewResult.Model);
         }
 
+        #endregion
+
+        #region AddItemToCartAsync
+
         [Fact]
         public async Task AddItemToCartAsync_RedirectsToIndex_WhenSuccessful()
         {
@@ -110,6 +116,10 @@ namespace MerchStore.WebUI.Tests.Controllers
             Assert.Equal("Error", viewResult.ViewName);
             Assert.Equal("An error occurred while adding the item to the cart.", viewResult.Model);
         }
+
+        #endregion
+
+        #region SubmitOrder
 
         [Fact]
         public void SubmitOrder_CreatesOrderSuccessfully_WhenModelIsValid()
@@ -186,6 +196,10 @@ namespace MerchStore.WebUI.Tests.Controllers
             Assert.Equal("An error occurred while processing your order.", viewResult.Model);
         }
 
+        #endregion
+
+        #region GetCartAsync
+
         [Fact]
         public async Task GetCartAsync_ReturnsViewWithCart()
         {
@@ -211,5 +225,7 @@ namespace MerchStore.WebUI.Tests.Controllers
             var model = Assert.IsType<CartDto>(viewResult.Model);
             Assert.Equal(cartDto, model);
         }
+
+        #endregion
     }
 }
