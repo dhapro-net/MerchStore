@@ -8,7 +8,7 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 env:
-  CONTAINER_APP_NAME: merchstore-containerap
+  CONTAINER_APP_NAME: merchstore-containerapp
   RESOURCE_GROUP: SomethingCreative  # Replace with your resource group name
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
