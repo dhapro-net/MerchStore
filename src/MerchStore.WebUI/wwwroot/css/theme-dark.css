@@ -1,0 +1,116 @@
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #eaeaea;
+}
+
+body.dark-mode .styled-product-card,
+body.dark-mode .carousel-content,
+body.dark-mode .newsletter-section,
+body.dark-mode .feature-card
+{
+    color: #030303;
+}
+body.dark-mode .newsletter-section {
+    border-radius: 2rem;
+}
+body.dark-mode .product-title,
+body.dark-mode .product-price,
+body.dark-mode .newsletter-section h2,
+body.dark-mode .newsletter-section p {
+    color: #1b1b1b;
+}
+
+body.dark-mode .add-to-bag-btn {
+    background-color: #333;
+    color: #fff;
+    border-color: #fff;
+}
+
+body.dark-mode .add-to-bag-btn:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+body.dark-mode .navbar {
+    background-color: #1e1e1e !important;
+}
+
+body.dark-mode a {
+    color: #eaeaea;
+}
+
+body.dark-mode .newsletter-input {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #555;
+    
+}
+
+body.dark-mode .wishlist-icon {
+    color: #ddd;
+}
+
+body.dark-mode .badge-new {
+    background-color: #050505;
+    color: #eee;
+    border-color: #999;
+}
+body.dark-mode .footer {
+    background-color: #000000;
+    color: #eaeaea;
+}
+body.dark-mode .footer h5 ,
+body.dark-mode .footer a,
+body.dark-mode .footer p {
+    color: #fff;
+}
+
+body.dark-mode .footer a:hover {
+    color: #fff;
+}
+
+
+/* Smooth transition for theme change */
+body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.styled-product-card,
+.carousel-content,
+.newsletter-section,
+.feature-card,
+.footer,
+.navbar,
+.add-to-bag-btn,
+.product-title,
+.product-price,
+.newsletter-input,
+.badge-new {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+.sun-icon {
+    display: block;
+}
+
+.moon-icon {
+    display: none;
+}
+
+/* When in dark mode, show moon and hide sun */
+.dark-mode .sun-icon {
+    display: none;
+}
+
+.dark-mode .moon-icon {
+    display: block;
+}
+
+/* Force navbar text color */
+.dark-mode .navbar a,
+.dark-mode .navbar-brand,
+.dark-mode .nav-link {
+    color: white !important;
+}
+
