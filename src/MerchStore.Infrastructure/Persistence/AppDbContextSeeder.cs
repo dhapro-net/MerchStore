@@ -56,47 +56,45 @@ public class AppDbContextSeeder
         {
             _logger.LogInformation("Seeding products...");
 
-            // Add sample products
-            var products = new List<Product>
-            {
-                new Product(
-                    "Canvas for decorating",
-                    "A high-quality canvas for decorating your workspace.",
-                    "Home Decoration",
-                    // new Uri("https://example.com/images/tshirt.jpg"),
-                    "https://somethingpicture20250509.blob.core.windows.net/picture/canvas01.png",
-                    Money.FromSEK(249.99m),
-                    50),
+// Add sample products
+var products = new List<Product>
+{
+    new Product(
+        Guid.NewGuid(),
+        "Canvas for decorating",
+        "A high-quality canvas for decorating your workspace.",
+        "Home Decoration",
+        "https://somethingpicture20250509.blob.core.windows.net/picture/canvas01.png",
+        Money.FromSEK(249.99m),
+        50),
 
-                new Product(
-                    "Littier dragon Coaster",
-                    "A coaster with a cute dragon design.",
-                    "Home Decoration",
-                    // new Uri("https://example.com/images/mug.jpg"),
-                    "https://somethingpicture20250509.blob.core.windows.net/picture/coaster.png",
-                    Money.FromSEK(99.50m),
-                    100),
+    new Product(
+        Guid.NewGuid(),
+        "Littier dragon Coaster",
+        "A coaster with a cute dragon design.",
+        "Home Decoration",
+        "https://somethingpicture20250509.blob.core.windows.net/picture/coaster.png",
+        Money.FromSEK(99.50m),
+        100),
 
-                new Product(
-                    "Hoodie",
-                    "A comfortable hoodie with a cute design.",
-                    "clothes",
-                    // new Uri("https://example.com/images/stickers.jpg"),
-                    "https://somethingpicture20250509.blob.core.windows.net/picture/hoodie.png",
-                    Money.FromSEK(179.99m),
-                    200),
+    new Product(
+        Guid.NewGuid(),
+        "Hoodie",
+        "A comfortable hoodie with a cute design.",
+        "clothes",
+        "https://somethingpicture20250509.blob.core.windows.net/picture/hoodie.png",
+        Money.FromSEK(179.99m),
+        200),
 
-                new Product(
-                    "cute dragon sticker",
-                    "A cute dragon sticker for your laptop or notebook.",
-                    "stationery",
-                    
-                    // new Uri("https://example.com/images/hoodie.jpg"),
-                    "https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png",
-                    Money.FromSEK(19.99m),
-                    25)
-
-            };
+    new Product(
+        Guid.NewGuid(),
+        "cute dragon sticker",
+        "A cute dragon sticker for your laptop or notebook.",
+        "stationery",
+        "https://somethingpicture20250509.blob.core.windows.net/picture/sticker.png",
+        Money.FromSEK(19.99m),
+        25)
+};
 
             await _context.Products.AddRangeAsync(products);
             await _context.SaveChangesAsync();

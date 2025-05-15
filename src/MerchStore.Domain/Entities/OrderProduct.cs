@@ -14,6 +14,10 @@ public class OrderProduct
     // Foreign key to the Order
     public Guid OrderId { get; private set; }
     public Order Order { get; private set; }
+    public Guid Guid { get; }
+    public string V1 { get; }
+    public Money Money { get; }
+    public int V2 { get; }
 
     private OrderProduct() { } //For EF Core 
     public OrderProduct(Guid id, Guid productId, string productName, Money unitPrice, int quantity, Guid orderId)
@@ -24,6 +28,14 @@ public class OrderProduct
         UnitPrice = unitPrice ?? throw new ArgumentNullException(nameof(unitPrice));
         Quantity = quantity > 0 ? quantity : throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
         OrderId = orderId;
+    }
+
+    public OrderProduct(Guid guid, string v1, Money money, int v2)
+    {
+        Guid = guid;
+        V1 = v1;
+        Money = money;
+        V2 = v2;
     }
 
     // Optional: Method to update quantity

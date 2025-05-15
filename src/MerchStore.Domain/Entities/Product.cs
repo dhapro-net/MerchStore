@@ -19,7 +19,7 @@ public class Product : Entity<Guid>
 
     private Product() { }
 
-    public Product(string name, string description, string category, string imageUrl, Money price, int stockQuantity) : base(Guid.NewGuid())
+    public Product(Guid guid, string name, string description, string category, string imageUrl, Money price, int stockQuantity) : base(Guid.NewGuid())
     {
         SetName(name);
         SetDescription(description);

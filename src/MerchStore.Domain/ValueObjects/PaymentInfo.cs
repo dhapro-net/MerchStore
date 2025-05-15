@@ -10,7 +10,7 @@ public class PaymentInfo
     public string ExpirationDate { get; private set; }
     public string CVV { get; private set; }
 
-    private PaymentInfo() { }
+    private PaymentInfo(string v, string v1, DateTime dateTime) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PaymentInfo"/> class.
