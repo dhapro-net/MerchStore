@@ -21,8 +21,8 @@ COPY src/MerchStore.Infrastructure/*.csproj ./src/MerchStore.Infrastructure/
 COPY src/MerchStore.WebUI/*.csproj ./src/MerchStore.WebUI/
 
 # Copy the infra project files if they exist
-COPY Infra/ReviewApiFunction/*.csproj ./infra/ReviewApiFunction/
-COPY Infra/ReviewApiClient/*.csproj ./infra/ReviewApiClient/
+COPY Infra/ReviewApiFunction/*.csproj ./Infra/ReviewApiFunction/
+COPY Infra/ReviewApiClient/*.csproj ./Infra/ReviewApiClient/
 
 # Copy test project files if they exist
 COPY MerchStore.Tests/Infrastructure/MerchStore.IntegrationTests/*.csproj ./MerchStore.Tests/Infrastructure/MerchStore.IntegrationTests/
