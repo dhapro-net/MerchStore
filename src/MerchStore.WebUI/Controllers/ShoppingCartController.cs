@@ -216,7 +216,7 @@ public class ShoppingCartController : Controller
         return new ErrorViewModel
         {
             Message = message,
-            RequestId = HttpContext.TraceIdentifier
+            RequestId = HttpContext?.TraceIdentifier ?? Guid.NewGuid().ToString()
         };
     }
 }

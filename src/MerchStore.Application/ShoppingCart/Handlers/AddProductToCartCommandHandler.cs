@@ -14,20 +14,20 @@ namespace MerchStore.Application.ShoppingCart.Handlers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<Result<bool>> Handle(AddProductToCartCommand request, CancellationToken cancellationToken)
+        public Task<Result<bool>> Handle(AddProductToCartCommand request, CancellationToken cancellationToken)
         {
             // Validate productId
             if (string.IsNullOrEmpty(request.ProductId))
             {
                 _logger.LogWarning("Validation failed: ProductId is null or empty.");
-                return Result<bool>.Failure("Product ID cannot be null or empty.");
+                return Task.FromResult(Result<bool>.Failure("Product ID cannot be null or empty."));
             }
 
             // Validate quantity
             if (request.Quantity <= 0)
             {
                 _logger.LogWarning("Validation failed: Quantity must be greater than zero.");
-                return Result<bool>.Failure("Quantity must be greater than zero.");
+                return Task.FromResult(Result<bool>.Failure("Quantity must be greater than zero."));
             }
 
             try
@@ -39,12 +39,12 @@ namespace MerchStore.Application.ShoppingCart.Handlers
                 // (e.g., updating the cart in memory or database)
 
                 _logger.LogInformation("Product {ProductId} added to cart {CartId} successfully.", request.ProductId, request.CartId);
-                return Result<bool>.Success(true);
+                return Task.FromResult(Result<bool>.Success(true));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while adding product {ProductId} to cart {CartId}.", request.ProductId, request.CartId);
-                return Result<bool>.Failure("An unexpected error occurred while adding the product to the cart.");
+                return Task.FromResult(Result<bool>.Failure("An unexpected error occurred while adding the product to the cart."));
             }
         }
     }

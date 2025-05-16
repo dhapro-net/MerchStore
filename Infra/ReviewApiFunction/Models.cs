@@ -1,7 +1,4 @@
 // Models.cs
-using System;
-using System.Collections.Generic;
-
 namespace ReviewApiFunction.Models
 {
     public class Review

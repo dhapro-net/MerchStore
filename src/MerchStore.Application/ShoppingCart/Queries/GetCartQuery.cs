@@ -6,12 +6,12 @@ namespace MerchStore.Application.ShoppingCart.Queries;
 
 public class GetCartQuery : IRequest<CartDto>
 {
-    public Cart Cart { get; }
+    public Cart? Cart { get; }
 
-    public Guid CartId => Cart.CartId; // Expose CartId from the Cart object
+    public Guid? CartId => Cart?.CartId; // Expose CartId from the Cart object, or null if Cart is null
 
-    public GetCartQuery(Cart cart)
+    public GetCartQuery(Cart? cart)
     {
-        Cart = cart ?? throw new ArgumentNullException(nameof(cart));
+        Cart = cart;
     }
 }

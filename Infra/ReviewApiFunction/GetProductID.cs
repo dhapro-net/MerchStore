@@ -1,17 +1,12 @@
 
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using System.Net;
-using MerchStore.Application.Services.Interfaces;
-using MerchStore.Domain.Interfaces;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using MerchStore.Application.DTOs;
-using MerchStore.Application.Services;
 using MerchStore.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 

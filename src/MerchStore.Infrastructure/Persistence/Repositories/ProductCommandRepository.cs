@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MerchStore.Domain.Entities;
 using MerchStore.Domain.Interfaces;
 
 namespace MerchStore.Infrastructure.Persistence.Repositories;

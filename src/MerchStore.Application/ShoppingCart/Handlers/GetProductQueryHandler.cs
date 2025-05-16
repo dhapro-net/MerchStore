@@ -45,6 +45,6 @@ public class GetProductQueryHandler : IRequestHandler<GetProductQuery, CartProdu
         };
 
         _logger.LogInformation("Successfully retrieved product {ProductId} from cart {CartId}.", request.ProductId, request.Cart.CartId);
-        return Task.FromResult(productDto);
+        return Task.FromResult<CartProductDto?>(productDto);
     }
 }

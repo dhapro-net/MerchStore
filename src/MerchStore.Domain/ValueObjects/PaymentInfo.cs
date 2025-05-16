@@ -6,11 +6,19 @@ public class PaymentInfo
     private const int ExpirationDateLength = 5;
     private const int CVVLength = 3;
 
-    public string CardNumber { get; private set; }
-    public string ExpirationDate { get; private set; }
-    public string CVV { get; private set; }
+    public string CardNumber { get; private set; } = null!;
+    public string ExpirationDate { get; private set; } = null!;
+    public string CVV { get; private set; } = null!;
 
     private PaymentInfo() { }
+
+    // Add this constructor for test support
+    internal PaymentInfo(string cardNumber, string cvv, DateTime expiration)
+    {
+        CardNumber = cardNumber;
+        CVV = cvv;
+        ExpirationDate = expiration.ToString("MM/yy");
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PaymentInfo"/> class.
@@ -24,7 +32,11 @@ public class PaymentInfo
         if (string.IsNullOrWhiteSpace(cardNumber) || cardNumber.Length != CardNumberLength || !cardNumber.All(char.IsDigit))
             throw new ArgumentException($"Card number must be {CardNumberLength} digits and contain only numeric characters.", nameof(cardNumber));
 
-        if (string.IsNullOrWhiteSpace(expirationDate) || expirationDate.Length != ExpirationDateLength || !IsValidExpirationDate(expirationDate))
+        // Strictly require MM/yy format using regex
+        if (string.IsNullOrWhiteSpace(expirationDate)
+            || expirationDate.Length != ExpirationDateLength
+            || !System.Text.RegularExpressions.Regex.IsMatch(expirationDate, @"^(0[1-9]|1[0-2])\/\d{2}$")
+            || !IsValidExpirationDate(expirationDate))
             throw new ArgumentException($"Expiration date must be in MM/YY format and in the future.", nameof(expirationDate));
 
         if (string.IsNullOrWhiteSpace(cvv) || cvv.Length != CVVLength || !cvv.All(char.IsDigit))
@@ -34,15 +46,18 @@ public class PaymentInfo
         ExpirationDate = expirationDate;
         CVV = cvv;
     }
-
     private static bool IsValidExpirationDate(string expirationDate)
     {
+        // Parse MM/yy format
         if (!DateTime.TryParseExact(expirationDate, "MM/yy", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
             return false;
 
-        // Set the expiration date to the last day of the month
-        parsedDate = parsedDate.AddMonths(1).AddDays(-1);
+        // Always treat 2-digit years as 2000+
+        if (parsedDate.Year < 100)
+            parsedDate = new DateTime(2000 + parsedDate.Year, parsedDate.Month, 1);
 
-        return parsedDate >= DateTime.UtcNow;
+        // Card is valid through the last day of the expiration month
+        var lastDayOfMonth = new DateTime(parsedDate.Year, parsedDate.Month, DateTime.DaysInMonth(parsedDate.Year, parsedDate.Month));
+        return lastDayOfMonth >= DateTime.UtcNow.Date;
     }
 }

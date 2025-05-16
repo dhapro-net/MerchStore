@@ -2,7 +2,7 @@
 
 namespace MerchStore.Application.DTOs;
 
-public class ProductsdetailsDto
+public class ProductsDetailsDto
 {
 
     public Guid Id { get; set; }
