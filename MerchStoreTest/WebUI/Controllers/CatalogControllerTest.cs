@@ -133,7 +133,7 @@ namespace MerchStore.Tests.WebUI.Controllers
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<ProductDetailsViewModel>(viewResult.Model);
             Assert.Equal(productId, model.Id);
-            Assert.Equal("Product", model.Name);
+            Assert.Equal("ProductX", model.Name);
         }
 
         [Fact]
