@@ -1,7 +1,7 @@
 using MerchStore.WebUI.Helpers;
 using Xunit;
 
-namespace MerchStore.Tests.WebUI.Helpers
+namespace MerchStoreTest.WebUI.Helpers
 {
     public class HoverImageHelperTest
     {

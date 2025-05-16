@@ -1,7 +1,7 @@
 using MerchStore.WebUI.Infrastructure;
 using Xunit;
 
-namespace MerchStore.Tests.WebUI.Infrastructure
+namespace MerchStoreTest.WebUI.Infrastructure
 {
     public class JsonSnakeCaseNamingPolicyTest
     {

@@ -1,6 +1,5 @@
 using MerchStore.Domain.ShoppingCart;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Service for managing the shopping cart stored in browser cookies.

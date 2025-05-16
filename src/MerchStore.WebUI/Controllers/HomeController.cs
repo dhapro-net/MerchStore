@@ -5,7 +5,6 @@ using MerchStore.WebUI.Models.Home;
 using MerchStore.WebUI.Models.Catalog;
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.WebUI.Helpers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MerchStore.WebUI.Controllers;
 

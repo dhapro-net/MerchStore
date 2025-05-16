@@ -1,18 +1,13 @@
 
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using System.Net;
-using MerchStore.Application.Services.Interfaces;
-using MerchStore.Domain.Interfaces;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using MerchStore.Application.DTOs;
-using MerchStore.Application.Services;
 using MerchStore.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MerchStore.Application.DTOs;
 
 
 namespace MerchStore.Infra.ReviewApiFunction;
@@ -34,7 +29,7 @@ public class GetProductsDetailById
     [OpenApiResponseWithBody(
     statusCode: HttpStatusCode.OK,
     contentType: "application/json",
-    bodyType: typeof(ProductsdetailsDto),
+    bodyType: typeof(ProductsDetailsDto),
     Description = "Returns full product details for one item")]
     [OpenApiResponseWithoutBody(HttpStatusCode.NotFound, Description = "Product not found")]
     [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "Invalid API key")]
@@ -65,7 +60,7 @@ public class GetProductsDetailById
 
         var product = await _db.Products
             .Where(p => p.Id == productId)
-            .Select(p => new ProductsdetailsDto
+            .Select(p => new ProductsDetailsDto
             {
                 Id = p.Id,
                 Name = p.Name,

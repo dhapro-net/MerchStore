@@ -1,13 +1,8 @@
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations; // For ReviewApiOptions
 using MerchStore.Infrastructure.IntegrationTests;
 using Microsoft.Extensions.DependencyInjection; // For GetRequiredService, IServiceScopeFactory
 using Microsoft.Extensions.Logging; // For ILogger, ILoggerFactory
 using Microsoft.Extensions.Options;
-using Xunit;
 using MerchStore.Infrastructure.ExternalServices.Reviews; // For IOptions, Options.Create
 
 namespace MerchStore.IntegrationTests;

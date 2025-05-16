@@ -3,7 +3,7 @@ using FluentAssertions;
 using MerchStore.Domain.ValueObjects;
 using Xunit;
 
-namespace MerchStore.Domain.Tests.ValueObjects;
+namespace MerchStoreTest.Domain.ValueObjects;
 
 public class ReviewStatsTests
 {

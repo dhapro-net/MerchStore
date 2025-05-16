@@ -1,7 +1,6 @@
 using MediatR;
 using MerchStore.Application.ShoppingCart.Commands;
 using MerchStore.Application.ShoppingCart.DTOs;
-using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;

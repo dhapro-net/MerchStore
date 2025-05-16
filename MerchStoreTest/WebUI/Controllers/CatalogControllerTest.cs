@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using MerchStore.Application.Catalog.Queries;
-using MerchStore.Domain.Entities;
 using MerchStore.Domain.ShoppingCart;
 using MerchStore.Domain.ValueObjects;
 using MerchStore.WebUI.Controllers;
@@ -17,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace MerchStore.Tests.WebUI.Controllers
+namespace MerchStoreTest.WebUI.Controllers
 {
     public class CatalogControllerTest
     {

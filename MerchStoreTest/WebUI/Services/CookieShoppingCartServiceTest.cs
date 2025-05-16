@@ -6,7 +6,7 @@ using Moq;
 using Xunit;
 using MerchStore.Domain.ShoppingCart;
 
-namespace MerchStore.Tests.WebUI.Services
+namespace MerchStoreTest.WebUI.Services
 {
     public class CookieShoppingCartServiceTest
     {

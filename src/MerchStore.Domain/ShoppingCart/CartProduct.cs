@@ -1,4 +1,3 @@
-using System;
 using MerchStore.Domain.ValueObjects;
 
 namespace MerchStore.Domain.ShoppingCart

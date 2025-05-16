@@ -1,10 +1,9 @@
 using System;
 using FluentAssertions;
-using MerchStore.Domain.Entities;
 using MerchStore.Domain.Enums;
 using Xunit;
 
-namespace MerchStore.Domain.Tests.Entities;
+namespace MerchStore.Domain.Entities;
 
 public class ReviewTests
 {

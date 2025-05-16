@@ -1,6 +1,5 @@
 using MerchStore.Domain.Common;
 using MerchStore.Domain.ValueObjects;
-using System.IO;
 
 namespace MerchStore.Domain.Entities;
 

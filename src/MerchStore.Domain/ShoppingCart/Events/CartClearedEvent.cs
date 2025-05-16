@@ -1,4 +1,3 @@
-using System;
 using MerchStore.Domain.Common;
 
 // Could do with an eventdispatcher

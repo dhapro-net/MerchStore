@@ -2,7 +2,7 @@ using MerchStore.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace MerchStore.Tests.WebUI.Controllers
+namespace MerchStoreTest.WebUI.Controllers
 {
     public class LandingControllerTest
     {

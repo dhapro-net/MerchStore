@@ -1,9 +1,8 @@
 using System;
 using FluentAssertions;
-using MerchStore.Domain.Enums;
 using Xunit;
 
-namespace MerchStore.Domain.Tests.Enums;
+namespace MerchStore.Domain.Enums;
 
 public class ReviewStatusTests
 {

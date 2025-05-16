@@ -13,10 +13,14 @@
     "cSpell.words": [
         "appsettings",
         "dtos",
+        "eventdispatcher",
+        "hiver",
         "Hsts",
         "Mediat",
         "Merch",
+        "SEKK",
         "Swashbuckle",
+        "Uppercases",
         "xunit"
     ]
 }

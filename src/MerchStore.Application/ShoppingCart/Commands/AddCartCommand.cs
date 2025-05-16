@@ -1,6 +1,5 @@
 using MediatR;
 using MerchStore.Domain.ShoppingCart;
-using System.Threading;
 
 namespace MerchStore.Application.ShoppingCart.Commands;
 

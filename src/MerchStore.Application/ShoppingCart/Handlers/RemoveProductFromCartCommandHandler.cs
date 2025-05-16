@@ -1,7 +1,5 @@
 using MediatR;
 using MerchStore.Application.Common;
-using MerchStore.Application.ShoppingCart.Interfaces;
-using MerchStore.Domain.ShoppingCart;
 using Microsoft.Extensions.Logging;
 
 namespace MerchStore.Application.ShoppingCart.Commands;

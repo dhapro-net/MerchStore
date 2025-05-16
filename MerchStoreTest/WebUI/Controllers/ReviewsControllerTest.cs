@@ -7,10 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MerchStore.WebUI.Controllers;
 using MerchStore.Application.Services.Interfaces;
-using MerchStore.WebUI.Models;
 using Microsoft.AspNetCore.Http;
 using MerchStore.Domain.Entities;
-using System.Linq;
 
 namespace MerchStoreTest.WebUI.Controllers
 {

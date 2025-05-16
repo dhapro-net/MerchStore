@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Moq;
-using System.Collections.Generic;
 
 
-namespace MerchStore.Tests.WebUI.Infrastructure
+namespace MerchStoreTest.WebUI.Infrastructure
 {
     public class SecurityRequirementsOperationFilterTest
     {

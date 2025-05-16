@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MerchStore.Application.Services.Interfaces;
@@ -12,7 +11,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
 using Xunit;
 
-namespace MerchStore.Tests.WebUI.Endpoints
+namespace MerchStoreTest.WebUI.Endpoints
 {
     public class MinimalProductEndpointsTest
     {

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using MerchStore.Domain.Common;
 using MerchStore.Domain.ValueObjects;
 using MerchStore.Domain.ShoppingCart.Events;

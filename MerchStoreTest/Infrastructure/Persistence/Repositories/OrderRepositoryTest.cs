@@ -9,7 +9,7 @@ using MerchStore.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace MerchStore.Tests.Infrastructure.Repositories
+namespace MerchStoreTest.Infrastructure.Repositories
 {
     public class OrderRepositoryTests
     {

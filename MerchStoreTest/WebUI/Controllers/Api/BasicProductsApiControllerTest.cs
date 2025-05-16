@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace MerchStore.Tests.WebUI.Controllers.Api
+namespace MerchStoreTest.WebUI.Controllers.Api
 {
     public class BasicProductsApiControllerTest
     {

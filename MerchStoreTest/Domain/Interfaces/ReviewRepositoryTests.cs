@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Enums;
-using MerchStore.Domain.Interfaces;
 using MerchStore.Domain.ValueObjects;
 using Moq;
 using Xunit;
 
-namespace MerchStore.Domain.Tests.Interfaces;
+namespace MerchStore.Domain.Interfaces;
 
 public class ReviewRepositoryTests
 {

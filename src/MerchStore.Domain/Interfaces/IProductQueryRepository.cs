@@ -1,6 +1,4 @@
 using MerchStore.Domain.Entities;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MerchStore.Domain.Interfaces;
 

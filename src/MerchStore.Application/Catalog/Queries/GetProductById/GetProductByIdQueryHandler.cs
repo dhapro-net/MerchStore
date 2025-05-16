@@ -1,6 +1,4 @@
 using MediatR;
-using MerchStore.Application;
-using MerchStore.Domain;
 using MerchStore.Domain.Interfaces;
 
 namespace MerchStore.Application.Catalog.Queries

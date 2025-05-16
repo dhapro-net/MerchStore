@@ -3,11 +3,6 @@ using MerchStore.Domain.Entities; // For Review
 using MerchStore.Domain.ValueObjects; // For ReviewStats
 using Microsoft.Extensions.DependencyInjection; // For GetRequiredService
 using Microsoft.Extensions.Logging;
-using Xunit;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using MerchStore.Infrastructure.IntegrationTests; // For ILogger (optional)
 
 namespace MerchStore.IntegrationTests;

@@ -7,7 +7,7 @@ namespace MerchStore.Application.ShoppingCart.Queries;
 /// <summary>
 /// Handles the query to retrieve a shopping cart.
 /// </summary>
-public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
+public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto?>
 {
     private readonly ILogger<GetCartQueryHandler> _logger;
 
@@ -16,9 +16,15 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task<CartDto> Handle(GetCartQuery request, CancellationToken cancellationToken)
+    public Task<CartDto?> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
-       
+        // Return null if the cart is null
+        if (request.Cart == null)
+        {
+            _logger.LogWarning("GetCartQuery received with null Cart.");
+            return Task.FromResult<CartDto?>(null);
+        }
+
         _logger.LogInformation("Mapping cart with ID {CartId} to CartDto.", request.Cart.CartId);
 
         // Map Cart to CartDto
@@ -38,6 +44,6 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
         };
 
         _logger.LogInformation("Successfully mapped cart with ID {CartId} to CartDto.", request.Cart.CartId);
-        return Task.FromResult(cartDto);
+        return Task.FromResult<CartDto?>(cartDto);
     }
 }
