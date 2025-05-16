@@ -49,7 +49,7 @@ public class CookieShoppingCartService
 
         if (string.IsNullOrEmpty(cookieValue))
         {
-            _logger.LogWarning("Cart cookie '{CartCookieName}' not found.");
+            _logger.LogWarning("Cart cookie '{CartCookieName}' not found.", CartCookieName);
             return null;
         }
 
@@ -86,7 +86,7 @@ public class CookieShoppingCartService
 
         var serializedCart = JsonSerializer.Serialize(cart, _jsonSerializerOptions);
 
-        _logger.LogInformation("Saving cart to cookie with name '{CartCookieName}'.");
+        _logger.LogInformation("Saving cart to cookie with name '{CartCookieName}'.", CartCookieName);
 
         _httpContextAccessor.HttpContext.Response.Cookies.Append(CartCookieName, serializedCart, new CookieOptions
         {
