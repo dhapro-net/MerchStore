@@ -24,7 +24,16 @@ namespace MerchStoreTest.WebUI.Controllers
 
         public ShoppingCartControllerTest()
         {
-            _cartServiceMock = new Mock<CookieShoppingCartService>(null, null, null);
+            var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            // Use Mock.Of<T>() to provide non-null logger instances
+            var cookieCartLogger = new Mock<ILogger<CookieShoppingCartService>>().Object;
+            var cartLogger = new Mock<ILogger<Cart>>().Object;
+            _cartServiceMock = new Mock<CookieShoppingCartService>(
+                MockBehavior.Loose,
+                cookieCartLogger,
+                cartLogger,
+                httpContextAccessorMock.Object
+            );
             _mediatorMock = new Mock<IMediator>();
             _loggerMock = new Mock<ILogger<ShoppingCartController>>();
             _controller = new ShoppingCartController(_cartServiceMock.Object, _mediatorMock.Object, _loggerMock.Object);

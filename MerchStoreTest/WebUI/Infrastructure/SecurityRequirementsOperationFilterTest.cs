@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Moq;
+using System.Collections.Generic;
+
 
 namespace MerchStore.Tests.WebUI.Infrastructure
 {
@@ -89,7 +91,7 @@ namespace MerchStore.Tests.WebUI.Infrastructure
     public static class TestHelper
     {
         private static ISchemaGenerator MockSchemaGenerator() => new Mock<ISchemaGenerator>().Object;
-        private static SchemaRepository MockSchemaRepository() => new Mock<SchemaRepository>().Object;
+        private static SchemaRepository MockSchemaRepository() => new SchemaRepository();
 
         public static OperationFilterContext CreateContextWithAuthorizeOnMethod()
         {

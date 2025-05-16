@@ -51,8 +51,7 @@ namespace MerchStore.Tests.WebUI.Controllers.Api
         new Money(200, "SEK"),
         10
     )
-            }
-            ;
+            };
 
             _catalogServiceMock.Setup(s => s.GetAllProductsAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(products);

@@ -30,7 +30,19 @@ namespace MerchStore.Tests.WebUI.Controllers
         {
             _mediatorMock = new Mock<IMediator>();
             _loggerMock = new Mock<ILogger<CatalogController>>();
-            _cartServiceMock = new Mock<CookieShoppingCartService>(MockBehavior.Strict, null, null, null);
+
+            // Mock dependencies for CookieShoppingCartService
+            var cartLoggerMock = new Mock<ILogger<CookieShoppingCartService>>();
+            var cartCartLoggerMock = new Mock<ILogger<Cart>>();
+            var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+
+            _cartServiceMock = new Mock<CookieShoppingCartService>(
+                MockBehavior.Strict,
+                cartLoggerMock.Object,
+                cartCartLoggerMock.Object,
+                httpContextAccessorMock.Object
+            );
+
             _controller = new CatalogController(_mediatorMock.Object, _loggerMock.Object, _cartServiceMock.Object);
 
             // Setup HttpContext for controller
@@ -39,6 +51,13 @@ namespace MerchStore.Tests.WebUI.Controllers
             {
                 HttpContext = httpContext
             };
+
+            // Setup TempData for controller
+            var tempData = new Microsoft.AspNetCore.Mvc.ViewFeatures.TempDataDictionary(
+                httpContext,
+                Mock.Of<Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataProvider>()
+            );
+            _controller.TempData = tempData;
         }
 
         #region Index
@@ -231,9 +250,16 @@ namespace MerchStore.Tests.WebUI.Controllers
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetProductByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(product);
 
-            var cartMock = new Mock<Cart>();
-            _cartServiceMock.Setup(s => s.GetOrCreateCart()).Returns(cartMock.Object);
-            _cartServiceMock.Setup(s => s.SaveCart(cartMock.Object));
+            var cart = new Cart(
+    Guid.NewGuid(),
+    new List<CartProduct>(),
+    DateTime.UtcNow,
+    DateTime.UtcNow
+);
+            var cartSpy = new Mock<Cart>();
+            cartSpy.CallBase = true;
+            _cartServiceMock.Setup(s => s.GetOrCreateCart()).Returns(cart);
+            _cartServiceMock.Setup(s => s.SaveCart(cart));
 
             // Act
             var result = await _controller.AddProductToCart(productId, 2);
@@ -242,8 +268,7 @@ namespace MerchStore.Tests.WebUI.Controllers
             var redirect = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirect.ActionName);
             Assert.Equal("Product added to cart successfully!", _controller.TempData["SuccessMessage"]);
-            cartMock.Verify(c => c.AddProduct(productId, product.Name, product.Price, 2), Times.Once);
-            _cartServiceMock.Verify(s => s.SaveCart(cartMock.Object), Times.Once);
+            Assert.Contains(cart.Products, item => item.ProductId == productId && item.ProductName == product.Name && item.UnitPrice == product.Price && item.Quantity == 2); _cartServiceMock.Verify(s => s.SaveCart(cart), Times.Once);
         }
 
         [Fact]

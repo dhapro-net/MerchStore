@@ -12,6 +12,13 @@ public class PaymentInfo
 
     private PaymentInfo() { }
 
+    // Add this constructor for test support
+    internal PaymentInfo(string cardNumber, string cvv, DateTime expiration)
+    {
+        CardNumber = cardNumber;
+        CVV = cvv;
+        ExpirationDate = expiration.ToString("MM/yy");
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PaymentInfo"/> class.

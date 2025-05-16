@@ -34,13 +34,22 @@ namespace MerchStore.Tests.Infrastructure.Repositories
             return (PaymentInfo)ctor.Invoke(new object[] { "TestCard", "1234", DateTime.UtcNow.AddYears(1) });
         }
         // Helper for test OrderProduct
-        private OrderProduct TestOrderProduct() => new OrderProduct(Guid.NewGuid(), "Test Product", new Money(100, "USD"), 2);
-
+        private OrderProduct TestOrderProduct()
+        {
+            return new OrderProduct(
+                Guid.NewGuid(),                // id
+                Guid.NewGuid(),                // productId
+                "Test Product",                // productName
+                new Money(100, "USD"),         // unitPrice
+                2,                             // quantity
+                Guid.NewGuid()                 // orderId (can be dummy for test)
+            );
+        }
         [Fact]
         public async Task AddOrderAsync_ShouldAddOrderToDatabase()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
 
             var order = new Order(
@@ -66,7 +75,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task GetOrderByIdAsync_ShouldReturnOrder_WhenOrderExists()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
             var queryRepo = new OrderQueryRepository(context);
 
@@ -94,7 +103,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task GetOrderByIdAsync_ShouldReturnNull_WhenOrderDoesNotExist()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var queryRepo = new OrderQueryRepository(context);
 
             // Act
@@ -108,7 +117,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task GetOrdersByCustomerAsync_ShouldReturnOrdersForCustomer()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
 
             var customerId = Guid.NewGuid();
@@ -134,7 +143,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task GetOrdersByCustomerAsync_ShouldReturnEmpty_WhenNoOrdersExist()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
 
             // Act
             var result = await context.Orders.Where(o => o.CustomerName == "Nonexistent").ToListAsync();
@@ -148,7 +157,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task GetOrdersByDateRangeAsync_ShouldReturnOrdersWithinDateRange()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
             var queryRepo = new OrderQueryRepository(context);
 
@@ -177,7 +186,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task GetOrdersByDateRangeAsync_ShouldIncludeOrdersOnStartAndEndDate()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
             var queryRepo = new OrderQueryRepository(context);
 
@@ -206,7 +215,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task UpdateOrderAsync_ShouldUpdateOrderInDatabase()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
 
             var order = new Order(
@@ -244,7 +253,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task DeleteOrderAsync_ShouldRemoveOrderFromDatabase()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
 
             var order = new Order(
@@ -271,7 +280,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
         public async Task DeleteOrderAsync_ShouldDoNothing_WhenOrderDoesNotExist()
         {
             // Arrange
-            var context = CreateInMemoryDbContext();
+            await using var context = CreateInMemoryDbContext();
             var commandRepo = new OrderCommandRepository(context);
 
             // Act

@@ -84,7 +84,12 @@ new Product(
             // Use reflection to call the private static method
             var method = typeof(MerchStore.WebUI.Endpoints.MinimalProductEndpoints)
                 .GetMethod("GetAllProducts", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            return (Task<IResult>)method.Invoke(null, new object[] { service, CancellationToken.None });
+            if (method == null)
+                throw new InvalidOperationException("GetAllProducts method not found on MinimalProductEndpoints.");
+            var result = method.Invoke(null, new object[] { service, CancellationToken.None });
+            if (result == null)
+                throw new InvalidOperationException("GetAllProducts invocation returned null.");
+            return (Task<IResult>)result;
         }
 
         #endregion
@@ -157,9 +162,15 @@ new Product(
             // Use reflection to call the private static method
             var method = typeof(MerchStore.WebUI.Endpoints.MinimalProductEndpoints)
                 .GetMethod("GetProductById", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            return (Task<IResult>)method.Invoke(null, new object[] { id, service, CancellationToken.None });
+            if (method == null)
+                throw new InvalidOperationException("GetProductById method not found on MinimalProductEndpoints.");
+            var result = method.Invoke(null, new object[] { id, service, CancellationToken.None });
+            if (result == null)
+                throw new InvalidOperationException("GetProductById invocation returned null.");
+            return (Task<IResult>)result;
         }
 
         #endregion
+
     }
 }
