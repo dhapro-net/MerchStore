@@ -31,7 +31,6 @@ namespace MerchStore.Tests.WebUI.Controllers.Api
         [Fact]
         public async Task GetAll_ReturnsOk_WithProductList()
         {
-            // Arrangevar products = new List<Product>
             var products = new List<Product>{
                 new Product(
                     Guid.NewGuid(),

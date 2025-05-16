@@ -28,7 +28,9 @@ namespace MerchStore.Application.Catalog.Queries
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                ImageUrl = string.IsNullOrEmpty(product.ImageUrl) ? null : new Uri(product.ImageUrl), 
+                ImageUrl = string.IsNullOrEmpty(product.ImageUrl)
+    ? new Uri("https://example.com/placeholder.jpg") // Use a sensible default
+    : new Uri(product.ImageUrl),
 
                 StockQuantity = product.StockQuantity
             };

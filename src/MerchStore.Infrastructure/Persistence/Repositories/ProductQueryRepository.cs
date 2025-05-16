@@ -21,10 +21,10 @@ public class ProductQueryRepository : IProductQueryRepository
         return await _context.Products.ToListAsync(cancellationToken);
     }
 
-    public async Task<Product> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken)
-    {
-        return await _context.Products.FirstOrDefaultAsync(p => p.Id == productId, cancellationToken);
-    }
+public async Task<Product?> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken)
+{
+    return await _context.Products.FirstOrDefaultAsync(p => p.Id == productId, cancellationToken);
+}
 
     public async Task<IEnumerable<Product>> GetFeaturedProductsAsync()
     {

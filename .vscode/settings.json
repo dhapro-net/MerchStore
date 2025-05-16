@@ -12,6 +12,11 @@
     "azureFunctions.preDeployTask": "publish (functions)",
     "cSpell.words": [
         "appsettings",
-        "Merch"
+        "dtos",
+        "Hsts",
+        "Mediat",
+        "Merch",
+        "Swashbuckle",
+        "xunit"
     ]
 }
