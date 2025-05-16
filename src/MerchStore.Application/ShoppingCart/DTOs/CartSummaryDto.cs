@@ -7,7 +7,7 @@ namespace MerchStore.Application.ShoppingCart.DTOs
     {
         public Guid CartId { get; set; }
         public int ProductCount { get; set; }
-        public Money TotalPrice { get; set; }
+        public required Money TotalPrice { get; set; }
         
     }
 }

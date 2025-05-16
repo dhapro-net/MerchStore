@@ -6,9 +6,9 @@ public class PaymentInfo
     private const int ExpirationDateLength = 5;
     private const int CVVLength = 3;
 
-    public string CardNumber { get; private set; }
-    public string ExpirationDate { get; private set; }
-    public string CVV { get; private set; }
+    public string CardNumber { get; private set; } = null!;
+    public string ExpirationDate { get; private set; } = null!;
+    public string CVV { get; private set; } = null!;
 
     private PaymentInfo(string v, string v1, DateTime dateTime) { }
 

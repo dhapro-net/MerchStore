@@ -22,7 +22,7 @@ EndProject
 
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{9EFDEDC9-DBFE-4805-9BBF-CD2E76FD0A61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.IntegrationTests", "IntegrationTestFolder\Infrastructure\MerchStore.IntegrationTests\MerchStore.IntegrationTests.csproj", "{F2714529-B310-44B3-8637-06955640E7B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.IntegrationTests", "IntegrationTestFolder\MerchStore.IntegrationTests\MerchStore.IntegrationTests.csproj", "{F2714529-B310-44B3-8637-06955640E7B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStoreTest", "MerchStoreTest\MerchStoreTest.csproj", "{D044B780-451B-4715-A3C7-5A57609B5190}"
 EndProject

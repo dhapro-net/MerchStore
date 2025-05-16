@@ -7,9 +7,10 @@ using Xunit;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq; // For ILogger (optional)
+using System.Linq;
+using MerchStore.Infrastructure.IntegrationTests; // For ILogger (optional)
 
-namespace MerchStore.Infrastructure.IntegrationTests;
+namespace MerchStore.IntegrationTests;
 
 
 // Contains integration tests for the ExternalReviewRepository,

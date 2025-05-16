@@ -10,7 +10,6 @@ namespace MerchStore.Domain.ShoppingCart
 {
     public class Cart : AggregateRoot<Guid>
     {
-        private readonly ILogger<Cart> _logger;
 
         public Guid CartId
         {

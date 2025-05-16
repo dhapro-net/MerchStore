@@ -8,5 +8,9 @@ public class ShoppingCartViewModel
     public int TotalProducts { get; set; }
     public DateTime LastUpdated { get; set; }
     public ShippingDetailsViewModel Shipping { get; set; } = new ShippingDetailsViewModel();
-    public PaymentDetailsViewModel Payment { get; set; } = new PaymentDetailsViewModel();
+    public PaymentDetailsViewModel Payment { get; set; } = new PaymentDetailsViewModel
+    {
+        CardNumber = string.Empty,
+        ExpirationDate = string.Empty
+    };
 }

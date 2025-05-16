@@ -85,7 +85,7 @@ public class ReviewTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Constructor_WithInvalidCustomerName_ShouldThrowArgumentException(string? invalidName)
+    public void Constructor_WithInvalidCustomerName_ShouldThrowArgumentException(string invalidName)
     {
         // Arrange & Act
         Action act = () => new Review(
@@ -108,7 +108,7 @@ public class ReviewTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Constructor_WithInvalidTitle_ShouldThrowArgumentException(string? invalidTitle)
+    public void Constructor_WithInvalidTitle_ShouldThrowArgumentException(string invalidTitle)
     {
         // Arrange & Act
         Action act = () => new Review(
@@ -131,7 +131,7 @@ public class ReviewTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Constructor_WithInvalidContent_ShouldThrowArgumentException(string? invalidContent)
+    public void Constructor_WithInvalidContent_ShouldThrowArgumentException(string invalidContent)
     {
         // Arrange & Act
         Action act = () => new Review(

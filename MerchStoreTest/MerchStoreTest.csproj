@@ -11,7 +11,7 @@
     <ProjectReference Include="..\src\MerchStore.Infrastructure\MerchStore.Infrastructure.csproj" />
     <ProjectReference Include="..\src\MerchStore.WebUI\MerchStore.WebUI.csproj" />
     <ProjectReference Include="..\Infra\ReviewApiClient\ReviewApiClient.csproj" />
-    <ProjectReference Include="..\Infra\ReviewApiFunctionn\ReviewApiFunctions.csproj" />
+    <ProjectReference Include="..\Infra\ReviewApiFunction\ReviewApiFunction.csproj" />
 
 
   </ItemGroup>

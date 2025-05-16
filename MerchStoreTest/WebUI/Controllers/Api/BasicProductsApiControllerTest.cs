@@ -137,7 +137,7 @@ namespace MerchStore.Tests.WebUI.Controllers.Api
             // Arrange
             var id = Guid.NewGuid();
             _catalogServiceMock.Setup(s => s.GetProductByIdAsync(id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Product?)null);
+                .ReturnsAsync((Product)null);
 
             // Act
             var result = await _controller.GetById(id, CancellationToken.None);

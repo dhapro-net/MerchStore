@@ -101,7 +101,9 @@ namespace MerchStoreTest.WebUI.Controllers
             {
                 Id = Guid.Parse(productId),
                 Name = "Test Product",
+                Description = "Test Description", // Add this line
                 Price = new Money(10, "SEK"),
+                ImageUrl = new Uri("https://example.com/image.jpg"), // Add this line
                 StockQuantity = 10
             };
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetProductByIdQuery>(), default)).ReturnsAsync(product);

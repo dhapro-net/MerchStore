@@ -38,8 +38,8 @@ public class GetCartSummaryQueryHandler : IRequestHandler<GetCartSummaryQuery, C
         var cartSummary = new CartSummaryDto
         {
             CartId = request.Cart.CartId,
-            ProductCount = request.Cart.Products.Sum(p => p.Quantity),
-            TotalPrice = new Money(request.Cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK")
+            ProductCount = request.Cart.Products?.Sum(p => p.Quantity) ?? 0,
+            TotalPrice = new Money(request.Cart.Products?.Sum(p => p.UnitPrice.Amount * p.Quantity) ?? 0, "SEK")
         };
 
         _logger.LogInformation("Successfully mapped cart with ID {CartId} to CartSummaryDto.", request.Cart.CartId);

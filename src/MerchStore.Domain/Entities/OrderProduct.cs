@@ -6,17 +6,17 @@ public class OrderProduct
 {
     public Guid Id { get; private set; } // Primary Key
     public Guid ProductId { get; private set; } // Foreign Key to Product
-    public string ProductName { get; private set; }
-    public Money UnitPrice { get; private set; }
+    public string ProductName { get; private set; }  = null!;
+    public Money UnitPrice { get; private set; } = null!;
     public int Quantity { get; private set; }
     public Money TotalPrice => new Money(UnitPrice.Amount * Quantity, UnitPrice.Currency);
 
     // Foreign key to the Order
     public Guid OrderId { get; private set; }
-    public Order Order { get; private set; }
+    public Order? Order { get; private set; }
     public Guid Guid { get; }
-    public string V1 { get; }
-    public Money Money { get; }
+    public string? V1 { get; }
+    public Money? Money { get; }
     public int V2 { get; }
 
     private OrderProduct() { } //For EF Core 

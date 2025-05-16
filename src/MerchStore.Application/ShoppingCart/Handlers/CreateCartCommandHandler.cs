@@ -20,7 +20,7 @@ public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, CartD
         _cartLogger = cartLogger ?? throw new ArgumentNullException(nameof(cartLogger));
     }
 
-    public async Task<CartDto> Handle(CreateCartCommand request, CancellationToken cancellationToken)
+    public Task<CartDto> Handle(CreateCartCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Creating a new cart with ID: {CartId}.", request.CartId);
 
@@ -28,14 +28,14 @@ public class CreateCartCommandHandler : IRequestHandler<CreateCartCommand, CartD
         var cart = Cart.Create(request.CartId, _cartLogger);
 
         // Map to CartDto
-        return new CartDto
+        return Task.FromResult(new CartDto
         {
             CartId = cart.CartId,
             Products = new List<CartProductDto>(),
             TotalPrice = new Money(0, "SEK"),
             TotalProducts = 0,
             LastUpdated = DateTime.UtcNow
-        };
+        });
     }
 }
 }

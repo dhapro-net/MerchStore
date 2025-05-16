@@ -47,11 +47,17 @@ public class HomeController : Controller
             {
                 Id = product.Id,
                 Name = product.Name,
+                TruncatedDescription = product.Description?.Length > 100
+        ? product.Description.Substring(0, 100) + "..."
+        : product.Description ?? string.Empty,
                 FormattedPrice = product.Price.Amount.ToString("0 kr"),
                 PriceAmount = product.Price.Amount,
-                ImageUrl = product.ImageUrl?.ToString(),
-                HoverImageUrl = HoverImageHelper.GetHoverImageUrl(product.Name),
+                ImageUrl = product.ImageUrl?.ToString() ?? string.Empty, // Defensive assignment
+                HoverImageUrl = HoverImageHelper.GetHoverImageUrl(product.Name) ?? string.Empty, // Defensive assignment
                 StockQuantity = product.StockQuantity,
+                Description = product.Description ?? string.Empty,
+                Category = product.Category ?? string.Empty,
+                IsFeatured = product.IsFeatured,
                 AverageRating = averageRating,
                 ReviewCount = reviewCount
             });
@@ -70,15 +76,14 @@ public class HomeController : Controller
         Heading = "20% Off Canvas Prints!",
         Description = "Brighten your space with our bold and artistic canvas designs. This week only!",
         ButtonText = "Shop Canvas",
-        ButtonUrl = canvas != null ? Url.Action("Details", "Catalog", new { id = canvas.Id }) : "#"
-    },
+ButtonUrl = canvas != null ? (Url.Action("Details", "Catalog", new { id = canvas.Id }) ?? "#") : "#"    },
     new HeroSlideViewModel
     {
         ImageUrl = "/img/hoodie03.jpg",
         Heading = "Comfy Hoodies Are Here",
         Description = "Get cozy in style – limited edition colors just dropped.",
         ButtonText = "Explore Hoodies",
-        ButtonUrl = hoodie != null ? Url.Action("Details", "Catalog", new { id = hoodie.Id }) : "#"
+ButtonUrl = hoodie != null ? (Url.Action("Details", "Catalog", new { id = hoodie.Id }) ?? "#") : "#"
     },
     new HeroSlideViewModel
     {
@@ -86,8 +91,7 @@ public class HomeController : Controller
         Heading = "Sip in Style ☕",
         Description = "Check out our coffee coasters – a small touch with big personality.",
         ButtonText = "Shop Coasters",
-        ButtonUrl = coaster != null ? Url.Action("Details", "Catalog", new { id = coaster.Id }) : "#"
-    }
+ButtonUrl = coaster != null ? (Url.Action("Details", "Catalog", new { id = coaster.Id }) ?? "#") : "#"    }
 },
 
             PopularProducts = productCards,
@@ -140,6 +144,10 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new ErrorViewModel
+        {
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+            Message = string.Empty // or a default error message
+        });
     }
 }

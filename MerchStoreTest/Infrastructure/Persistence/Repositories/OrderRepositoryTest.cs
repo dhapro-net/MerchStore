@@ -24,15 +24,15 @@ namespace MerchStore.Tests.Infrastructure.Repositories
 
         // Helper for test PaymentInfo
         private PaymentInfo TestPaymentInfo()
-{
-    var ctor = typeof(PaymentInfo).GetConstructor(
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
-        null,
-        new[] { typeof(string), typeof(string), typeof(DateTime) },
-        null
-    );
-    return (PaymentInfo)ctor.Invoke(new object[] { "TestCard", "1234", DateTime.UtcNow.AddYears(1) });
-}
+        {
+            var ctor = typeof(PaymentInfo).GetConstructor(
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                null,
+                new[] { typeof(string), typeof(string), typeof(DateTime) },
+                null
+            );
+            return (PaymentInfo)ctor.Invoke(new object[] { "TestCard", "1234", DateTime.UtcNow.AddYears(1) });
+        }
         // Helper for test OrderProduct
         private OrderProduct TestOrderProduct() => new OrderProduct(Guid.NewGuid(), "Test Product", new Money(100, "USD"), 2);
 
@@ -137,7 +137,7 @@ namespace MerchStore.Tests.Infrastructure.Repositories
             var context = CreateInMemoryDbContext();
 
             // Act
-            var result = context.Orders.Where(o => o.CustomerName == "Nonexistent").ToList();
+            var result = await context.Orders.Where(o => o.CustomerName == "Nonexistent").ToListAsync();
 
             // Assert
             Assert.NotNull(result);

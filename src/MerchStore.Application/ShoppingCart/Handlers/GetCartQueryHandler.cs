@@ -18,12 +18,7 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, CartDto>
 
     public Task<CartDto> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
-        if (request.Cart == null)
-        {
-            _logger.LogWarning("GetCartQuery failed: Cart is null.");
-            return Task.FromResult<CartDto>(null);
-        }
-
+       
         _logger.LogInformation("Mapping cart with ID {CartId} to CartDto.", request.Cart.CartId);
 
         // Map Cart to CartDto

@@ -111,20 +111,20 @@ namespace MerchStore.Tests.WebUI.Controllers
         [Fact]
         public async Task Details_ReturnsViewWithProductDetails()
         {
-// Arrange
-var productId = Guid.NewGuid();
-var product = new ProductDto
-{
-    Id = productId,
-    Name = "ProductX",
-    Description = "DescX",
-    ImageUrl = new Uri("http://img.com/x.jpg"),
-    Price = new Money(123, "SEK"),
-    StockQuantity = 7
-};
+            // Arrange
+            var productId = Guid.NewGuid();
+            var product = new ProductDto
+            {
+                Id = productId,
+                Name = "ProductX",
+                Description = "DescX",
+                ImageUrl = new Uri("http://img.com/x.jpg"),
+                Price = new Money(123, "SEK"),
+                StockQuantity = 7
+            };
 
-_mediatorMock.Setup(m => m.Send(It.Is<GetProductByIdQuery>(q => q.ProductId == productId), It.IsAny<CancellationToken>()))
-    .ReturnsAsync(product);
+            _mediatorMock.Setup(m => m.Send(It.Is<GetProductByIdQuery>(q => q.ProductId == productId), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(product);
 
             // Act
             var result = await _controller.Details(productId);
@@ -223,6 +223,8 @@ _mediatorMock.Setup(m => m.Send(It.Is<GetProductByIdQuery>(q => q.ProductId == p
             {
                 Id = Guid.Parse(productId),
                 Name = "Product",
+                Description = "A test product description.", // Add this line
+                ImageUrl = new Uri("http://test.com/image.jpg"), // Add this line
                 Price = new Money(50, "SEK"),
                 StockQuantity = 10
             };

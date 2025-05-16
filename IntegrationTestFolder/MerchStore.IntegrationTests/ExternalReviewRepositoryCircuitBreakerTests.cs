@@ -2,14 +2,15 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using MerchStore.Infrastructure.ExternalServices.Reviews; // For ReviewApiClient, ExternalReviewRepository etc.
 using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations; // For ReviewApiOptions
+using MerchStore.Infrastructure.IntegrationTests;
 using Microsoft.Extensions.DependencyInjection; // For GetRequiredService, IServiceScopeFactory
 using Microsoft.Extensions.Logging; // For ILogger, ILoggerFactory
 using Microsoft.Extensions.Options;
-using Xunit; // For IOptions, Options.Create
+using Xunit;
+using MerchStore.Infrastructure.ExternalServices.Reviews; // For IOptions, Options.Create
 
-namespace MerchStore.Infrastructure.IntegrationTests;
+namespace MerchStore.IntegrationTests;
 
 
 /// Contains integration tests specifically for verifying the circuit breaker
