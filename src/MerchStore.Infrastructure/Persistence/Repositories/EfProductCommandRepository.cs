@@ -6,11 +6,11 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// Repository for managing Product entities (commands).
 /// </summary>
-public class ProductCommandRepository : IProductCommandRepository
+public class EfProductCommandRepository : IProductCommandRepository
 {
     private readonly AppDbContext _context;
 
-    public ProductCommandRepository(AppDbContext context)
+    public EfProductCommandRepository(AppDbContext context)
     {
         _context = context;
     }
