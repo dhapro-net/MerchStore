@@ -11,6 +11,7 @@ using MerchStore.Infrastructure.ExternalServices.Reviews;
 using MerchStore.Infrastructure.Repositories;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Application.ShoppingCart.Services;
+using MongoDB.Driver;
 
 
 namespace MerchStore.Infrastructure;
@@ -33,39 +34,64 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Register DbContext with in-memory database
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseInMemoryDatabase("MerchStoreDb"));
+        var provider = configuration["Config:PersistenceProvider"] ?? "EfCore";
 
-        // Register repositories
-        services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
-        services.AddScoped<IOrderCommandRepository, OrderCommandRepository>();
-        services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
-        services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
-        services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
-        services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
+        if (provider == "Mongo")
+        {
 
-        // Register Unit of Work
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+            // Register MongoDB client and database
+            services.AddSingleton<IMongoClient>(sp =>
+            {
+                var settings = MongoClientSettings.FromConnectionString(configuration["CosmosDb:ConnectionString"]);
+                return new MongoClient(settings);
+            });
+            services.AddScoped<IMongoDatabase>(sp =>
+            {
+                var client = sp.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(configuration["CosmosDb:DatabaseName"]);
+            });
 
-        // Register Repository Manager
-        services.AddScoped<IRepositoryManager, RepositoryManager>();
+            // Register MongoDB repositories
+            services.AddScoped<IProductQueryRepository, MongoProductQueryRepository>();
+            services.AddScoped<IProductCommandRepository, MongoProductCommandRepository>();
 
-        // Add logging services if not already added
-        services.AddLogging();
+            // Register MongoDB seeder
+            services.AddScoped<MongoDbSeeder>();
+        }
+        else
+        {
+            // Register DbContext with in-memory database or your real provider
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseInMemoryDatabase("MerchStoreDb"));
 
-        // Register DbContext seeder
-        services.AddScoped<AppDbContextSeeder>();
+            // Register EF Core repositories
+            services.AddScoped<IOrderQueryRepository, OrderQueryRepository>();
+            services.AddScoped<IOrderCommandRepository, OrderCommandRepository>();
+            services.AddScoped<IProductQueryRepository, EfProductQueryRepository>();
+            services.AddScoped<IProductCommandRepository, EfProductCommandRepository>();
+            services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
+            services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
 
+            // Register Unit of Work
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Register cookie-based shopping cart repositories
+            // Register Repository Manager
+            services.AddScoped<IRepositoryManager, RepositoryManager>();
+
+            // Register EF Core seeder
+            services.AddScoped<AppDbContextSeeder>();
+        }
+
+        // Register cookie-based shopping cart repositories (if not persistence-specific)
         services.AddScoped<IShoppingCartQueryRepository, CookieShoppingCartRepository>();
         services.AddScoped<IShoppingCartCommandRepository, CookieShoppingCartRepository>();
 
-        // Register ShoppingCart services (split into Query and Command services)
+        // Register ShoppingCart services
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
         services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
 
+        // Add logging services if not already added
+        services.AddLogging();
 
         return services;
     }
@@ -88,11 +114,20 @@ public static class DependencyInjection
         return services;
     }
 
-    public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
+    public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider, IConfiguration configuration)
     {
         using var scope = serviceProvider.CreateScope();
-        var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
+        var provider = configuration["Config:PersistenceProvider"] ?? "EfCore";
 
-        await seeder.SeedAsync();
+        if (provider == "Mongo")
+        {
+            var seeder = scope.ServiceProvider.GetRequiredService<MongoDbSeeder>();
+            await seeder.SeedAsync();
+        }
+        else
+        {
+            var seeder = scope.ServiceProvider.GetRequiredService<AppDbContextSeeder>();
+            await seeder.SeedAsync();
+        }
     }
 }
