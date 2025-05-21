@@ -7,11 +7,11 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// Repository for querying Product entities.
 /// </summary>
-public class ProductQueryRepository : IProductQueryRepository
+public class EfProductQueryRepository : IProductQueryRepository
 {
     private readonly AppDbContext _context;
 
-    public ProductQueryRepository(AppDbContext context)
+    public EfProductQueryRepository(AppDbContext context)
     {
         _context = context;
     }

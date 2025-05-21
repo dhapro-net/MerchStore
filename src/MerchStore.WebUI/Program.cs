@@ -130,7 +130,7 @@ else
 {
     app.UseDeveloperExceptionPage(); // Show detailed error messages in development
     // In development, seed the database with test data using the extension method
-    app.Services.SeedDatabaseAsync().Wait();
+    app.Services.SeedDatabaseAsync(app.Configuration).Wait();
 
     // Enable Swagger UI in development
     app.UseSwagger();
