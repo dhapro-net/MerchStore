@@ -34,7 +34,7 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var provider = configuration["Config:PersistenceProvider"] ?? "EfCore";
+        var provider = configuration["Config:DatabaseType"] ?? "EfCore";
 
         if (provider == "Mongo")
         {
