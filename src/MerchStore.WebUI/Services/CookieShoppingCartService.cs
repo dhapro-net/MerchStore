@@ -1,6 +1,5 @@
 using MerchStore.Domain.ShoppingCart;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Service for managing the shopping cart stored in browser cookies.
@@ -37,7 +36,7 @@ public class CookieShoppingCartService
     /// Retrieves the shopping cart from the browser cookie.
     /// </summary>
     /// <returns>The deserialized <see cref="Cart"/> object, or null if the cart does not exist or cannot be deserialized.</returns>
-    public Cart? GetCart()
+    public virtual Cart? GetCart()
     {
         if (_httpContextAccessor.HttpContext == null)
         {
@@ -49,7 +48,7 @@ public class CookieShoppingCartService
 
         if (string.IsNullOrEmpty(cookieValue))
         {
-            _logger.LogWarning("Cart cookie '{CartCookieName}' not found.");
+            _logger.LogWarning("Cart cookie '{CartCookieName}' not found.", CartCookieName);
             return null;
         }
 
@@ -70,7 +69,7 @@ public class CookieShoppingCartService
     /// Saves the shopping cart to the browser cookie.
     /// </summary>
     /// <param name="cart">The <see cref="Cart"/> object to save.</param>
-    public void SaveCart(Cart cart)
+    public virtual void SaveCart(Cart cart)
     {
         if (cart == null)
         {
@@ -86,7 +85,7 @@ public class CookieShoppingCartService
 
         var serializedCart = JsonSerializer.Serialize(cart, _jsonSerializerOptions);
 
-        _logger.LogInformation("Saving cart to cookie with name '{CartCookieName}'.");
+        _logger.LogInformation("Saving cart to cookie with name '{CartCookieName}'.", CartCookieName);
 
         _httpContextAccessor.HttpContext.Response.Cookies.Append(CartCookieName, serializedCart, new CookieOptions
         {
@@ -102,7 +101,7 @@ public class CookieShoppingCartService
     /// <summary>
     /// Clears the shopping cart by deleting the cookie.
     /// </summary>
-    public void ClearCart()
+    public virtual void ClearCart()
     {
         if (_httpContextAccessor.HttpContext == null)
         {
@@ -119,7 +118,7 @@ public class CookieShoppingCartService
     /// Retrieves the shopping cart from the cookie, or creates a new one if it does not exist.
     /// </summary>
     /// <returns>The <see cref="Cart"/> object.</returns>
-    public Cart GetOrCreateCart()
+    public virtual Cart GetOrCreateCart()
     {
         _logger.LogInformation("Retrieving or creating cart.");
 

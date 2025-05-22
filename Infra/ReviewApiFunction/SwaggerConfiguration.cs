@@ -2,9 +2,6 @@
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace ReviewApiFunction
 {

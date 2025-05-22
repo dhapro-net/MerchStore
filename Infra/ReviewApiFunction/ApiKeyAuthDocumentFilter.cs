@@ -1,7 +1,6 @@
 // filepath: MerchStoreDemo/infra/ReviewApiFunction/ApiKeyAuthDocumentFilter.cs
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
 
 namespace ReviewApiFunction
 {

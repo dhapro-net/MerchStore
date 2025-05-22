@@ -26,27 +26,34 @@ namespace MerchStore.Application.ShoppingCart.Mappers
 
         public static CartDto ToCartDto(Cart cart)
         {
-            if (cart == null)
-            {
-                throw new ArgumentNullException(nameof(cart), "Cart cannot be null.");
-            }
+            
 
-            // Log the mapping process
             var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("CartMapper");
             logger.LogInformation("Mapping Cart to CartDto. Cart ID: {CartId}", cart.CartId);
+
+            var products = cart.Products.Select(p => new CartProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                Quantity = p.Quantity,
+                UnitPrice = p.UnitPrice
+            }).ToList();
+
+            var totalPrice = new Money(
+                products.Sum(p => p.UnitPrice.Amount * p.Quantity),
+                products.FirstOrDefault()?.UnitPrice.Currency ?? "SEK"
+            );
 
             return new CartDto
             {
                 CartId = cart.CartId,
-                Products = cart.Products.Select(p => new CartProductDto
-                {
-                    ProductId = p.ProductId,
-                    Quantity = p.Quantity,
-                    UnitPrice = p.UnitPrice
-                }).ToList(),
+                Products = products,
+                TotalPrice = totalPrice,
+                TotalProducts = products.Sum(p => p.Quantity),
                 LastUpdated = cart.LastUpdated
             };
         }
+
 
         public static Cart ToCart(CartDto cartDto, ILogger<Cart> logger)
         {

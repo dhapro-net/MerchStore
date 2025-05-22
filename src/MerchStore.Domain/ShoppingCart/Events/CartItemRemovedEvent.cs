@@ -1,4 +1,3 @@
-using System;
 using MerchStore.Domain.Common;
 
 namespace MerchStore.Domain.ShoppingCart.Events

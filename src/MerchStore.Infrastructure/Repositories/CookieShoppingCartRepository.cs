@@ -43,18 +43,18 @@ public class CookieShoppingCartRepository : IShoppingCartCommandRepository, ISho
     /// <summary>
     /// Retrieves a shopping cart by its ID from cookies.
     /// </summary>
-    public async Task<Cart?> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
+    public Task<Cart?> GetCartByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
         {
             _logger.LogWarning("Attempted to retrieve a cart with Guid.Empty. Returning null.");
-            return null;
+            return Task.FromResult<Cart?>(null);
         }
 
         if (_httpContextAccessor.HttpContext == null)
         {
             _logger.LogWarning("HttpContext is null. Unable to retrieve cart.");
-            return null;
+            return Task.FromResult<Cart?>(null);
         }
 
         var cookieKey = GetCookieKeyForCart(id);
@@ -63,7 +63,7 @@ public class CookieShoppingCartRepository : IShoppingCartCommandRepository, ISho
         if (string.IsNullOrEmpty(cookieValue))
         {
             _logger.LogWarning($"Cart cookie with key '{cookieKey}' not found.");
-            return null;
+            return Task.FromResult<Cart?>(null);
         }
 
         try
@@ -72,16 +72,16 @@ public class CookieShoppingCartRepository : IShoppingCartCommandRepository, ISho
             if (cart == null)
             {
                 _logger.LogWarning($"Deserialized cart is null for cookie key '{cookieKey}'.");
-                return null;
+                return Task.FromResult<Cart?>(null);
             }
 
             _logger.LogInformation($"Successfully retrieved cart with ID {id}.");
-            return cart;
+            return Task.FromResult<Cart?>(cart);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deserializing cart with ID {CartId}.", id);
-            return null;
+            return Task.FromResult<Cart?>(null);
         }
     }
 

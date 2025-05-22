@@ -10,7 +10,7 @@ namespace MerchStore.Application.ShoppingCart.Handlers;
 /// <summary>
 /// Handles the retrieval of a shopping cart summary.
 /// </summary>
-public class GetCartSummaryQueryHandler : IRequestHandler<GetCartSummaryQuery, CartSummaryDto>
+public class GetCartSummaryQueryHandler : IRequestHandler<GetCartSummaryQuery, CartSummaryDto?>
 {
     private readonly ILogger<GetCartSummaryQueryHandler> _logger;
 
@@ -19,17 +19,12 @@ public class GetCartSummaryQueryHandler : IRequestHandler<GetCartSummaryQuery, C
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task<CartSummaryDto> Handle(GetCartSummaryQuery request, CancellationToken cancellationToken)
+    public Task<CartSummaryDto?> Handle(GetCartSummaryQuery request, CancellationToken cancellationToken)
     {
         if (request.Cart == null)
         {
             _logger.LogWarning("GetCartSummaryQuery failed: Cart is null.");
-            return Task.FromResult(new CartSummaryDto
-            {
-                CartId = request.CartId,
-                ProductCount = 0,
-                TotalPrice = new Money(0, "SEK") // Default total price
-            });
+            return Task.FromResult<CartSummaryDto?>(null);
         }
 
         _logger.LogInformation("Mapping cart with ID {CartId} to CartSummaryDto.", request.Cart.CartId);
@@ -38,11 +33,11 @@ public class GetCartSummaryQueryHandler : IRequestHandler<GetCartSummaryQuery, C
         var cartSummary = new CartSummaryDto
         {
             CartId = request.Cart.CartId,
-            ProductCount = request.Cart.Products.Sum(p => p.Quantity),
-            TotalPrice = new Money(request.Cart.Products.Sum(p => p.UnitPrice.Amount * p.Quantity), "SEK")
+            ProductCount = request.Cart.Products?.Sum(p => p.Quantity) ?? 0,
+            TotalPrice = new Money(request.Cart.Products?.Sum(p => p.UnitPrice.Amount * p.Quantity) ?? 0, "SEK")
         };
 
         _logger.LogInformation("Successfully mapped cart with ID {CartId} to CartSummaryDto.", request.Cart.CartId);
-        return Task.FromResult(cartSummary);
+        return Task.FromResult<CartSummaryDto?>(cartSummary);
     }
 }
