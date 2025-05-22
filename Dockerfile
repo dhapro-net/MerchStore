@@ -25,7 +25,7 @@ COPY Infra/ReviewApiFunction/*.csproj ./Infra/ReviewApiFunction/
 COPY Infra/ReviewApiClient/*.csproj ./Infra/ReviewApiClient/
 
 # Copy test project files if they exist
-COPY IntegrationTestFolder/MerchStore.IntegrationTests/IntegrationTests.csproj/ ./IntegrationTestFolder/MerchStore.IntegrationTests/
+COPY IntegrationTestFolder/MerchStore.IntegrationTests/*.csproj/ ./IntegrationTestFolder/MerchStore.IntegrationTests/
 
 # Restore NuGet packages
 ARG TARGETARCH
