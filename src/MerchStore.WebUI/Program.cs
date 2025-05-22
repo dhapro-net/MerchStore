@@ -5,8 +5,13 @@ using MerchStore.Infrastructure;
 using MerchStore.WebUI.Authentication.ApiKey;
 using MerchStore.WebUI.Endpoints;
 using MerchStore.WebUI.Infrastructure;
+using MerchStore.WebUI.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -15,6 +20,7 @@ using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddScoped<ICatalogService, CatalogService>();
 
@@ -28,6 +34,12 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+
+// Add Razor Pages (required for Identity UI)
+builder.Services.AddRazorPages();
+
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 // Add API Key authentication
 builder.Services.AddAuthentication()
@@ -50,6 +62,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<CookieShoppingCartService>();
 
 builder.Services.AddHttpContextAccessor();
+
 // Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -111,6 +124,71 @@ builder.Services.AddLogging(logging =>
     logging.AddDebug();
 });
 
+// Configure authentication with multiple schemes
+var authBuilder = builder.Services.AddAuthentication(options =>
+{
+    // Set the default scheme to check all authentication types
+    options.DefaultScheme = "CustomMultiAuthScheme"; // Default scheme for authentication
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Default challenge to standard cookie login
+})
+    .AddPolicyScheme("CustomMultiAuthScheme", "Custom MultiAuth Scheme", options =>
+    {
+        // This policy scheme will check the name of the cookie and decide which authentication scheme to use
+        options.ForwardDefaultSelector = context =>
+        {
+            // Check if the default auth cookie exists. If it does, use the cookie authentication scheme.
+            if (context.Request.Cookies.ContainsKey(".AspNetCore.Cookies"))
+                return CookieAuthenticationDefaults.AuthenticationScheme;
+
+            // Check if the Entra External ID cookie exists
+            if (context.Request.Cookies.ContainsKey(".AspNetCore.Cookies.External"))
+                return OpenIdConnectDefaults.AuthenticationScheme;
+
+            // Otherwise, fall back to the Identity scheme
+            return IdentityConstants.ApplicationScheme;
+        };
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        // Cookie settings
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+
+        // Expiration settings
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.SlidingExpiration = true;
+        
+        options.Events.OnRedirectToReturnUrl = context =>
+        {
+        if (string.IsNullOrEmpty(context.Request.Query["ReturnUrl"]))
+        {
+            context.Response.Redirect("/Home");
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+        };
+
+        
+    });
+
+// Configure authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole(UserRoles.Administrator));
+
+    options.AddPolicy("AdminOrCustomer", policy =>
+        policy.RequireRole(UserRoles.Administrator, UserRoles.Customer));
+    
+    options.AddPolicy("RequireAuth", policy =>
+        policy.RequireAuthenticatedUser());
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -159,8 +237,10 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 
-app.MapMinimalProductEndpoints();
+//app.MapMinimalProductEndpoints();
 
+// Add Razor Pages for Identity UI
+app.MapRazorPages();
 
 app.Run();
 
