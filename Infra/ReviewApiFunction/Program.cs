@@ -1,7 +1,6 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
-
 using Microsoft.Extensions.DependencyInjection;
 using MerchStore.Domain.Interfaces;
 using MerchStore.Infrastructure.Persistence.Repositories;
@@ -27,6 +26,8 @@ var host = new HostBuilder()
         // ✅ Register Repositories
         services.AddScoped<IProductCommandRepository, ProductCommandRepository>();
         services.AddScoped<IProductQueryRepository, ProductQueryRepository>();
+       // services.AddScoped<IProductRepository, ProductRepository>();
+
 
         // ✅ Register Seeder
         services.AddScoped<AppDbContextSeeder>();
