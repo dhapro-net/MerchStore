@@ -22,8 +22,10 @@ namespace MerchStore.Application.Catalog.Queries
                 Id = p.Id,
                 Name = p.Name,
                 Description = p.Description,
-                Price = new Money(p.Price.Amount, p.Price.Currency), 
-                ImageUrl = string.IsNullOrEmpty(p.ImageUrl) ? null : new Uri(p.ImageUrl), 
+                Price = new Money(p.Price.Amount, p.Price.Currency),
+                ImageUrl = string.IsNullOrEmpty(p.ImageUrl)
+    ? new Uri("https://example.com/placeholder.jpg") // Use a sensible default
+    : new Uri(p.ImageUrl),
                 StockQuantity = p.StockQuantity
             }).ToList();
         }

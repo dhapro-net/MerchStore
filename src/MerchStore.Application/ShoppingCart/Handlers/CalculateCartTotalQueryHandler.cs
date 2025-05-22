@@ -15,11 +15,7 @@ public class CalculateCartTotalQueryHandler : IRequestHandler<CalculateCartTotal
 
     public Task<Money> Handle(CalculateCartTotalQuery request, CancellationToken cancellationToken)
     {
-        if (request.Cart == null)
-        {
-            _logger.LogWarning("CalculateCartTotalQuery failed: Cart is null.");
-            throw new ArgumentNullException(nameof(request.Cart), "Cart cannot be null.");
-        }
+       
 
         _logger.LogInformation("Calculating total for cart with ID: {CartId}.", request.Cart.CartId);
 

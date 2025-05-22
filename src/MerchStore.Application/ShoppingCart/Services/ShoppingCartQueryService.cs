@@ -75,7 +75,7 @@ public class ShoppingCartQueryService : IShoppingCartQueryService
         if (query == null)
             throw new ArgumentNullException(nameof(query));
 
-        _logger.LogInformation("Fetching cart summary with ID: {CartId}.", query.Cart.CartId);
+        _logger.LogInformation("Fetching cart with ID: {CartId}.", query.Cart?.CartId ?? Guid.Empty);
         return await _mediator.Send(query, cancellationToken);
     }
 

@@ -119,12 +119,18 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+        // Enable Swagger UI in development
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+    });
 }
 else
 {
     app.UseDeveloperExceptionPage(); // Show detailed error messages in development
     // In development, seed the database with test data using the extension method
-    app.Services.SeedDatabaseAsync().Wait();
+    app.Services.SeedDatabaseAsync(app.Configuration).Wait();
 
     // Enable Swagger UI in development
     app.UseSwagger();

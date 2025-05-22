@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using MerchStore.Domain.Common;
 using MerchStore.Domain.ValueObjects;
 using MerchStore.Domain.ShoppingCart.Events;
@@ -10,7 +7,6 @@ namespace MerchStore.Domain.ShoppingCart
 {
     public class Cart : AggregateRoot<Guid>
     {
-        private readonly ILogger<Cart> _logger;
 
         public Guid CartId
         {

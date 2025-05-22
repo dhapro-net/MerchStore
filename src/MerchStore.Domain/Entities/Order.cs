@@ -26,10 +26,10 @@ public class Order : Entity<Guid>
     {
         _domainEvents.Clear();
     }
-    public PaymentInfo PaymentInfo { get; private set; }
-    public string CustomerName { get; private set; }
-    public string Address { get; private set; }
-    public Money TotalPrice { get; private set; }
+    public PaymentInfo PaymentInfo { get; private set; } = null!;
+    public string CustomerName { get; private set; } = null!;
+    public string Address { get; private set; } = null!;
+    public Money TotalPrice { get; private set; } = null!;
     public List<OrderProduct> Products { get; private set; } = new List<OrderProduct>();
     public DateTime CreatedDate { get; private set; }
 

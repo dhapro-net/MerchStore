@@ -1,6 +1,5 @@
 using MerchStore.Domain.Common;
 using MerchStore.Domain.ValueObjects;
-using System.IO;
 
 namespace MerchStore.Domain.Entities;
 
@@ -19,7 +18,8 @@ public class Product : Entity<Guid>
 
     private Product() { }
 
-    public Product(string name, string description, string category, string imageUrl, Money price, int stockQuantity) : base(Guid.NewGuid())
+    public Product(Guid guid, string name, string description, string category, string imageUrl, Money price, int stockQuantity)
+    : base(guid) 
     {
         SetName(name);
         SetDescription(description);

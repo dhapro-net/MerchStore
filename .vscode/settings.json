@@ -9,5 +9,18 @@
     "azureFunctions.projectLanguage": "C#",
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",
-    "azureFunctions.preDeployTask": "publish (functions)"
+    "azureFunctions.preDeployTask": "publish (functions)",
+    "cSpell.words": [
+        "appsettings",
+        "dtos",
+        "eventdispatcher",
+        "hiver",
+        "Hsts",
+        "Mediat",
+        "Merch",
+        "SEKK",
+        "Swashbuckle",
+        "Uppercases",
+        "xunit"
+    ]
 }

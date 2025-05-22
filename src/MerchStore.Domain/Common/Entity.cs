@@ -15,9 +15,9 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
     }
 
     // Required for EF Core, even if using private setters elsewhere
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     protected Entity() { }
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     public override bool Equals(object? obj)
     {
@@ -29,12 +29,12 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
         return Equals((object?)other);
     }
 
-    public static bool operator ==(Entity<TId> left, Entity<TId> right)
+    public static bool operator ==(Entity<TId>? left, Entity<TId>? right)
     {
         return Equals(left, right);
     }
 
-    public static bool operator !=(Entity<TId> left, Entity<TId> right)
+    public static bool operator !=(Entity<TId>? left, Entity<TId>? right)
     {
         return !Equals(left, right);
     }
