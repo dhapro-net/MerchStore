@@ -10,6 +10,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
+using Azure.Identity;
 
 
 
@@ -19,6 +20,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ICatalogService, CatalogService>();
 
 
+
+// Add Key Vault to configuration
+var keyVaultName = builder.Configuration["Config:AzureKeyVaultName"]; 
+if (!string.IsNullOrEmpty(keyVaultName))
+{
+    var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
+    builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+}
 // Update the JSON options configuration to use our custom policy
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
