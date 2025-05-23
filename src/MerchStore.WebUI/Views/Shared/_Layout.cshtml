@@ -7,7 +7,7 @@
     <title>@ViewData["Title"] - MerchStore.WebUI</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/theme-dark.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
@@ -39,7 +39,8 @@
                             asp-action="Index">Products</a>
                         </li>
                         <li class="nav-item"></li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Reviews" asp-action="Index">Reviews</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Reviews"
+                            asp-action="Index">Reviews</a>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="ShoppingCart"
                                 asp-action="Index">Cart</a>
@@ -51,11 +52,12 @@
                     </ul>
                 </div>
                 <div class="d-flex align-items-center ms-3 me-3"></div>
-                    <button id="theme-toggle-btn" class="btn btn-link nav-link px-3 py-2" aria-label="Toggle dark/light mode">
-                        <i class="bi bi-moon-fill moon-icon"></i>
-                        <i class="bi bi-sun-fill sun-icon"></i>
-                    </button>
-                </div>
+                <button id="theme-toggle-btn" class="btn btn-link nav-link px-3 py-2"
+                    aria-label="Toggle dark/light mode">
+                    <i class="bi bi-moon-fill moon-icon"></i>
+                    <i class="bi bi-sun-fill sun-icon"></i>
+                </button>
+            </div>
             </div>
         </nav>
     </header>
@@ -76,6 +78,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
     <script
         src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

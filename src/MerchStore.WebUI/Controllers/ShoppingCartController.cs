@@ -49,7 +49,10 @@ public class ShoppingCartController : Controller
             return View("Error", CreateErrorViewModel("An error occurred while loading the shopping cart."));
         }
     }
-
+    public IActionResult OrderCompleted()
+    {
+        return View("OrderCompleted");
+    }
     /// <summary>
     /// Adds a product to the shopping cart.
     /// </summary>
@@ -199,7 +202,7 @@ public class ShoppingCartController : Controller
             _cookieShoppingCartService.ClearCart();
 
             TempData["SuccessMessage"] = "Order submitted successfully!";
-            return RedirectToAction("Index");
+            return RedirectToAction("OrderCompleted");
         }
         catch (Exception ex)
         {
