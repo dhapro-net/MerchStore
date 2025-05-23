@@ -37,7 +37,7 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("MerchStoreDb"));
 
-// ──────────── Identity with UI & EF Core/MySQL ────────────
+// ──────────── Identity with UI & EF Core ────────────
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     {
         // your password / lockout / sign-in options
@@ -45,7 +45,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
         options.User.RequireUniqueEmail = true;
     })
     .AddRoles<IdentityRole>()                   //roles
-    .AddEntityFrameworkStores<AppDbContext>()   // or your Mongo store via AddMongoDbStores<…>()
+    .AddEntityFrameworkStores<AppDbContext>()   // run User Admin on inmemory-DB
     .AddDefaultTokenProviders()
     .AddDefaultUI();                            // wires up /Areas/Identity Razor-Pages
 
