@@ -1,6 +1,7 @@
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Enums;
 using MerchStore.Domain.ValueObjects;
+using MerchStore.Application.DTOs;
 
 namespace MerchStore.Infrastructure.ExternalServices.Reviews;
 
@@ -63,7 +64,7 @@ public class MockReviewService
                 _ => 5                   // 20% chance of 5-stars
             };
 
-            string title = $"Sample Review: {i+1} for Product";
+            string title = $"Review: {i + 1}";
             string customerName = _customerNames[random.Next(_customerNames.Length)];
             string content = _reviewContents[random.Next(_reviewContents.Length)];
 
@@ -82,6 +83,34 @@ public class MockReviewService
         // Sort by date descending (newest first)
         return reviews.OrderByDescending(r => r.CreatedAt).ToList();
     }
+    public ReviewResponseDto EnsureMockReviewsIfMissing(Guid productId)
+    {
+        var (reviews, stats) = GetProductReviews(productId);
+
+        return new ReviewResponseDto
+        {
+            Reviews = reviews.Select(r => new ReviewProductDto
+            {
+                Id = r.Id.ToString(),
+                ProductId = r.ProductId.ToString(),
+                CustomerName = r.CustomerName,
+                Title = r.Title,
+                Content = r.Content,
+                Rating = r.Rating,
+                CreatedAt = r.CreatedAt,
+                Status = r.Status.ToString().ToLower()
+            }).ToList(),
+            Stats = new ReviewStatsDto
+            {
+                ProductId = productId.ToString(),
+                AverageRating = stats.AverageRating,
+                ReviewCount = stats.ReviewCount
+            },
+            Source = "mock"
+        };
+    }
+
 }
 
 //This mock service will provide synthetic review data that can be used when the real API fails.
+//and it will use whe we add new product and review did not show up.
