@@ -41,7 +41,6 @@
                     </a>
                 </li>
                 
-                <!-- Removed Orders and Users options since we're focusing on Products only -->
                 
                 <!-- Logout section -->
                 <li><hr class="dropdown-divider"></li>
@@ -78,7 +77,7 @@
                 <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">
                         <i class="bi bi-key me-2"></i> Default Login
                     </a></li>
-                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">
+                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                         <i class="bi bi-person-badge me-2"></i> Identity Login
                     </a></li>
                 <li>

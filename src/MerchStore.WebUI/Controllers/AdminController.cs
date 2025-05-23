@@ -42,7 +42,7 @@ public class AdminController : Controller
         }
         else
         {
-            products = await _catalogService.GetAllProductsAsync();
+            products = await _catalogService.GetAllProductsAsync(HttpContext.RequestAborted);
         }
 
         // Map to view models
@@ -108,7 +108,7 @@ public class AdminController : Controller
     // GET: Admin/EditProduct/{id}
     public async Task<IActionResult> EditProduct(Guid id)
     {
-        var product = await _catalogService.GetProductByIdAsync(id);
+        var product = await _catalogService.GetProductByIdAsync(id, HttpContext.RequestAborted);
         if (product == null)
         {
             return NotFound();

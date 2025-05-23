@@ -1,4 +1,3 @@
-
 using MerchStore.Application.Services.Interfaces;
 using MerchStore.Domain.Entities;
 using MerchStore.Domain.Interfaces;
@@ -13,10 +12,10 @@ namespace MerchStore.Application.Services.Implementations;
 public class CatalogService : ICatalogService
 {
     private readonly IProductQueryRepository _productQueryRepository;
-    private readonly IProductCommandRepository _productCommandRepository;
+    private readonly ICommandRepository<Product, Guid> _productCommandRepository;
    
 
-    public CatalogService(IProductQueryRepository productQueryRepository, IProductCommandRepository productCommandRepository)
+    public CatalogService(IProductQueryRepository productQueryRepository, ICommandRepository<Product, Guid> productCommandRepository)
     {
         _productQueryRepository = productQueryRepository;
         _productCommandRepository = productCommandRepository;
@@ -39,7 +38,7 @@ public class CatalogService : ICatalogService
         return await _productQueryRepository.SearchProductsAsync(searchTerm);
     }
 
-    public async Task AddProductAsync(string name, string description, Uri? imageUrl, decimal price, int stockQuantity)
+    public async Task<Product> AddProductAsync(string name, string description, Uri? imageUrl, decimal price, int stockQuantity)
     {
         var product = new Product(
             Guid.NewGuid(),
@@ -52,23 +51,27 @@ public class CatalogService : ICatalogService
         );
 
         await _productCommandRepository.AddAsync(product);
+        return product;
     }
 
     public async Task UpdateProductAsync(Guid id, string name, string description, Uri? imageUrl, decimal price, int stockQuantity)
-{
-    var product = await _productQueryRepository.GetProductByIdAsync(id, CancellationToken.None);
-    if (product == null) throw new Exception("Product not found");
+    {
+        var product = await _productQueryRepository.GetProductByIdAsync(id, CancellationToken.None);
+        if (product == null) throw new Exception("Product not found");
 
-    // Assuming you have an Update() method in the Product entity
-    product.Update(name, description, product.Category, imageUrl?.ToString() ?? "", new Money(price, "SEK"), stockQuantity);
+        product.UpdateDetails(name, description, imageUrl?.ToString() ?? "");
+        product.UpdatePrice(new Money(price, "SEK"));
+        product.UpdateStock(stockQuantity);
 
-    await _productCommandRepository.UpdateAsync(product);
-}
+        await _productCommandRepository.UpdateAsync(product);
+    }
 
-public async Task DeleteProductAsync(Guid id)
-{
-    await _productCommandRepository.DeleteAsync(id);
-}
+    public async Task DeleteProductAsync(Guid id)
+    {
+        var product = await _productQueryRepository.GetProductByIdAsync(id, CancellationToken.None);
+        if (product == null) throw new Exception("Product not found");
+        await _productCommandRepository.RemoveAsync(product);
+    }
 
 
 }
