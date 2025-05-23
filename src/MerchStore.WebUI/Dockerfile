@@ -12,7 +12,7 @@ RUN mkdir -p src/MerchStore.Domain \
     src/MerchStore.WebUI \
     infra/ReviewApiFunction \
     infra/ReviewApiClient \
-    MerchStoreTest/Infrastructure/MerchStore.IntegrationTests
+    MerchStore.Tests/Infrastructure/MerchStore.IntegrationTests
 
 # Copy all project files
 COPY src/MerchStore.Domain/*.csproj ./src/MerchStore.Domain/
@@ -25,7 +25,7 @@ COPY Infra/ReviewApiFunction/*.csproj ./Infra/ReviewApiFunction/
 COPY Infra/ReviewApiClient/*.csproj ./Infra/ReviewApiClient/
 
 # Copy test project files if they exist
-COPY MerchStoreTest/Infrastructure/MerchStore.IntegrationTests/*.csproj ./MerchStoreTest/Infrastructure/MerchStore.IntegrationTests/
+COPY MerchStore.Tests/Infrastructure/MerchStore.IntegrationTests/*.csproj ./MerchStore.Tests/Infrastructure/MerchStore.IntegrationTests/
 
 # Restore NuGet packages
 ARG TARGETARCH

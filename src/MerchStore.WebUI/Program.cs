@@ -14,11 +14,24 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using MerchStore.Application;                         
 using MerchStore.Infrastructure;
-using System.Text.Json.Serialization;                      
+using System.Text.Json.Serialization; 
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ──────────── JSON & MVC ────────────
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add Key Vault to configuration
+/*var keyVaultName = builder.Configuration["Config:AzureKeyVaultName"]; 
+if (!string.IsNullOrEmpty(keyVaultName))
+{
+    var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
+    builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+}*/
+// Update the JSON options configuration to use our custom policy
+
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(opts =>
     {
@@ -171,20 +184,27 @@ using (var scope = app.Services.CreateScope())
 // ──────────── Middleware Pipeline ────────────
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
-    app.Services.SeedDatabaseAsync(app.Configuration).Wait();
-
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1"));
+    // Use custom error page in production
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1"));
+    // Show detailed error messages in development
+    app.UseDeveloperExceptionPage();
+    // Seed database with test data in development
+    app.Services.SeedDatabaseAsync(app.Configuration).Wait();
+    
 }
+
+// ✅ Enable Swagger in all environments
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MerchStore API V1");
+});
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

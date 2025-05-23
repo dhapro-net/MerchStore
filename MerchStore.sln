@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MerchStore.WebUI", "src\Mer
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{2533ABBC-FF5B-448A-81BD-1DB924A8D0EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReviewApiFunction", "infra\ReviewApiFunction\ReviewApiFunction.csproj", "{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReviewApiFunction", "Infra\ReviewApiFunction\ReviewApiFunction.csproj", "{FBCFA6A6-6ED4-4932-BC2B-D351ACBBACC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReviewApiClient", "infra\ReviewApiClient\ReviewApiClient.csproj", "{B283DA2B-D152-43C5-9EA0-C13BB931BC26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReviewApiClient", "Infra\ReviewApiClient\ReviewApiClient.csproj", "{B283DA2B-D152-43C5-9EA0-C13BB931BC26}"
 EndProject
 
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{9EFDEDC9-DBFE-4805-9BBF-CD2E76FD0A61}"
