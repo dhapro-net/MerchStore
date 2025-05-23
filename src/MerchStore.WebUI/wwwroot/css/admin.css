@@ -1,0 +1,59 @@
+/* Admin panel specific styles */
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.table th {
+    font-weight: 600;
+}
+
+.navbar-dark {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    transition: transform 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-card .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+.dashboard-card .bi {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+/* Form styling */
+label {
+    font-weight: 500;
+}
+
+/* Actions column width */
+.table th:last-child,
+.table td:last-child {
+    min-width: 200px;
+}

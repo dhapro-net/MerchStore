@@ -21,10 +21,10 @@ public class EfProductQueryRepository : IProductQueryRepository
         return await _context.Products.ToListAsync(cancellationToken);
     }
 
-public async Task<Product?> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken)
-{
-    return await _context.Products.FirstOrDefaultAsync(p => p.Id == productId, cancellationToken);
-}
+    public async Task<Product?> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken)
+    {
+        return await _context.Products.FirstOrDefaultAsync(p => p.Id == productId, cancellationToken);
+    }
 
     public async Task<IEnumerable<Product>> GetFeaturedProductsAsync()
     {
@@ -55,5 +55,21 @@ public async Task<Product?> GetProductByIdAsync(Guid productId, CancellationToke
         return await _context.Products
             .Where(p => p.Price.Amount >= minPrice && p.Price.Amount <= maxPrice)
             .ToListAsync();
+    }
+
+    public async Task<string?> GetGroupReviewsAsync(Guid productId)
+    {
+        return await _context.Products
+            .Where(p => p.Id == productId)
+            .Select(p => p.Name)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<string?> GetProductNameByIdAsync(Guid productId)
+    {
+        return await _context.Products
+            .Where(p => p.Id == productId)
+            .Select(p => p.Name)
+            .FirstOrDefaultAsync();
     }
 }

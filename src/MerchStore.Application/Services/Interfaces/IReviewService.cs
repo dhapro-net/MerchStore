@@ -11,6 +11,7 @@ public interface IReviewService
     
     Task<IEnumerable<Review>> GetReviewsByProductIdAsync(Guid productId);
 
+
     Task<double> GetAverageRatingForProductAsync(Guid productId);
 
     Task<int> GetReviewCountForProductAsync(Guid productId);

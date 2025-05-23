@@ -7,7 +7,7 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// Repository for managing Product entities commands using MongoDB.
 /// </summary>
-public class MongoProductCommandRepository : IProductCommandRepository
+public class MongoProductCommandRepository : IProductCommandRepository, ICommandRepository<Product, Guid>
 {
     private readonly IMongoCollection<Product> _products;
 
@@ -34,5 +34,22 @@ public class MongoProductCommandRepository : IProductCommandRepository
         var result = await _products.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
 
         return result.ModifiedCount > 0;
+    }
+
+     public async Task AddAsync(Product entity)
+    {
+        await _products.InsertOneAsync(entity);
+    }
+
+    public async Task UpdateAsync(Product entity)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, entity.Id);
+        await _products.ReplaceOneAsync(filter, entity);
+    }
+
+    public async Task RemoveAsync(Product entity)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, entity.Id);
+        await _products.DeleteOneAsync(filter);
     }
 }

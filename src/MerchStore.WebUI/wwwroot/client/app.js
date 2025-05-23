@@ -1,11 +1,11 @@
 // Configuration
 const API_CONFIG = {
-    baseUrl: 'http://localhost:5022',  // Update with your API's URL
+    baseUrl: 'https://reviewapiv2250506.azurewebsites.net',  // Update with your API's URL
     endpoints: {
-        products: '/api/basic/products'
+        products: '/api/products'
     },
     headers: {
-        'X-API-Key': 'ItHurtWhenIPee',  // Update with your API key
+        'X-functions-Key': 'ItHurtWhenIPee',  // Update with your API key
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }

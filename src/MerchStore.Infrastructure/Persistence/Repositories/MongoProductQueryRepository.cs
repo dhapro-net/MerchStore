@@ -7,7 +7,7 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// Repository for querying Product entities using MongoDB.
 /// </summary>
-public class MongoProductQueryRepository : IProductQueryRepository
+public class MongoProductQueryRepository : IProductQueryRepository, IQueryRepository<Product, Guid>
 {
     private readonly IMongoCollection<Product> _products;
 
@@ -60,4 +60,32 @@ public class MongoProductQueryRepository : IProductQueryRepository
         );
         return await _products.Find(filter).ToListAsync();
     }
+
+
+    public async Task<Product?> GetByIdAsync(Guid id)
+    {
+        // Just call your existing method!
+        return await GetProductByIdAsync(id, CancellationToken.None);
+    }
+
+    public async Task<IEnumerable<Product>> GetAllAsync()
+    {
+        // Just call your existing method!
+        return await GetAllProductsAsync(CancellationToken.None);
+    }
+
+    public async Task<string?> GetGroupReviewsAsync(Guid productId)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+        var result = await _products.Find(filter).FirstOrDefaultAsync();
+        return result?.Name;
+    }
+
+    public async Task<string?> GetProductNameByIdAsync(Guid productId)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+        var result = await _products.Find(filter).FirstOrDefaultAsync();
+        return result?.Name;
+    }
+
 }

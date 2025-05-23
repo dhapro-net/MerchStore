@@ -16,23 +16,20 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-
-
         services.AddMediatR(
-    Assembly.GetExecutingAssembly(),
-    typeof(DependencyInjection).Assembly,
-    typeof(GetAllProductsQueryHandler).Assembly,
-    typeof(AddCartCommandHandler).Assembly
-);
+            Assembly.GetExecutingAssembly(),
+            typeof(DependencyInjection).Assembly,
+            typeof(GetAllProductsQueryHandler).Assembly,
+            typeof(AddCartCommandHandler).Assembly
+        );
+        
         services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
-        
-        //services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<ICatalogService, CatalogService>();
         services.AddScoped<IReviewService, ReviewService>();
 
         // leaving this here just in case it seems like a good idea to use later services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddScoped<CartCalculationService>();
-
 
         return services;
     }
