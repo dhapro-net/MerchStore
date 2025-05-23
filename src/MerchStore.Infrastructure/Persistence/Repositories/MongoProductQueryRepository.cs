@@ -73,4 +73,19 @@ public class MongoProductQueryRepository : IProductQueryRepository, IQueryReposi
         // Just call your existing method!
         return await GetAllProductsAsync(CancellationToken.None);
     }
+
+    public async Task<string?> GetGroupReviewsAsync(Guid productId)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+        var result = await _products.Find(filter).FirstOrDefaultAsync();
+        return result?.Name;
+    }
+
+    public async Task<string?> GetProductNameByIdAsync(Guid productId)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+        var result = await _products.Find(filter).FirstOrDefaultAsync();
+        return result?.Name;
+    }
+
 }
