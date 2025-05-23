@@ -52,18 +52,47 @@ h1 {
 .enter-site-link a:hover {
     background-color: #ffe5db;
     color: #000;
+    
+}
+/* Default state: desktop visible, mobile hidden */
+.big-text-desktop {
+    display: block;
+}
+.big-text-mobile {
+    display: none;
 }
 /* For larger screens */
 @media (min-width: 768px) {
-    h1 {
-        font-size: 120px;
-        height: 150px;
+    .big-text-desktop {
+        display: block !important;
     }
+    .big-text-mobile {
+        display: none !important;
+    }
+
+    h1 {
+        font-size: 36px;
+        height: auto;
+    }
+    
 }
 
 @media (min-width: 1200px) {
     h1 {
         font-size: 150px;
         height: 180px;
+    }
+    
+}
+@media (max-width: 375px) {
+    h1 {
+        font-size: 50px;
+        height: auto;
+    }
+    .big-text-desktop {
+        display: none !important;
+    }
+    .big-text-mobile {
+        display: block !important;
     }
 }
