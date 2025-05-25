@@ -1,4 +1,6 @@
 ﻿using MerchStore.Domain.Interfaces;
+using MerchStore.Infrastructure.ExternalServices.Reviews;
+using MerchStore.Infrastructure.ExternalServices.Reviews.Configurations;
 using MerchStore.IntegrationTests;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,16 +20,16 @@ public class ReviewApiIntegrationTestFixture : IDisposable
 
     public ReviewApiIntegrationTestFixture()
     {
-        // Step 1: Load appsettings.json for configuration
+        // 1. Load configuration from appsettings.json
         Configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-        // Step 2: Set up the service collection (DI container)
+        // 2. Register services
         var services = new ServiceCollection();
 
-        // Step 3: Register logging services (for debug/log output)
+        // Add logging (optional but useful for debugging tests)
         services.AddLogging(builder =>
         {
             builder.AddConfiguration(Configuration.GetSection("Logging"));
@@ -35,17 +37,24 @@ public class ReviewApiIntegrationTestFixture : IDisposable
             builder.AddDebug();
         });
 
-        // Step 4: ✅ Register the fake product repository (used in integration tests)
+        // 3. Register options from configuration
+        services.Configure<ReviewApiOptions>(Configuration.GetSection(nameof(ReviewApiOptions)));
+
+        // 4. Register HttpClientFactory and HttpClient (for ReviewApiClient)
+        services.AddHttpClient();
+
+        // 5. Register mocks or fakes
         services.AddSingleton<IProductQueryRepository, FakeProductQueryRepository>();
+        services.AddSingleton<MockReviewService>(); // This is your internal fallback for reviews
 
-        // Step 5: Register review services (includes ReviewApiClient, ExternalReviewRepository, etc.)
-        services.AddReviewServices(Configuration);
+        // 6. Register the actual services under test
+        services.AddSingleton<ReviewApiClient>();
+        services.AddSingleton<IReviewRepository, ExternalReviewRepository>();
 
-        // Step 6: Build the service provider
+        // 7. Build service provider
         ServiceProvider = services.BuildServiceProvider();
     }
 
-    // Step 7: Dispose pattern for cleaning up resources
     public void Dispose()
     {
         if (ServiceProvider is IDisposable disposable)

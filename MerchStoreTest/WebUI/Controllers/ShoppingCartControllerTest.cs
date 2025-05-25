@@ -273,7 +273,7 @@ namespace MerchStoreTest.WebUI.Controllers
             _cartServiceMock.Setup(s => s.ClearCart());
             var result = _controller.SubmitOrder(new ShoppingCartViewModel());
             var redirect = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirect.ActionName);
+            Assert.Equal("OrderCompleted", redirect.ActionName);
             Assert.Equal("Order submitted successfully!", _controller.TempData["SuccessMessage"]);
         }
 
