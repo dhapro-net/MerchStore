@@ -28,6 +28,7 @@ public class Order : Entity<Guid>
     }
     public PaymentInfo PaymentInfo { get; private set; } = null!;
     public string CustomerName { get; private set; } = null!;
+    public string CustomerEmail { get; private set; } = null!;
     public string Address { get; private set; } = null!;
     public Money TotalPrice { get; private set; } = null!;
     public List<OrderProduct> Products { get; private set; } = new List<OrderProduct>();
@@ -35,11 +36,12 @@ public class Order : Entity<Guid>
 
     private Order() { }
 
-    public Order(Guid id, PaymentInfo paymentInfo, string customerName, string address, Money totalPrice, List<OrderProduct> products, DateTime createdDate)
+    public Order(Guid id, PaymentInfo paymentInfo, string customerName, string customerEmail, string address, Money totalPrice, List<OrderProduct> products, DateTime createdDate)
     {
         Id = id; // Provided by Entity<Guid>
         PaymentInfo = paymentInfo ?? throw new ArgumentNullException(nameof(paymentInfo));
         CustomerName = customerName ?? throw new ArgumentNullException(nameof(customerName));
+        CustomerEmail = customerEmail ?? throw new ArgumentNullException(nameof(customerEmail));
         Address = address ?? throw new ArgumentNullException(nameof(address));
         TotalPrice = totalPrice ?? throw new ArgumentNullException(nameof(totalPrice));
         CreatedDate = createdDate;

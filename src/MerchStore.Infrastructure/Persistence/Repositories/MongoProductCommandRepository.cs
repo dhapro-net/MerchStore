@@ -10,10 +10,12 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 public class MongoProductCommandRepository : IProductCommandRepository, ICommandRepository<Product, Guid>
 {
     private readonly IMongoCollection<Product> _products;
+    private readonly IMongoCollection<Order> _orders;
 
     public MongoProductCommandRepository(IMongoDatabase database)
     {
         _products = database.GetCollection<Product>("Products");
+        _orders = database.GetCollection<Order>("Orders");
     }
 
     public async Task<bool> IsInStockAsync(Guid productId, int quantity)

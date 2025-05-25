@@ -12,10 +12,12 @@ public class MongoDbSeeder
 {
     private readonly ILogger<MongoDbSeeder> _logger;
     private readonly IMongoCollection<Product> _products;
+    
 
     public MongoDbSeeder(IMongoDatabase database, ILogger<MongoDbSeeder> logger)
     {
         _products = database.GetCollection<Product>("Products");
+        
         _logger = logger;
     }
 
@@ -24,6 +26,7 @@ public class MongoDbSeeder
         try
         {
             await SeedProductsAsync();
+            
         }
         catch (Exception ex)
         {
@@ -87,4 +90,7 @@ public class MongoDbSeeder
             _logger.LogInformation("MongoDB already contains products. Skipping product seed.");
         }
     }
+
+
+
 }

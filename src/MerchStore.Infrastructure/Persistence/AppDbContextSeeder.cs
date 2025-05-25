@@ -38,6 +38,8 @@ public class AppDbContextSeeder
 
             // Seed products if none exist
             await SeedProductsAsync();
+            
+            
         }
         catch (Exception ex)
         {
@@ -106,6 +108,5 @@ var products = new List<Product>
             _logger.LogInformation("Database already contains products. Skipping product seed.");
         }
     }
-
 
 }

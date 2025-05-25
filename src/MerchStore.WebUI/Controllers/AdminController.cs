@@ -10,6 +10,9 @@ using System.Linq;
 using System.Collections.Generic;
 using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.ValueObjects;
+using System.Net;
+using MerchStore.Application.DTOs;
+
 
 namespace MerchStore.WebUI.Controllers;
 
@@ -19,10 +22,13 @@ namespace MerchStore.WebUI.Controllers;
 public class AdminController : Controller
 {
     private readonly ICatalogService _catalogService;
+    private readonly IOrderService _orderService;
+   
 
-    public AdminController(ICatalogService catalogService)
+    public AdminController(ICatalogService catalogService, IOrderService orderService)
     {
         _catalogService = catalogService;
+        _orderService = orderService;
     }
 
     public IActionResult Dashboard()
@@ -187,8 +193,7 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Products));
         }
     }
-    //order management
-    public IActionResult Orders()
+   public IActionResult Orders()
     {
         // Create some sample data for testing
         var sampleOrders = new List<OrderViewModel>
@@ -226,6 +231,45 @@ public class AdminController : Controller
     };
 
         return View(sampleOrders);
+    }
+
+     // GET: /Admin/CreateOrder
+    [HttpGet]
+    public IActionResult CreateOrder()
+    {
+        return View(new CreateOrderViewModel
+        {
+            CustomerName = string.Empty,
+            CustomerEmail = string.Empty,
+            StreetAddress = string.Empty,
+            City = string.Empty,
+            ZipCode = string.Empty,
+            Country = string.Empty
+        });
+    }
+
+    // POST: /Admin/CreateOrder
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateOrder(CreateOrderViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var dto = new OrderProductDto
+        {
+            CustomerName = model.CustomerName,
+            CustomerEmail = model.CustomerEmail,
+            StreetAddress = model.StreetAddress,
+            City = model.City,
+            ZipCode = model.ZipCode,
+            Country = model.Country
+        };
+
+        await _orderService.CreateAsync(dto);
+
+        TempData["Success"] = "✅ Order created successfully!";
+        return RedirectToAction("Orders");
     }
 
 }

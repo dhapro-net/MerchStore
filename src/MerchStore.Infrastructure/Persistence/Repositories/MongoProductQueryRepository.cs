@@ -10,10 +10,12 @@ namespace MerchStore.Infrastructure.Persistence.Repositories;
 public class MongoProductQueryRepository : IProductQueryRepository, IQueryRepository<Product, Guid>
 {
     private readonly IMongoCollection<Product> _products;
+    private readonly IMongoCollection<Order> _orders;
 
     public MongoProductQueryRepository(IMongoDatabase database)
     {
         _products = database.GetCollection<Product>("Products");
+        _orders = database.GetCollection<Order>("Orders");
     }
 
     public async Task<IEnumerable<Product>> GetAllProductsAsync(CancellationToken cancellationToken)

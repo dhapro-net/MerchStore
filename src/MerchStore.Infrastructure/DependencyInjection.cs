@@ -16,6 +16,8 @@ using MerchStore.Domain.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.Application.Services.Implementations;
 
 namespace MerchStore.Infrastructure;
 
@@ -100,6 +102,9 @@ public static class DependencyInjection
         // Register ShoppingCart services
         services.AddScoped<IShoppingCartQueryService, ShoppingCartQueryService>();
         services.AddScoped<IShoppingCartCommandService, ShoppingCartCommandService>();
+
+        // Register Order services
+        services.AddScoped<IOrderService, OrderService>();
 
         // Add logging services if not already added
         services.AddLogging();
