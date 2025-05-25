@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Something Admin</title>
+    <title>@(ViewData["Title"] ?? "Admin") - Something Admin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -21,25 +21,25 @@
                 <div class="collapse navbar-collapse" id="navbarNavAdmin">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Dashboard" ? "active" : "")" 
+                            <a class="nav-link @((ViewContext.RouteData.Values["Action"]?.ToString() ?? "") == "Dashboard" ? "active" : "")" 
                                asp-controller="Admin" asp-action="Dashboard">
                                 <i class="bi bi-speedometer2"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Products" ? "active" : "")" 
+                            <a class="nav-link @((ViewContext.RouteData.Values["Action"]?.ToString() ?? "") == "Products" ? "active" : "")" 
                                asp-controller="Admin" asp-action="Products">
                                 <i class="bi bi-box-seam"></i> Products
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Orders" ? "active" : "")" 
+                            <a class="nav-link @((ViewContext.RouteData.Values["Action"]?.ToString() ?? "") == "Orders" ? "active" : "")" 
                                asp-controller="Admin" asp-action="Orders">
                                 <i class="bi bi-cart-check"></i> Orders
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Users" ? "active" : "")" 
+                            <a class="nav-link @((ViewContext.RouteData.Values["Action"]?.ToString() ?? "") == "Users" ? "active" : "")" 
                                asp-controller="Admin" asp-action="Users">
                                 <i class="bi bi-people"></i> Users
                             </a>
@@ -82,7 +82,7 @@
     </footer>
 
     
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
