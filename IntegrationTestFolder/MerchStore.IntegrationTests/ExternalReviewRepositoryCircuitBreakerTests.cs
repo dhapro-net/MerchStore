@@ -78,7 +78,7 @@ public class ExternalReviewRepositoryCircuitBreakerTests : IClassFixture<ReviewA
                 {
                      logger.LogInformation("Circuit Breaker Test: Call #{CallNum} completed and returned mock data (Title: '{Title}') as expected (due to repo catch block).",
                         callNum, initialFallbackReviews.First().Title);
-                     Assert.StartsWith("Sample Review:", initialFallbackReviews.First().Title, StringComparison.OrdinalIgnoreCase);
+                     Assert.StartsWith("Review:", initialFallbackReviews.First().Title, StringComparison.OrdinalIgnoreCase);
 
                      // --- Log details of initial fallback reviews ---
                      logger.LogInformation("--- Details of Initial Fallback Reviews (Call #{CallNum}) ---", callNum);
