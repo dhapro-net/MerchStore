@@ -57,7 +57,7 @@ public static class DependencyInjection
 
             // Configure MongoDB serialization
            
-            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.CSharpLegacy));
 
             // Register MongoDB repositories
             services.AddScoped<IProductQueryRepository, MongoProductQueryRepository>();
