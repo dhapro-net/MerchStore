@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MerchStore.Domain.Entities;
 
 namespace MerchStore.Infrastructure.Persistence;
 
-
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<IdentityUser>
 {
     public DbSet<Product> Products { get; set; }
 

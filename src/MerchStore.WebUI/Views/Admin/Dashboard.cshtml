@@ -1,0 +1,80 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<h1 class="mb-4">Welcome to the Admin Dashboard</h1>
+<p class="lead mb-5">Manage your products, orders, and more from this administrative area.</p>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card h-100 bg-primary bg-opacity-10">
+            <div class="card-body text-center">
+                <i class="bi bi-box-seam text-primary"></i>
+                <h3>Products</h3>
+                <p>Manage your product catalog</p>
+                <a asp-action="Products" class="btn btn-primary mt-auto w-100">
+                    View Products <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card h-100 bg-success bg-opacity-10">
+            <div class="card-body text-center">
+                <i class="bi bi-cart-check text-success"></i>
+                <h3>Orders</h3>
+                <p>Manage customer orders</p>
+                <a asp-action="Orders" class="btn btn-success mt-auto w-100">
+                    View Orders <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card h-100 bg-warning bg-opacity-10">
+            <div class="card-body text-center">
+                <i class="bi bi-gear text-warning"></i>
+                <h3>Settings</h3>
+                <p>Configure store settings</p>
+                <a href="#" class="btn btn-warning mt-auto w-100">
+                    Manage Settings <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Orders</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">No recent orders found.</p>
+                
+            </div>
+            <div class="card-footer text-end">
+                <a asp-action="Orders" class="btn btn-sm btn-outline-primary">View All Orders</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Low Stock Products</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">No low stock products found.</p>
+                
+            </div>
+            <div class="card-footer text-end">
+                <a asp-action="Products" class="btn btn-sm btn-outline-primary">View All Products</a>
+            </div>
+        </div>
+    </div>
+</div>

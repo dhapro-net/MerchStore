@@ -15,3 +15,6 @@ GET http://localhost:5022/api/basic/products
 ### Get all products (with valid API key)
 GET http://localhost:5022/api/basic/products
 X-API-Key: ItHurtWhenIPee
+
+
+

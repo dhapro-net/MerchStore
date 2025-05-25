@@ -12,7 +12,10 @@ using MerchStore.Infrastructure.Repositories;
 using MerchStore.Application.ShoppingCart.Interfaces;
 using MerchStore.Application.ShoppingCart.Services;
 using MongoDB.Driver;
-
+using MerchStore.Domain.Entities;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace MerchStore.Infrastructure;
 
@@ -34,7 +37,7 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var provider = configuration["Config:DatabaseType"] ?? "EfCore";
+        var provider = configuration["Config:DatabaseType"] ?? "Mongo";
 
         if (provider == "Mongo")
         {
@@ -51,9 +54,15 @@ public static class DependencyInjection
                 return client.GetDatabase(configuration["CosmosDb:DatabaseName"]);
             });
 
+            // Configure MongoDB serialization
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+
             // Register MongoDB repositories
             services.AddScoped<IProductQueryRepository, MongoProductQueryRepository>();
             services.AddScoped<IProductCommandRepository, MongoProductCommandRepository>();
+
+            services.AddScoped<IQueryRepository<Product, Guid>, MongoProductQueryRepository>();
+            services.AddScoped<ICommandRepository<Product, Guid>, MongoProductCommandRepository>();
 
             // Register MongoDB seeder
             services.AddScoped<MongoDbSeeder>();
@@ -71,6 +80,8 @@ public static class DependencyInjection
             services.AddScoped<IProductCommandRepository, EfProductCommandRepository>();
             services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
             services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
+            
+            
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -117,7 +128,7 @@ public static class DependencyInjection
     public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider, IConfiguration configuration)
     {
         using var scope = serviceProvider.CreateScope();
-        var provider = configuration["Config:PersistenceProvider"] ?? "EfCore";
+        var provider = configuration["Config:PersistenceProvider"] ?? "Mongo";
 
         if (provider == "Mongo")
         {
