@@ -16,5 +16,6 @@ GET http://localhost:5022/api/basic/products
 GET http://localhost:5022/api/basic/products
 X-API-Key: ItHurtWhenIPee
 
-
-
+### get product by Id
+GET http://localhost:5022/api/basic/products/454bdf16-89a1-486b-b2d7-fa9a1f20b90e
+X-API-Key: ItHurtWhenIPee

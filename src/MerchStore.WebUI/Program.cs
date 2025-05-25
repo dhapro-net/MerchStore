@@ -69,6 +69,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.AddAuthentication(options =>
     {
         // leave DefaultScheme alone so Identity cookies still work
+        
     })
     .AddApiKey(builder.Configuration["ApiKey:Value"]
         ?? throw new InvalidOperationException("API Key not configured"));
@@ -89,7 +90,12 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy("AdminOrCustomer", policy =>
         policy.RequireRole(UserRoles.Administrator, UserRoles.Customer));
 });
-
+builder.Services.AddAuthentication()
+    .AddFacebook(options =>
+    {
+        options.AppId = "YOUR_FACEBOOK_APP_ID";
+        options.AppSecret = "YOUR_FACEBOOK_APP_SECRET";
+    });
 // ──────────── Application & Infrastructure ────────────
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
