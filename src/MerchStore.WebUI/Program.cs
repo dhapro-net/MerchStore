@@ -74,12 +74,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddDefaultUI();                            // wires up /Areas/Identity Razor-Pages
 
 // ──────────── API Key Authentication ────────────
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication()
+     .AddCookie(options =>
     {
-        // leave DefaultScheme alone so Identity cookies still work
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.SlidingExpiration = true;
     })
     .AddApiKey(builder.Configuration["ApiKey:Value"]
-        ?? throw new InvalidOperationException("API Key not configured"));
+        ?? throw new InvalidOperationException("API Key not configured"))
+    .AddFacebook(options =>
+    {
+        options.AppId = "YOUR_FACEBOOK_APP_ID";
+        options.AppSecret = "YOUR_FACEBOOK_APP_SECRET";
+    });
 
 // ──────────── Authorization ────────────
 builder.Services.AddAuthorization(opts =>
