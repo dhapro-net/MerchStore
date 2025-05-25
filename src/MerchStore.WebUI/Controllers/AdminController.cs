@@ -99,7 +99,7 @@ public class AdminController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating product: {ex.Message}");
+            _logger.LogError(ex, "Error creating product: {Message}", ex.Message);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View(model);
         }
