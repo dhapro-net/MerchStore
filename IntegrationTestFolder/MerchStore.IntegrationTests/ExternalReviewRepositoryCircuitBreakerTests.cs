@@ -3,7 +3,8 @@ using MerchStore.Infrastructure.IntegrationTests;
 using Microsoft.Extensions.DependencyInjection; // For GetRequiredService, IServiceScopeFactory
 using Microsoft.Extensions.Logging; // For ILogger, ILoggerFactory
 using Microsoft.Extensions.Options;
-using MerchStore.Infrastructure.ExternalServices.Reviews; // For IOptions, Options.Create
+using MerchStore.Infrastructure.ExternalServices.Reviews;
+using MerchStore.Domain.Interfaces; // For IOptions, Options.Create
 
 namespace MerchStore.IntegrationTests;
 
@@ -50,7 +51,8 @@ public class ExternalReviewRepositoryCircuitBreakerTests : IClassFixture<ReviewA
 
         // Create a new HttpClient with the test options and configure the repository
         var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
-        var apiClient = new ReviewApiClient(httpClient, optionsWrapper, loggerFactory.CreateLogger<ReviewApiClient>());
+        var productQueryRepository = serviceProvider.GetRequiredService<IProductQueryRepository>();
+        var apiClient = new ReviewApiClient(httpClient, optionsWrapper, loggerFactory.CreateLogger<ReviewApiClient>(), productQueryRepository, mockReviewService);
         var repository = new ExternalReviewRepository(apiClient, mockReviewService, optionsWrapper, loggerFactory.CreateLogger<ExternalReviewRepository>());
 
         var productId = Guid.NewGuid(); // Generate a new product ID for testing. Does not matter.

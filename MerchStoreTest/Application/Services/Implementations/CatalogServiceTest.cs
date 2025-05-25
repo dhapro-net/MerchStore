@@ -11,12 +11,14 @@ namespace MerchStoreTest.Application.Services.Implementations;
 public class CatalogServiceTest
 {
     private readonly Mock<IProductQueryRepository> _repoMock;
+    private readonly Mock<ICommandRepository<Product, Guid>> _commandRepoMock;
     private readonly CatalogService _service;
 
     public CatalogServiceTest()
     {
         _repoMock = new Mock<IProductQueryRepository>();
-        _service = new CatalogService(_repoMock.Object);
+        _commandRepoMock = new Mock<ICommandRepository<Product, Guid>>();
+        _service = new CatalogService(_repoMock.Object, _commandRepoMock.Object);
     }
 
     [Fact]
