@@ -8,9 +8,7 @@ using MerchStore.Domain.Interfaces; // For IOptions, Options.Create
 
 namespace MerchStore.IntegrationTests;
 
-
 /// Contains integration tests specifically for verifying the circuit breaker
-
 public class ExternalReviewRepositoryCircuitBreakerTests : IClassFixture<ReviewApiIntegrationTestFixture>
 {
     // Create a scope factory to manage the lifetime of services
@@ -23,7 +21,6 @@ public class ExternalReviewRepositoryCircuitBreakerTests : IClassFixture<ReviewA
         _scopeFactory = fixture.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
     }
 
- 
     [Fact]
     [Trait("Category", "Integration")]
     [Trait("Category", "CircuitBreaker")]
@@ -130,11 +127,11 @@ public class ExternalReviewRepositoryCircuitBreakerTests : IClassFixture<ReviewA
         Assert.NotNull(fallbackReviews);
         Assert.NotNull(fallbackStats);
 
-        // MockReviewService adds "Sample Review:" prefix to titles
+        // MockReviewService now adds "Review:" prefix to titles
         if (fallbackReviews.Any())
         {
             // Check the first review's title prefix to confirm it's likely from the mock service
-            Assert.StartsWith("Sample Review:", fallbackReviews.First().Title, StringComparison.OrdinalIgnoreCase);
+            Assert.StartsWith("Review:", fallbackReviews.First().Title, StringComparison.OrdinalIgnoreCase);
             logger.LogInformation("Circuit Breaker Test: Call #{CallNum} correctly returned mock data (Title: '{Title}'). Circuit successfully opened and fallback occurred.",
                 finalCallNum, fallbackReviews.First().Title);
 
