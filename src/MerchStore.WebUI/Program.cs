@@ -17,6 +17,7 @@ using MerchStore.Infrastructure;
 using System.Text.Json.Serialization; 
 using Azure.Identity;
 using dotenv.net;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,13 +67,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddDefaultUI();                            // wires up /Areas/Identity Razor-Pages
 
 // ──────────── API Key Authentication ────────────
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication()
+     .AddCookie(options =>
     {
-        // leave DefaultScheme alone so Identity cookies still work
-        
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+        options.SlidingExpiration = true;
     })
     .AddApiKey(builder.Configuration["ApiKey:Value"]
-        ?? throw new InvalidOperationException("API Key not configured"));
+        ?? throw new InvalidOperationException("API Key not configured"))
+    .AddFacebook(options =>
+    {
+        options.AppId = "YOUR_FACEBOOK_APP_ID";
+        options.AppSecret = "YOUR_FACEBOOK_APP_SECRET";
+    });
 
 // ──────────── Authorization ────────────
 builder.Services.AddAuthorization(opts =>
@@ -90,12 +100,7 @@ builder.Services.AddAuthorization(opts =>
     opts.AddPolicy("AdminOrCustomer", policy =>
         policy.RequireRole(UserRoles.Administrator, UserRoles.Customer));
 });
-builder.Services.AddAuthentication()
-    .AddFacebook(options =>
-    {
-        options.AppId = "YOUR_FACEBOOK_APP_ID";
-        options.AppSecret = "YOUR_FACEBOOK_APP_SECRET";
-    });
+
 // ──────────── Application & Infrastructure ────────────
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -184,6 +189,7 @@ using (var scope = app.Services.CreateScope())
         
         await userManager.CreateAsync(adminUser, "Admin123!");
         await userManager.AddToRoleAsync(adminUser, UserRoles.Administrator);
+        await userManager.AddClaimAsync(adminUser, new Claim("Department", "AdminTeam"));
         
         app.Logger.LogInformation("🔐 Created default admin user: admin@merchstore.com");
     }
