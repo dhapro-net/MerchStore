@@ -23,11 +23,11 @@ var host = new HostBuilder()
             options.UseInMemoryDatabase("MerchStoreDb"));
 
         // ✅ Register Repositories
-
         services.AddScoped<IProductQueryRepository, EfProductQueryRepository>();
         services.AddScoped<IProductCommandRepository, EfProductCommandRepository>();
-
-        
+        //services.AddScoped<IProductCommandRepository, EfProductCommandRepository>();
+        //services.AddScoped<IProductQueryRepository, EfProductQueryRepository>();
+       // services.AddScoped<IProductRepository, ProductRepository>();
 
 
         // ✅ Register Seeder

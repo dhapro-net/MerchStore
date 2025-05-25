@@ -130,6 +130,8 @@ public static class DependencyInjection
         using var scope = serviceProvider.CreateScope();
         var provider = configuration["Config:DatabaseType"] ?? "Mongo";
         Console.WriteLine("🧪 Seeding with provider: " + provider);
+        var provider = configuration["Config:DatabaseType"] ?? "EfCore";
+
 
         if (provider == "Mongo")
         {
@@ -143,3 +145,4 @@ public static class DependencyInjection
         }
     }
 }
+//apa
