@@ -17,6 +17,9 @@ using MerchStore.Infrastructure;
 using System.Text.Json.Serialization; 
 using Azure.Identity;
 using dotenv.net;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +35,17 @@ if (!string.IsNullOrEmpty(keyVaultName))
     Console.WriteLine("🔑 CosmosDB connection from Key Vault: " + cosmosTest);
 }*/
 // Update the JSON options configuration to use our custom policy
+
+// Register Guid serializer as string (recommended for compatibility)
+BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+
+
+
 DotEnv.Load(); // from dotenv.net
 builder.Configuration.AddEnvironmentVariables();
+
+
+
 
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(opts =>
