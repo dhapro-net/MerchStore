@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MerchStore.Application.Common.Interfaces;
 using MerchStore.Domain.ValueObjects;
+using DnsClient.Internal;
 
 namespace MerchStore.WebUI.Controllers;
 
@@ -99,7 +100,7 @@ public class AdminController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating product: {Message}", ex.Message);
+            Console.WriteLine(ex);
             ModelState.AddModelError(string.Empty, ex.Message);
             return View(model);
         }
