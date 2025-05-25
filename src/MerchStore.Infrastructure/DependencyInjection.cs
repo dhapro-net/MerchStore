@@ -16,6 +16,7 @@ using MerchStore.Domain.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace MerchStore.Infrastructure;
 
@@ -55,7 +56,8 @@ public static class DependencyInjection
             });
 
             // Configure MongoDB serialization
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+           
+            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
             // Register MongoDB repositories
             services.AddScoped<IProductQueryRepository, MongoProductQueryRepository>();
