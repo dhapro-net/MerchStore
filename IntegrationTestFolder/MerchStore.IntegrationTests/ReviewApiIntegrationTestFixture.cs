@@ -18,44 +18,41 @@ public class ReviewApiIntegrationTestFixture : IDisposable
 
     public ReviewApiIntegrationTestFixture()
     {
-        // Build configuration
+        // Step 1: Load appsettings.json for configuration
         Configuration = new ConfigurationBuilder()
-            // Set base path to the directory where the test assembly is running
             .SetBasePath(Directory.GetCurrentDirectory())
-            // Add the appsettings.json file we created for tests
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            // Optionally add environment variables or other sources
             .Build();
 
-        // Set up dependency injection
+        // Step 2: Set up the service collection (DI container)
         var services = new ServiceCollection();
-        services.AddScoped<IProductQueryRepository, FakeProductQueryRepository>();
 
-        // Add logging (optional, but helpful for debugging)
-        // This configures logging providers based on the "Logging" section in appsettings.json
+        // Step 3: Register logging services (for debug/log output)
         services.AddLogging(builder =>
         {
             builder.AddConfiguration(Configuration.GetSection("Logging"));
-            // Add common providers - output will show in test runner console/debug output
             builder.AddConsole();
             builder.AddDebug();
         });
 
-      
-        services.AddReviewServices(Configuration);
-        // --- --- --- --- --- --- --- --- ---
+        // Step 4: ✅ Register the fake product repository (used in integration tests)
+        services.AddSingleton<IProductQueryRepository, FakeProductQueryRepository>();
 
-        // Build the service provider
+        // Step 5: Register review services (includes ReviewApiClient, ExternalReviewRepository, etc.)
+        services.AddReviewServices(Configuration);
+
+        // Step 6: Build the service provider
         ServiceProvider = services.BuildServiceProvider();
     }
 
-       public void Dispose()
+    // Step 7: Dispose pattern for cleaning up resources
+    public void Dispose()
     {
-
         if (ServiceProvider is IDisposable disposable)
         {
             disposable.Dispose();
         }
+
         GC.SuppressFinalize(this);
     }
 }
