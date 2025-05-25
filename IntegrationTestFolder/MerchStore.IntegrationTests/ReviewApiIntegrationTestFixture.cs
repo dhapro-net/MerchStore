@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using MerchStore.Domain.Interfaces;
+using MerchStore.IntegrationTests;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -27,6 +29,7 @@ public class ReviewApiIntegrationTestFixture : IDisposable
 
         // Set up dependency injection
         var services = new ServiceCollection();
+        services.AddScoped<IProductQueryRepository, FakeProductQueryRepository>();
 
         // Add logging (optional, but helpful for debugging)
         // This configures logging providers based on the "Logging" section in appsettings.json
