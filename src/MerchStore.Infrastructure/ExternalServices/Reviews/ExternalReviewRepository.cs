@@ -64,7 +64,7 @@ public class ExternalReviewRepository : IReviewRepository
             // Use circuit breaker to call the external API
             return await _circuitBreakerPolicy.ExecuteAsync(async () =>
             {
-                var response = await _apiClient.GetProductReviewsAsync(productId);
+                var response = await _apiClient.GetGroupReviewsAsync(productId);
 
                 if (response?.Reviews == null || response.Stats == null)
                 {

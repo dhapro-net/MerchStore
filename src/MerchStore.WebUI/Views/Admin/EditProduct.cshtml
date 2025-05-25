@@ -1,0 +1,80 @@
+@model MerchStore.WebUI.Models.Dashboard.ProductViewModel
+
+@{
+    ViewData["Title"] = "Edit Product";
+    Layout = "_AdminLayout";
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h1 class="card-title">Edit Product</h1>
+        <a asp-action="Products" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditProduct" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label">Product Name</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                
+                <div class="col-md-3">
+                    <label asp-for="Price" class="form-label">Price</label>
+                    <div class="input-group">
+                        <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+                        <span class="input-group-text">@Model.Currency</span>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                
+                <div class="col-md-3">
+                    <label asp-for="Stock" class="form-label">Stock Quantity</label>
+                    <input asp-for="Stock" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="Stock" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="ImageUrl" class="form-label">Image URL</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="Enter a valid URL to an image (optional)" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                <small class="form-text text-muted">For example: https://example.com/images/product.jpg</small>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="mb-3">
+                    <label class="form-label">Current Image</label>
+                    <div>
+                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-thumbnail" style="max-height: 200px;" />
+                    </div>
+                </div>
+            }
+            
+            <div class="d-flex mt-4">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-check-circle"></i> Save Changes
+                </button>
+                <a asp-action="Products" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

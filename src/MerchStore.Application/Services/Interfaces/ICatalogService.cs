@@ -10,4 +10,12 @@ public interface ICatalogService
 
 
     Task<Product?> GetProductByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    // Add search functionality
+    Task<IEnumerable<Product>> SearchProductsAsync(string searchTerm);
+    
+    // Add write methods
+    Task<Product> AddProductAsync(string name, string description, Uri? imageUrl, decimal price, int stockQuantity);
+    Task UpdateProductAsync(Guid id, string name, string description, Uri? imageUrl, decimal price, int stockQuantity);
+    Task DeleteProductAsync(Guid id);
 }

@@ -38,7 +38,7 @@ public class CatalogController : Controller
                 TruncatedDescription = p.Description.Length > 100
                     ? p.Description.Substring(0, 97) + "..."
                     : p.Description,
-                FormattedPrice = p.Price.Amount.ToString("C"),
+                FormattedPrice = $"{p.Price.Amount:0.00} SEK",
                 PriceAmount = p.Price.Amount,
                 ImageUrl = p.ImageUrl?.ToString(),
                 StockQuantity = p.StockQuantity,
@@ -74,7 +74,7 @@ public class CatalogController : Controller
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
-                FormattedPrice = product.Price.Amount.ToString("C"),
+                FormattedPrice = $"{product.Price.Amount:0.00} SEK",
                 PriceAmount = product.Price.Amount,
                 ImageUrl = product.ImageUrl?.ToString(),
                 StockQuantity = product.StockQuantity,
