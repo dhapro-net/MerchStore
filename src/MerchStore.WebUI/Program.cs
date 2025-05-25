@@ -16,10 +16,7 @@ using MerchStore.Application;
 using MerchStore.Infrastructure;
 using System.Text.Json.Serialization; 
 using Azure.Identity;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// ──────────── JSON & MVC ────────────
+using dotenv.net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +26,14 @@ if (!string.IsNullOrEmpty(keyVaultName))
 {
     var keyVaultUri = new Uri($"https://{keyVaultName}.vault.azure.net/");
     builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+
+    // 🧪 Test the CosmosDB secret was loaded
+    var cosmosTest = builder.Configuration["CosmosDb:ConnectionString"];
+    Console.WriteLine("🔑 CosmosDB connection from Key Vault: " + cosmosTest);
 }*/
 // Update the JSON options configuration to use our custom policy
+DotEnv.Load(); // from dotenv.net
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(opts =>
@@ -90,6 +93,7 @@ builder.Services.AddAuthorization(opts =>
 // ──────────── Application & Infrastructure ────────────
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+Console.WriteLine("🌍 Config:DatabaseType = " + builder.Configuration["Config:DatabaseType"]);
 //builder.Services.AddScoped<ICatalogService, CatalogService>();
 
 // ──────────── Shopping Cart & HTTP Context ────────────

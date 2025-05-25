@@ -128,7 +128,8 @@ public static class DependencyInjection
     public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider, IConfiguration configuration)
     {
         using var scope = serviceProvider.CreateScope();
-        var provider = configuration["Config:PersistenceProvider"] ?? "Mongo";
+        var provider = configuration["Config:DatabaseType"] ?? "Mongo";
+        Console.WriteLine("🧪 Seeding with provider: " + provider);
 
         if (provider == "Mongo")
         {
