@@ -206,20 +206,20 @@ using (var scope = app.Services.CreateScope())
 // ──────────── Middleware Pipeline ────────────
 if (app.Environment.IsDevelopment())
 {
-    // Show detailed error messages in development
-    app.UseDeveloperExceptionPage();
-    // Seed database with test data in development
-    app.Services.SeedDatabaseAsync(app.Configuration).Wait();
+    // Use custom error page in production
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 
 
 }
 else
 {
-    
-    // Use custom error page in production
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+
+    // Show detailed error messages in development
+    app.UseDeveloperExceptionPage();
+    // Seed database with test data in development
+    app.Services.SeedDatabaseAsync(app.Configuration).Wait();
     
 }
 
