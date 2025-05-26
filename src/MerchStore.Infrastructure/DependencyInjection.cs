@@ -17,6 +17,8 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization.Conventions;
+using MerchStore.Application.Services.Interfaces;
+using MerchStore.Application.Services.Implementations;
 
 namespace MerchStore.Infrastructure;
 
@@ -56,7 +58,7 @@ public static class DependencyInjection
             });
 
             // Configure MongoDB serialization
-           
+
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.CSharpLegacy));
 
             // Register MongoDB repositories
@@ -66,6 +68,8 @@ public static class DependencyInjection
             services.AddScoped<IQueryRepository<Product, Guid>, MongoProductQueryRepository>();
             services.AddScoped<ICommandRepository<Product, Guid>, MongoProductCommandRepository>();
 
+            // ✅ Register OrderService
+            services.AddScoped<IOrderService, OrderService>();
             // Register MongoDB seeder
             services.AddScoped<MongoDbSeeder>();
         }
@@ -82,8 +86,8 @@ public static class DependencyInjection
             services.AddScoped<IProductCommandRepository, EfProductCommandRepository>();
             services.AddScoped(typeof(IQueryRepository<,>), typeof(QueryRepository<,>));
             services.AddScoped(typeof(ICommandRepository<,>), typeof(CommandRepository<,>));
-            
-            
+
+
 
             // Register Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
